@@ -1,0 +1,143 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+    <!-- Page Header -->
+    {% if form.address_name.errors %}
+        {% for error in form.address_name.errors %}
+            <div class="alert alert-danger mt-2">
+                <strong>
+                    {{ error }}
+                </strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="main-content-container container-fluid px-0">
+        <!-- Page Header -->
+        <div class="page-header row no-gutters mt-2">
+            <div class="col-8 col-sm-8 text-center text-sm-left mb-0">
+                <span class="text-uppercase page-subtitle">Overview</span>
+                <h3 class="page-title">Address Table</h3>
+            </div>
+            <div class="col-4 col-sm-4 text-right justify-content-end">
+                <a href="/address/create" class="btn btn-lg btn-accent ml-auto">
+                    <i class="material-icons">add</i>Add new address
+                </a>
+            </div>
+        </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+        <br><br>
+
+        <div class="row">
+            <div class="col">
+                <div class="card card-small mb-4">
+                    <div class="card-body p-0 pb-3 text-center">
+                        <table class="table mb-0" id="table-posts">
+                            <thead class="bg-light">
+                            <tr>
+                                <th scope="col" class="border-0">Id</th>
+                                <th scope="col" class="border-0">Address</th>
+                                <th scope="col" class="border-0">District</th>
+                                <th scope="col" class="border-0">City</th>
+                                <th scope="col" class="border-0">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="table-tbody-posts">
+                            {% for address in addresses %}
+                                <tr>
+                                    <td>{{ address.id }}</td>
+                                    <td>{{ address.detail }}</td>
+                                    <td data-district-id="{{ address.district_id }}">{{ address.district }}</td>
+                                    <td data-city-id="{{ address.city_id }}">{{ address.city }}</td>
+                                    <td>
+                                        <button data-toggle="modal" data-target="#exampleModal"
+                                                class="mb-2 btn btn-md btn-info mr-1">Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <ul id="pagination" class="pagination-md float-right"></ul>
+
+            </div>
+
+        </div>
+
+        <!-- POP UP MODAL -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <form action="{{ url_for('address.edit_address') }}" method="POST">
+                    {{ form.csrf_token }}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modify address</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="id_edit" class="col-sm-2" style="padding-left: 0">AddressID</label>
+                                <input type="text" class="form-control form-control-lg" id="id_edit" name="address_id"
+                                       readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="city_edit" class="col-sm-2" style="padding-left: 0">City</label>
+                                <select class="form-control form-control-lg" id="city_edit"
+                                        onchange="getDistrictByCity()">
+                                    {% for city in list_city %}
+                                        <option value="{{ city.id }}">{{ city.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="district_edit" class="col-sm-2" style="padding-left: 0">District</label>
+                                <select class="form-control form-control-lg" id="district_edit" name="district_id">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <strong class="text-muted d-block mb-2">Address name</strong>
+                                <div class="input-group mb-3">
+                                    {{ form.address_name(placeholder="Name", class="form-control", id="address-edit") }}
+                                </div>
+                            </div>
+                            {#                            <div class="form-group">#}
+                            {#                                <label for="address-edit" class="col-sm-2" style="padding-left: 0">Detail</label>#}
+                            {#                                <input type="text" class="form-control form-control-lg" id="address-edit"#}
+                            {#                                       placeholder="address detail">#}
+                            {#                            </div>#}
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                            <button type="submit" id="modify" class="btn btn-primary btn-sm">Modify</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- END MODAL -->
+    </div>
+
+    <script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
+    <script src="{{ url_for('static', filename='address/show_address.js') }}"></script>
+
+    <script>
+        $('#pagination').twbsPagination({
+            startPage: 1,
+            totalPages: {{ total_page }},
+            pageVariable: 'page',
+            visiblePages: {{ visible_page }},
+            href: true,
+            defaultHref: '?page=',
+        });
+    </script>
+{% endblock %}

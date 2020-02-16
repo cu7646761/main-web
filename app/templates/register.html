@@ -1,0 +1,39 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+    <h1>Register</h1>
+    <br>
+    <form class="form-signin" role="form" method="post" action="">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.email(placeholder="Email", class="w-20") }}
+            <span class="error dis-block">
+      {% if form.email.errors %}
+          {% for error in form.email.errors %}
+              {{ error }}
+          {% endfor %}
+      {% endif %}
+    </span>
+        </p>
+        <p>
+            {{ form.password(placeholder="Password", class="w-20") }}
+            <span class="error dis-block">
+      {% if form.password.errors %}
+          {% for error in form.password.errors %}
+              {{ error }}
+          {% endfor %}
+      {% endif %}
+    </span>
+        </p>
+        <button class="btn btn-sm btn-success w-20" type="submit" id="submit">Register</button>
+    </form>
+    <br>
+    <div>or</div>
+
+{#    <a class="btn btn-block btn-primary w-20 center" href="{{ url_for('users.oauth_authorize', provider='facebook') }}" id="submitFb" target="windowfb">Sign#}
+{#        up with Facebook</a>#}
+{#    <a class="btn btn-block btn-default w-20 center" href="{{ url_for('users.oauth_authorize', provider='twitter') }}" id="submitTw" target="windowtw">Sign#}
+{#        up with Twitter</a>#}
+
+{% endblock %}
