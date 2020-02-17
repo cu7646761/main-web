@@ -1,13 +1,13 @@
 from flask_mongoengine import Pagination
-from app.entity.mongo.user import User as UserEntity
+from app.entity.user import User as UserEntity
 from constants import Pages
 
 
 class UserModel(UserEntity):
     objects = UserEntity.objects
 
-    def get_name_by_id(self, User_id):
-        return self.objects.get(id=User_id).name
+    def get_name_by_id(self, user_id):
+        return self.objects.get(id=user_id).name
 
     def query_all(self):
         return self.objects
@@ -34,7 +34,7 @@ class UserModel(UserEntity):
     def create(cls, email, password):
         try:
             UserEntity(email=email, password=password).save()
-            UserEntity.reindex()
+            # UserEntity.reindex()
             return True, None
         except Exception as e:
             return False, e.__str__()

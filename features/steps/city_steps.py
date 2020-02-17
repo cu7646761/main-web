@@ -1,6 +1,5 @@
 from behave import given, when, then
-from app import db
-from app.entity.mongo.city import City
+
 
 @given(u'When get into "city" page with blank list and click the create button.')
 def when_click_create(context):

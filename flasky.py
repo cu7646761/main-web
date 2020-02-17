@@ -1,10 +1,14 @@
-from app import create_app, db, cache
+from flask_mongo_sessions import MongoDBSessionInterface
+
+from app import create_app, cache, db
 import os
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
 with app.app_context():
-    cache.clear()
+    mongo_sess = db.connection[app.config['MONGODB_DB']]
+    app.session_interface = MongoDBSessionInterface(app, mongo_sess, 'sessions')
+    # cache.clear()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="3000", debug=True)
+    app.run(host="localhost", port="5000", debug=True)

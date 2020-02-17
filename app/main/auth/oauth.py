@@ -1,10 +1,9 @@
-import json
 from builtins import str, super, classmethod, object
 
 from rauth import OAuth1Service, OAuth2Service
 from flask import current_app, request, redirect, session
 
-from app.utils import Utils
+from utils import Utils
 
 
 class OAuthSignIn(object):

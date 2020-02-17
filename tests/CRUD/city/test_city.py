@@ -1,4 +1,4 @@
-from app.entity.mongo.city import City
+from app.entity.city import City
 from tests.test_client import FlaskClientTestCase
 
 

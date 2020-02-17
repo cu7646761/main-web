@@ -4,7 +4,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+    # SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+    SECRET_KEY = 'hard to guess string'
     CACHE_TYPE = 'redis'
     CACHE_KEY_PREFIX = 'fcache'
     CACHE_REDIS_HOST = 'localhost'
@@ -22,6 +23,9 @@ class Config:
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     ELASTICSEARCH_URL = 'http://localhost:9200'
 
+    # SESSION_MONGODB = 'mongodb://localhost:27017/main_1'
+    # SESSION_MONGODB_DB = 'main_1'
+    # SESSION_MONGODB_COLLECT = 'sessions'
 
     @staticmethod
     def init_app(app):

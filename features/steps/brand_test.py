@@ -1,8 +1,4 @@
 from behave import given, when, then
-from app import db
-from app.entity.mongo.city import City
-from app.entity.mongo.brand import Brand
-
 
 
 @given(u'When get into "brand" page with blank list and click the create button.')

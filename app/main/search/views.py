@@ -1,10 +1,7 @@
 from flask import Blueprint, render_template, redirect, request, jsonify
 
 from app.main.search.forms import SearchForm
-from app.CRUD.address.models import AddressModel
-from app.CRUD.city.models import CityModel
-from app.CRUD.district.models import DistrictModel
-from app.main.user.models import UserModel
+from app.main.auth.models import UserModel
 from app.main.search.models import FullTextSearch, FuzzySearch, SuggestionSearch
 
 search_blueprint = Blueprint('search', __name__, template_folder='templates')
