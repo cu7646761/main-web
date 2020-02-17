@@ -17,9 +17,10 @@
                             <div class="card card-small mb-4">
                                 <div class="card-body">
                                     <form action="/login" method="post">
+                                        {{ form.csrf_token }}
                                         {% if error %}
                                             <div class="input-group mb-3">
-                                                <div class="alert alert-danger alert-dismissible fade show mb-0 w-100"
+                                                <div class="alert alert-danger fade show mb-0 w-100"
                                                      role="alert">
                                                     <button type="button" class="close" data-dismiss="alert"
                                                             aria-label="Close">
@@ -29,17 +30,41 @@
                                                     <strong>{{ error }}</strong></div>
                                             </div>
                                         {% endif %}
+
                                         <div class="form-group">
                                             <div class="input-group mb-3">
-                                                <input type="email" class="form-control" placeholder="Email"
-                                                       aria-label="Email" name="email" aria-describedby="basic-addon1" required>
+                                                {{ form.email(placeholder="Email", class="form-control") }}
                                             </div>
                                         </div>
+
+                                        {% if form.email.errors %}
+                                            {% for error in form.email.errors %}
+                                                <div class="form-group">
+                                                    <strong class="text-warning d-block mb-2">
+                                                        {{ error }}
+                                                    </strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
                                         <div class="form-group">
-                                            <input type="password" class="form-control" id="inputPassword4"
-                                                   placeholder="Password" name="password" required></div>
+                                            <div class="input-group mb-3">
+                                                {{ form.password(placeholder="Password", class="form-control") }}
+                                            </div>
+                                        </div>
+
+                                        {% if form.password.errors %}
+                                            {% for error in form.password.errors %}
+                                                <div class="form-group">
+                                                    <strong class="text-warning d-block mb-2">
+                                                        {{ error }}
+                                                    </strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
                                         <button type="submit" class="mb-2 btn btn-danger mr-2 w-100">Login</button>
-                                        <a class="text-success" href="#">
+                                        <a class="text-primary" href="/signup">
                                             Sign up?
                                         </a>
                                     </form>
