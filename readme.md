@@ -28,3 +28,7 @@ How to run bdd test
     > behave features/checkform.feature <br>
      behave features/checkfb.feature <br>
      behave features/checktw.feature
+
+Work with github
+=======================================
+1. Link docs: https://docs.google.com/document/d/1dyJDHd9g7ZIg4bhdWCf1m3j3L5yI3tpefdt1XyxIaLY/edit

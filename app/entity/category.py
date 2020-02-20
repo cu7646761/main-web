@@ -11,4 +11,4 @@ class Category(mongoengine.Document, SearchableMixin):
     meta = {'allow_inheritance': True}
 
     def __repr__(self):
-        return '<City %r>' % (self.name)
+        return '<Category %r>' % (self.name)
