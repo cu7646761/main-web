@@ -11,6 +11,11 @@ class User(mongoengine.Document, SearchableMixin):
     password = mongoengine.StringField(max_length=255)
     email_fb = mongoengine.StringField(max_length=255)
     id_fb = mongoengine.StringField(max_length=255)
+    birthday = mongoengine.DateTimeField()
+    permission = mongoengine.IntField()
+    favorite_categories = mongoengine.ListField()
+    favorite_stores = mongoengine.ListField()
+    gender = mongoengine.IntField()
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
