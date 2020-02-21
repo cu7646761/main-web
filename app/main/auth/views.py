@@ -3,6 +3,7 @@ from flask import redirect, render_template, Blueprint, session, request
 
 from app.main.auth.forms import AuthForm
 from app.main.auth.models import UserModel
+from app.main.store.models import StoreModel
 
 from utils import Utils
 
@@ -84,3 +85,11 @@ def get_logout():
 @login_required
 def home():
     return render_template("index.html")
+
+
+@auth_blueprint.route('/stores', methods=['GET'])
+@login_required
+def stores():
+    store_model = StoreModel()
+    stores = store_model.query_all()
+    return render_template("listing.html", stores=stores)
