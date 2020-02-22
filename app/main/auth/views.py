@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import redirect, render_template, Blueprint, session, request
 
-from app.main.auth.forms import AuthForm
+from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
 
 from utils import Utils
@@ -14,7 +14,7 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         # if user is not logged in, redirect to login page
-        if not session['logged']:
+        if session['logged'] is None or not session['logged']:
             return redirect("/login")
         return f(*args, **kwargs)
     return wrap
@@ -22,19 +22,19 @@ def login_required(f):
 
 @auth_blueprint.route("/login", methods=["GET"])
 def get_login():
-    form = AuthForm()
+    form = LoginForm()
     return render_template('login.html', form=form)
 
 
 @auth_blueprint.route("/signup", methods=["GET"])
 def get_signup():
-    form = AuthForm()
+    form = SignupForm()
     return render_template('signup.html', form=form)
 
 
 @auth_blueprint.route("/signup", methods=["POST"])
 def post_signup(error=None):
-    form = AuthForm()
+    form = SignupForm()
     if form.validate_on_submit():
         user = UserModel()
         email = request.form.get("email", "")
@@ -61,7 +61,8 @@ def post_signup(error=None):
 
 @auth_blueprint.route('/login', methods=['POST'])
 def post_login(error=None):
-    form = AuthForm()
+    form = LoginForm()
+
     if form.validate_on_submit():
         user = UserModel()
         email = request.form.get("email", "")
