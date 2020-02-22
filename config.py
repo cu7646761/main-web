@@ -1,11 +1,11 @@
 import os
-import redis
+from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
     # SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    # SECRET_KEY = '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+    SECRET_KEY = 'hard to guess string'
     CACHE_TYPE = 'redis'
     CACHE_KEY_PREFIX = 'fcache'
     CACHE_REDIS_HOST = 'localhost'
@@ -23,12 +23,11 @@ class Config:
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     ELASTICSEARCH_URL = 'http://localhost:9200'
 
-    # Flask-Session
-    # SESSION_TYPE = environ.get('SESSION_TYPE')
-    # SESSION_REDIS = redis.from_url(environ.get('SESSION_REDIS'))
-    SESSION_TYPE = redis
-    # redis: //:[password] @ [host_url]: [port]
-    SESSION_REDIS = "redis://localhost:6379"
+    SESSION_TYPE = 'filesystem'
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
+    # The maximum number of items the session stores
+    # before it starts deleting some, default 500
+    SESSION_FILE_THRESHOLD = 100
 
     @staticmethod
     def init_app(app):

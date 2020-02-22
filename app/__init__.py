@@ -13,17 +13,18 @@ sess = Session()
 
 def create_app(config_name):
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
+
     bcrypt.init_app(app)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
     db.init_app(app)
     # cache.init_app(app)
-    sess.init_app(app)
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
         if app.config['ELASTICSEARCH_URL'] else None
+
+    sess.init_app(app)
 
     from app.main.auth.views import auth_blueprint
     from app.main.search.views import search_blueprint

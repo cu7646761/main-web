@@ -14,8 +14,8 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         # if user is not logged in, redirect to login page
-        # if not session['logged']:
-        #     return redirect("/login")
+        if not session['logged']:
+            return redirect("/login")
         return f(*args, **kwargs)
     return wrap
 
@@ -39,10 +39,14 @@ def post_signup(error=None):
         user = UserModel()
         email = request.form.get("email", "")
         password = request.form.get("password", "")
+        password_confirm = request.form.get("password_confirm", "")
         if not email:
             error = "Email is required"
         elif not password:
             error = "Password is required"
+        elif password != password_confirm:
+            error = "Repeat password is incorrect"
+
         elif len(user.find_by_email(email)) == 1:
             error = "User {0} is already registered.".format(email)
         if error is None:
@@ -68,7 +72,6 @@ def post_login(error=None):
         elif not Utils.check_password(plain_text_password, user[0].password):
             error = "Incorrect password"
         if error is None:
-            print(session)
             session['logged'] = True
             session['cur_user'] = user
             return redirect('/')
@@ -77,7 +80,7 @@ def post_login(error=None):
 
 @auth_blueprint.route("/logout", methods=["GET"])
 def get_logout():
-    # session.clear()
+    session.clear()
     return redirect('/login')
 
 
