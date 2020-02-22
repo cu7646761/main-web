@@ -1,11 +1,11 @@
 import os
-
+import redis
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
     # SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    SECRET_KEY = 'hard to guess string'
+    # SECRET_KEY = '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
     CACHE_TYPE = 'redis'
     CACHE_KEY_PREFIX = 'fcache'
     CACHE_REDIS_HOST = 'localhost'
@@ -23,9 +23,12 @@ class Config:
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     ELASTICSEARCH_URL = 'http://localhost:9200'
 
-    # SESSION_MONGODB = 'mongodb://localhost:27017/main_1'
-    # SESSION_MONGODB_DB = 'main_1'
-    # SESSION_MONGODB_COLLECT = 'sessions'
+    # Flask-Session
+    # SESSION_TYPE = environ.get('SESSION_TYPE')
+    # SESSION_REDIS = redis.from_url(environ.get('SESSION_REDIS'))
+    SESSION_TYPE = redis
+    # redis: //:[password] @ [host_url]: [port]
+    SESSION_REDIS = "redis://localhost:6379"
 
     @staticmethod
     def init_app(app):

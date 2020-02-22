@@ -14,8 +14,8 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         # if user is not logged in, redirect to login page
-        if not session.get('logged'):
-            return redirect("/login")
+        # if not session['logged']:
+        #     return redirect("/login")
         return f(*args, **kwargs)
     return wrap
 
@@ -68,6 +68,7 @@ def post_login(error=None):
         elif not Utils.check_password(plain_text_password, user[0].password):
             error = "Incorrect password"
         if error is None:
+            print(session)
             session['logged'] = True
             session['cur_user'] = user
             return redirect('/')
@@ -76,7 +77,7 @@ def post_login(error=None):
 
 @auth_blueprint.route("/logout", methods=["GET"])
 def get_logout():
-    session.clear()
+    # session.clear()
     return redirect('/login')
 
 
