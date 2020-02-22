@@ -12,6 +12,5 @@ class Address(mongoengine.Document, SearchableMixin):
     longtitude = mongoengine.FloatField()
     
     meta = {'allow_inheritance': True}
-
     def __repr__(self):
         return '<Address %r>' % (self.detail)
