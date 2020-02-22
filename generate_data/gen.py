@@ -39,7 +39,7 @@ print('finished create category')
 
 # --------- Create store ----------
 data = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/store_json.json') as f:
+with open(os.path.abspath(os.path.dirname(__file__)) + '/store_json.json', encoding="utf8") as f:
     for line in f:
         data.append(json.loads(line))
 
