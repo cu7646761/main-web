@@ -12,6 +12,9 @@ store_blueprint = Blueprint(
 @store_blueprint.route("/detail-store", methods=["GET"])
 def view_detail():
     form = StoreForm()
+    store = StoreModel()
+    StoreModel.create("huhu", "123")
+    print(store.query_all())
     return render_template('detail.html', form=form)
 
 # @auth_blueprint.route("/detail-store", methods=["POST"])

@@ -7,19 +7,22 @@ class Store(mongoengine.Document, SearchableMixin):
     __tablename__ = 'store_mongo'
     __searchable__ = ['store']
 
-    name = mongoengine.StringField(max_length=255, required=True, unique=True)
+    name = mongoengine.StringField(max_length=255)
+
     address_id = mongoengine.ObjectIdField()
     categories_id = mongoengine.ListField()
-    min_price = mongoengine.LongField()
-    max_price = mongoengine.LongField()
+    min_price = mongoengine.StringField()
+    max_price = mongoengine.StringField()
     link_image = mongoengine.ListField()
+
+    stars = mongoengine.FloatField()
     star_s1 = mongoengine.IntField()
     star_s2 = mongoengine.IntField()
     star_s3 = mongoengine.IntField()
     star_s4 = mongoengine.IntField()
     star_s5 = mongoengine.IntField()
     description = mongoengine.StringField(max_length=500)
-    comments = mongoengine.StringField(max_length=255)
+
     comments_a = mongoengine.IntField()
     comments_b = mongoengine.IntField()
     comments_c = mongoengine.IntField()
@@ -31,6 +34,7 @@ class Store(mongoengine.Document, SearchableMixin):
     comments_i = mongoengine.IntField()
     comments_s = mongoengine.IntField()
     comments_list = mongoengine.ListField()
+
     classification = mongoengine.StringField(max_length=10)
     reviewer_quantity = mongoengine.IntField()
 

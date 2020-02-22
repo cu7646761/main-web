@@ -10,6 +10,7 @@ class StoreModel(StoreEntity):
         return self.objects.get(id=user_id).name
 
     def query_all(self):
+        print(StoreEntity.objects)
         return self.objects
 
     def query_paginate(self, page):
@@ -31,9 +32,9 @@ class StoreModel(StoreEntity):
     #         return False, e.__str__()
 
     @classmethod
-    def create(cls, email, password):
+    def create(cls, name, description):
         try:
-            StoreEntity(email=email, password=password).save()
+            StoreEntity(name=name, description=description).save()
             # StoreEntity.reindex()
             return True, None
         except Exception as e:

@@ -6,8 +6,10 @@ from app.main.search.models import SearchableMixin
 class Category(mongoengine.Document, SearchableMixin):
     __tablename__ = 'category_mongo'
     __searchable__ = ['name']
+
     name = mongoengine.StringField()
-    
+    name_link = mongoengine.StringField()
+
     meta = {'allow_inheritance': True}
 
     def __repr__(self):
