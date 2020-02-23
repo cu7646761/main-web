@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import redirect, render_template, Blueprint, session, request
 
+from app import mail
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
 
@@ -27,6 +28,10 @@ def login_required(f):
 @auth_blueprint.route("/login", methods=["GET"])
 def get_login():
     form = LoginForm()
+    msg = Message("Hello",
+                  sender="phuongvuong98@gmail.com",
+                  recipients=["vuonglegend@gmail.com"])
+    mail.send(msg)
     return render_template('login.html', form=form)
 
 
