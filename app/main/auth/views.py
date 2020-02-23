@@ -5,6 +5,7 @@ from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
 
 from utils import Utils
+from flask_mail import Message
 
 auth_blueprint = Blueprint(
     'auth', __name__, template_folder='templates')
