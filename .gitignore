@@ -138,3 +138,5 @@ dmypy.json
 .vscode/
 
 project_env/
+
+flask_session/

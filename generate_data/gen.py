@@ -9,33 +9,33 @@ client = MongoClient(port=27017)
 db = client.main_1
 
 # --------- Create category ----------
-names = []
-names_link = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/category.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    line_count = 0
-    for row in csv_reader:
-        if line_count == 0:
-            print(f'Column names are {", ".join(row)}')
-            line_count += 1
-        else:
-            names.append(row[0])
-            names_link.append(row[1])
-            line_count += 1
-    print(f'Processed {line_count} lines.')
-for x in range(0, 14):
-    cate = {
-        '_cls': 'Category',
-        'name': names[x],
-        'name_link': names_link[x]
-    }
-    try:
-        result = db.category.insert_one(cate)
-    except:
-        continue
-    print('Created {0}'.format(x))
-
-print('finished create category')
+# names = []
+# names_link = []
+# with open(os.path.abspath(os.path.dirname(__file__)) + '/category.csv') as csv_file:
+#     csv_reader = csv.reader(csv_file, delimiter=',')
+#     line_count = 0
+#     for row in csv_reader:
+#         if line_count == 0:
+#             print(f'Column names are {", ".join(row)}')
+#             line_count += 1
+#         else:
+#             names.append(row[0])
+#             names_link.append(row[1])
+#             line_count += 1
+#     print(f'Processed {line_count} lines.')
+# for x in range(0, 14):
+#     cate = {
+#         '_cls': 'Category',
+#         'name': names[x],
+#         'name_link': names_link[x]
+#     }
+#     try:
+#         result = db.category.insert_one(cate)
+#     except:
+#         continue
+#     print('Created {0}'.format(x))
+#
+# print('finished create category')
 
 # --------- Create store ----------
 data = []
@@ -116,9 +116,10 @@ for each in data:
     for cmt in each['comment_list']:
         comment_1 = {
             '_cls': 'Comment',
-            'detail': json.dumps(cmt['comment']).strip(),
+            'detail': json.dumps(cmt['comment'])[1:-1],
             'star_num': int(json.dumps(cmt['star_num']['$numberInt']).replace('"', "")),
-            'store_id': store_new_id
+            'store_id': store_new_id,
+            'cus_name': json.dumps(cmt['author'])[1:-1]
         }
         res_cmt = db.comment.insert_one(comment_1)
         comment_list_id.append(res_cmt.inserted_id)
