@@ -13,8 +13,13 @@ class StoreModel(StoreEntity):
         return self.objects
 
     def query_paginate(self, page):
-        users = Pagination(self.objects, int(page), int(Pages['NUMBER_PER_PAGE']))
-        return users.items, users.pages
+        stores = Pagination(self.objects, int(page), int(Pages['NUMBER_PER_PAGE']))
+        return stores.items, stores.pages
+
+    def query_paginate_sort(self, page):
+        stores_sorted = self.objects.order_by("-classification")
+        stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
+        return stores.items, stores.pages
 
     def find_by_id(self, user_id):
         return self.objects(id__exact=user_id)

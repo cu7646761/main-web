@@ -90,6 +90,11 @@ def home():
 @auth_blueprint.route('/stores', methods=['GET'])
 @login_required
 def stores():
+    page = request.args.get('page', 1, type=int)
     store_model = StoreModel()
-    stores = store_model.query_all()
+    
+    
+    stores, pages = store_model.query_paginate_sort(page)
+    
+    print(stores[0].categories_id)
     return render_template("listing.html", stores=stores)
