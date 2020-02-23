@@ -13,8 +13,11 @@ auth_blueprint = Blueprint(
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        # if user is not logged in, redirect to login page
-        if session['logged'] is None or not session['logged']:
+        try:
+            # if user is not logged in, redirect to login page
+            if not session['logged']:
+                return redirect("/login")
+        except:
             return redirect("/login")
         return f(*args, **kwargs)
     return wrap
