@@ -27,6 +27,9 @@ class StoreModel(StoreEntity):
     def find_by_email(self, email):
         return self.objects(email__exact=email)
 
+    def get_cate(self, categories_id):
+        return ["sang-trong", "buffet"]
+
     # def edit(self, _id, email):
     #     try:
     #         self.objects(id__exact=_id).update(set__email=email)

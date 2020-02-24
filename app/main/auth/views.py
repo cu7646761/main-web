@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import redirect, render_template, Blueprint, session, request
+from constants import Pages
 
 from app.main.auth.forms import AuthForm
 from app.main.auth.models import UserModel
@@ -87,7 +88,7 @@ def home():
     return render_template("index.html")
 
 
-@auth_blueprint.route('/stores', methods=['GET'])
+@auth_blueprint.route('/stores/', methods=['GET'])
 @login_required
 def stores():
     page = request.args.get('page', 1, type=int)
@@ -95,6 +96,10 @@ def stores():
     
     
     stores, pages = store_model.query_paginate_sort(page)
-    
-    print(stores[0].categories_id)
-    return render_template("listing.html", stores=stores)
+    datas = []
+    for store in stores:
+        cates = store_model.get_cate(store.categories_id)
+        datas += [{ "store": store, "cates": cates}]
+
+    # address = 
+    return render_template("listing.html", datas=datas, pages=pages, current_page=page)
