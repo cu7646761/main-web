@@ -1,21 +1,42 @@
 from functools import wraps
+import math
 from flask import redirect, render_template, Blueprint, session, request
 
 from app.main.store.forms import StoreForm
 from app.main.store.models import StoreModel
+from app.main.category.models import CategoryModel
+from app.main.address.models import AddressModel
 
 from utils import Utils
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
 
-@store_blueprint.route("/detail-store", methods=["GET"])
-def view_detail():
-    form = StoreForm()
-    store = StoreModel()
-    StoreModel.create("huhu", "123")
-    print(store.query_all())
-    return render_template('detail.html', form=form)
+@store_blueprint.route("/detail-store/<string:store_id>", methods=["GET"])
+def view_detail(store_id=None):
+    # form = StoreForm()
+    stores =StoreModel()
+    categories = CategoryModel()
+    store = stores.find_by_id(store_id)
+    category = categories.findAllById(store[0].categories_id)
+    address = AddressModel().find_by_id(store[0].address_id)
+    star_s1,star_s2,star_s3,star_s4,star_s5,avr_star,cnt = countStar(store)
+    return render_template('detail.html', store=store[0], category=category, address= address[0],
+    star_s1 = star_s1, star_s2 = star_s2, star_s3 = star_s3, star_s4= star_s4, star_s5 = star_s5, 
+    avr_star = avr_star, cnt= cnt)
+def countStar(store):
+    if (store[0].reviewer_quant != 0):
+        star_s1 = round((store[0].star_s1/store[0].reviewer_quant*100),2)
+        star_s2 = round((store[0].star_s2/store[0].reviewer_quant*100),2)
+        star_s3 = round((store[0].star_s3/store[0].reviewer_quant*100),2)
+        star_s4 = round((store[0].star_s4/store[0].reviewer_quant*100),2)
+        star_s5 = round((store[0].star_s5/store[0].reviewer_quant*100),2)
+        avr_star = round(((store[0].star_s1*1 + store[0].star_s2*2 + store[0].star_s3*3 + store[0].star_s4*4 + store[0].star_s5*5)/store[0].reviewer_quant),1)
+        cnt = math.floor(avr_star)
+        
+        return star_s1,star_s2,star_s3,star_s4,star_s5,avr_star,cnt
+    else:
+        return 0,0,0,0,0,0
 
 # @auth_blueprint.route("/detail-store", methods=["POST"])
 # def post_signup(error=None):
