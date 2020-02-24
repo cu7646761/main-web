@@ -19,6 +19,9 @@ class User(mongoengine.Document, SearchableMixin):
     comments_list = mongoengine.ListField()
     active = mongoengine.IntField(default=0)
 
+    # save avatar
+    link_image = mongoengine.StringField()
+
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
 
