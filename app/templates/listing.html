@@ -219,20 +219,20 @@
                         <div class = "col-12"><p>Danh sách sản phẩm</p></div>
                         <div class="col-sm-12 col-lg-12 col-xl-12 featured-responsive">
                             <div class="featured-place-wrap">
-                                <a href="detail.html">
+                                <a href="/detail-store/{{data['store'].id}}">
                                     <img src="{{ data['store'].link_image[0] }}" class="img-fluid" alt="#">
                                     <span class="featured-rating-orange ">6.5</span>
                                     <div class="featured-title-box">
                                         <h6>{{data['store'].name}}</h6>
                                         {% for cate in data['cates'] %}
-                                            <p>{{cate}}</p> <span> • </span>    
+                                            <p>{{cate[0].name}}</p> <span> • </span>    
                                         {% endfor %}
                                         <br>
                                         <p>{{ data['store'].reviewer_quant}} Reviews</p>
                                         
                                         <ul>
                                             <li><span class="icon-location-pin"></span>
-                                                <p>{{data['store'].address}}</p>
+                                                <p>{{data['address'][0].detail}}</p>
                                             </li>
                                             <li><span class="icon-screen-smartphone"></span>
                                                 <p>+44 20 7336 8898</p>

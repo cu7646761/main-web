@@ -5,7 +5,8 @@ from constants import Pages
 from app.main.auth.forms import AuthForm
 from app.main.auth.models import UserModel
 from app.main.store.models import StoreModel
-
+from app.main.category.models import CategoryModel
+from app.main.address.models import AddressModel
 from utils import Utils
 
 auth_blueprint = Blueprint(
@@ -16,7 +17,7 @@ def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         # if user is not logged in, redirect to login page
-        if not session['logged']:
+        if not session.get('logged'):
             return redirect("/login")
         return f(*args, **kwargs)
     return wrap
@@ -93,17 +94,24 @@ def home():
 
 
 @auth_blueprint.route('/stores/', methods=['GET'])
-@login_required
+# @login_required
 def stores():
     page = request.args.get('page', 1, type=int)
     store_model = StoreModel()
+    categories = CategoryModel()
     
     
     stores, pages = store_model.query_paginate_sort(page)
     datas = []
     for store in stores:
-        cates = store_model.get_cate(store.categories_id)
-        datas += [{ "store": store, "cates": cates}]
+        address = AddressModel().find_by_id(store.address_id)
+        cates = categories.findAllById(store.categories_id)
+        # cates = store_model.get_cate(store.categories_id)
+        datas += [{ 
+                    "store": store, 
+                    "cates": cates, 
+                    "address": address
+                }]
 
     # address = 
     return render_template("listing.html", datas=datas, pages=pages, current_page=page)
