@@ -1,5 +1,5 @@
 import os
-
+from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -23,9 +23,11 @@ class Config:
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     ELASTICSEARCH_URL = 'http://localhost:9200'
 
-    # SESSION_MONGODB = 'mongodb://localhost:27017/main_1'
-    # SESSION_MONGODB_DB = 'main_1'
-    # SESSION_MONGODB_COLLECT = 'sessions'
+    SESSION_TYPE = 'filesystem'
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
+    # The maximum number of items the session stores
+    # before it starts deleting some, default 500
+    SESSION_FILE_THRESHOLD = 100
 
     @staticmethod
     def init_app(app):

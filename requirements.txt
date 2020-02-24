@@ -11,10 +11,8 @@ elasticsearch==7.1.0
 Flask==1.1.1
 Flask-Bcrypt==0.7.1
 Flask-Caching==1.8.0
-Flask-Cors==3.0.8
 Flask-Login==0.4.1
 Flask-Migrate==2.5.2
-flask-mongo-sessions==0.2.1
 flask-mongoengine==0.9.5
 Flask-PyMongo==2.3.0
 Flask-Script==2.0.6

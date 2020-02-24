@@ -63,6 +63,22 @@
                                             {% endfor %}
                                         {% endif %}
 
+                                        <div class="form-group">
+                                            <div class="input-group mb-3">
+                                                {{ form.password_confirm(placeholder="Password Confirm", class="form-control") }}
+                                            </div>
+                                        </div>
+
+                                        {% if form.password_confirm.errors %}
+                                            {% for error in form.password_confirm.errors %}
+                                                <div class="form-group">
+                                                    <strong class="text-warning d-block mb-2">
+                                                        {{ error }}
+                                                    </strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
                                         <button type="submit" class="mb-2 btn btn-danger mr-2 w-100">Sign Up</button>
 
                                         {% if success %}

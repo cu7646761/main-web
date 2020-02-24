@@ -67,35 +67,24 @@
             <div class="swiper-wrapper">
 
                 <div class="swiper-slide">
-                    <a href="{{ url_for('static', filename='images/reserve-slide2.jpg') }}" class="grid image-link">
-                        <img src="{{ url_for('static', filename='images/reserve-slide2.jpg') }}" class="img-fluid" alt="#">
+                    {% for st in store.link_image %}
+                
+                    <a href= "{{st}}" class="grid image-link">
+                        <img src="{{st}}" class="img-fluid" alt="#">
                     </a>
+                    {% endfor %}
                 </div>
                 <div class="swiper-slide">
-                    <a href="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="grid image-link">
-                        <img src="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="img-fluid" alt="#">
+                    {% for st in store.link_image %}
+                
+                    <a href= "{{st}}" class="grid image-link">
+                        <img src="{{st}}" class="img-fluid" alt="#">
                     </a>
+                    {% endfor %}
                 </div>
-                <div class="swiper-slide">
-                    <a href="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="grid image-link">
-                        <img src="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="img-fluid" alt="#">
-                    </a>
-                </div>
-                <div class="swiper-slide">
-                    <a href="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="grid image-link">
-                        <img src="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="img-fluid" alt="#">
-                    </a>
-                </div>
-                <div class="swiper-slide">
-                    <a href="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="grid image-link">
-                        <img src="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="img-fluid" alt="#">
-                    </a>
-                </div>
-                <div class="swiper-slide">
-                    <a href="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="grid image-link">
-                        <img src="{{ url_for('static', filename='images/reserve-slide1.jpg') }}" class="img-fluid" alt="#">
-                    </a>
-                </div>
+            
+                
+            
             </div>
             <!-- Add Pagination -->
             <div class="swiper-pagination swiper-pagination-white"></div>
@@ -110,22 +99,35 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5>Tasty Hand-Pulled Noodles</h5>
-                    <p><span>$$$</span>$$</p>
-                    <p class="reserve-description">Innovative cooking, paired with fine wines in a modern setting.</p>
+                    <h5>{{store.name}}</h5>
+                    
+                    <p class="reserve-description">
+                        {% for ct in category %}
+                        {{ct[0].name}} , 
+                        {% endfor %}...
+                    </p>
+                    <!-- <br><br> -->
+                    <div class="res-common-minmaxprice">
+                        <span class="fa fa-tag minmaxpriceicon"></span>
+                            <span itemprop="priceRange">
+                                <span> Mức giá: {{store.min_price}}đ - <span>{{store.max_price}}</span>đ
+                            </span>
+                        </span>
+                    </div>  
+                    
                 </div>
                 <div class="col-md-6">
                     <div class="reserve-seat-block">
                         <div class="reserve-rating">
-                            <span>9.5</span>
+                            <span>SS+</span>
                         </div>
                         <div class="review-btn">
-                            <a href="#" class="btn btn-outline-danger">WRITE A REVIEW</a>
-                            <span>34 reviews</span>
+                            <a href="#" class="btn btn-outline-danger">NHẬN XÉT</a>
+                            <span>{{store.reviewer_quant}}</span>
                         </div>
                         <div class="reserve-btn">
                             <div class="featured-btn-wrap">
-                                <a href="#" class="btn btn-danger">RESERVE A SEAT</a>
+                                <a href="#" class="btn btn-danger">BẢN ĐỒ</a>
                             </div>
                         </div>
                     </div>
@@ -141,57 +143,88 @@
                 <div class="col-md-8 responsive-wrap">
                     <div class="booking-checkbox_wrap">
                         <div class="booking-checkbox">
-                            <p>Tasty Hand-Pulled Noodles is a 1950s style diner located in Madison, Wisconsin. Opened in 1946 by Mickey Weidman, and located just across the street from Camp Randall Stadium, it has become a popular game day tradition amongst
-                                many Badger fans. The diner is well known for its breakfast selections, especially the Scrambler, which is a large mound of potatoes, eggs, cheese, gravy, and a patrons’ choice of other toppings.</p>
-                            <p>Mickies has also been featured on “Todd’s Taste of the Town” during one of ESPN’s college football broadcasts. We are one of the best Chinese restaurants in the New York, New York area. We have been recognized for our outstanding
-                                Chinese & Asian cuisine, excellent Chinese menu, and great restaurant specials. We are one of the best Chinese restaurants in the New York, New York area. We have been recognized for our outstanding Chinese & Asian cuisine,
-                                excellent Chinese menu, and great restaurant specials.</p>
+                            <p> Description ở đây</p>
                             <hr>
                         </div>
+                        
+                        <!-- SHOW USER RATING-->
+                        <span class="heading">Đánh giá cửa hàng</span>
+                        <!-- Show stars -->
+                        <p id="show-star"></p> 
+                        <!--End show stars -->
+                        <p>{{avr_star}} điểm trung bình dựa trên {{store.reviewer_quant}} nhận xét.</p>
+                        <hr style="border:3px solid #f1f1f1">
+                        
                         <div class="row">
-                            <div class="col-md-4">
-                                <label class="custom-checkbox">
-                        <span class="ti-check-box"></span>
-                        <span class="custom-control-description">Bike Parking</span>
-                      </label> </div>
-                            <div class="col-md-4">
-                                <label class="custom-checkbox">
-                       <span class="ti-check-box"></span>
-                       <span class="custom-control-description">Wireless Internet  </span>
-                     </label>
+                            <div class="side">
+                                <div>5 sao</div>
                             </div>
-                            <div class="col-md-4">
-                                <label class="custom-checkbox">
-                     <span class="ti-check-box"></span>
-                     <span class="custom-control-description">Smoking Allowed  </span>
-                   </label> </div>
-                            <div class="col-md-4">
-                                <label class="custom-checkbox">
-                    <span class="ti-check-box"></span>
-                    <span class="custom-control-description">Street Parking</span>
-                  </label>
+                            <div class="middle">
+                                <div class="bar-container">
+                                    <div class="bar-5" style = "--bar5: {{star_s5}}%;"></div>
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <label class="custom-checkbox">
-                   <span class="ti-check-box"></span>
-                   <span class="custom-control-description">Special</span>
-                 </label> </div>
-                            <div class="col-md-4">
-                                <label class="custom-checkbox">
-                  <span class="ti-check-box"></span>
-                  <span class="custom-control-description">Accepts Credit cards</span>
-                </label>
+                            <div class="side right">
+                                <div>{{store.star_s5}}</div>
+                            </div>
+                            <div class="side">
+                                <div>4 sao</div>
+                            </div>
+                            <div class="middle">
+                                <div class="bar-container">
+                                    <div class="bar-4" style = "--bar4: {{star_s4}}%;"></div>
+                                </div>
+                            </div>
+                            <div class="side right">
+                                <div>{{store.star_s4}}</div>
+                            </div>
+                            <div class="side">
+                                <div>3 sao</div>
+                            </div>
+                            <div class="middle">
+                                <div class="bar-container">
+                                    <div class="bar-3" style = "--bar3: {{star_s3}}%;"></div>
+                                </div>
+                            </div>
+                            <div class="side right">
+                                <div>{{store.star_s3}}</div>
+                            </div>
+                            <div class="side">
+                                <div>2 sao</div>
+                            </div>
+                            <div class="middle">
+                                <div class="bar-container">
+                                    <div class="bar-2" style = "--bar2: {{star_s2}}%;"></div>
+                                </div>
+                            </div>
+                            <div class="side right">
+                                <div>{{store.star_s2}}</div>
+                            </div>
+                            <div class="side">
+                                <div>1 sao</div>
+                            </div>
+                            <div class="middle">
+                                <div class="bar-container">
+                                    <div class="bar-1" style = "--bar1: {{star_s1}}%;"></div>
+                                </div>
+                            </div>
+                            <div class="side right">
+                                <div>{{store.star_s1}}</div>
                             </div>
                         </div>
+                        
+                        
+                        <!-- END SHOW USER RATING-->
+
+
                     </div>
                     <div class="booking-checkbox_wrap mt-4">
-                        <h5>34 Reviews</h5>
+                        <h5>{{store.reviewer_quant}} nhận xét</h5>
                         <hr>
                         <div class="customer-review_wrap">
                             <div class="customer-img">
                                 <img src="images/customer-img1.jpg" class="img-fluid" alt="#">
                                 <p>Amanda G</p>
-                                <span>35 Reviews</span>
                             </div>
                             <div class="customer-content-wrap">
                                 <div class="customer-content">
@@ -253,16 +286,16 @@
                 </div>
                 <div class="col-md-4 responsive-wrap">
                     <div class="contact-info">
-                        <img src="images/map.jpg" class="img-fluid" alt="#">
+                        <div id="map"></div>
                         <div class="address">
                             <span class="icon-location-pin"></span>
-                            <p> Doyers St<br> New York, NY 10013<br> b/t Division St & St James Pl <br> Chinatown, Civic Center</p>
+                            <p>{{address.detail}}</p>
                         </div>
-                        <div class="address">
+                        <!-- <div class="address">
                             <span class="icon-screen-smartphone"></span>
                             <p> +44 20 7336 8898</p>
-                        </div>
-                        <div class="address">
+                        </div> -->
+                        <!-- <div class="address">
                             <span class="icon-link"></span>
                             <p>https://burgerandlobster.com</p>
                         </div>
@@ -270,10 +303,10 @@
                             <span class="icon-clock"></span>
                             <p>Mon - Sun 09:30 am - 05:30 pm <br>
                                 <span class="open-now">OPEN NOW</span></p>
-                        </div>
-                        <a href="#" class="btn btn-outline-danger btn-contact">SEND A MESSAGE</a>
+                        </div> -->
+                        <a href="#" class="btn btn-outline-danger btn-contact">CHỈ ĐƯỜNG</a>
                     </div>
-                    <div class="follow">
+                    <!-- <div class="follow">
                         <div class="follow-img">
                             <img src="images/follow-img.jpg" class="img-fluid" alt="#">
                             <h6>Christine Evans</h6>
@@ -294,7 +327,7 @@
                             </li>
                         </ul>
                         <a href="#">FOLLOW</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -334,4 +367,38 @@
             });
         }
     </script>
+    <script>
+        // Initialize and add the map
+        function initMap() {
+          // The location of Uluru
+        var lat = Number('{{address.latitude}}');
+        var lng = Number('{{address.longtitude}}');
+        var uluru = {lat, lng};
+          // The map, centered at Uluru
+        var map = new google.maps.Map(
+            document.getElementById('map'), {zoom: 12, center: uluru});
+          // The marker, positioned at Uluru
+        var marker = new google.maps.Marker({position: uluru, map: map});
+        }
+    </script>
+            <!--Load the API from the specified URL
+            * The async attribute allows the browser to render the page while the API loads
+            * The key parameter will contain your own API key (which is not needed for this tutorial)
+            * The callback parameter executes the initMap() function
+            -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
+    </script>
+    <script>
+        var i = 0;
+        var text = "";
+        for (;i < '{{cnt}}'; i++){
+            text += "<span class=\"fa fa-star checked\"></span>" ;
+        }
+        if ('{{avr_star}}' - '{{cnt}}' >= 0.5){
+            text +="<span class=\"fa fa-star-half checked\"></span>";
+        }
+        document.getElementById("show-star").innerHTML = text;
+    </script>>
+
 {% endblock %}

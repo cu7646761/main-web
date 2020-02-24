@@ -28,6 +28,12 @@ How to run bdd test
     > behave features/checkform.feature <br>
      behave features/checkfb.feature <br>
      behave features/checktw.feature
+                  
+How to run generate_data
+=======================================
+1. Access folder that contain gen.py file
+2. Run command
+    > python gen.py <br>
 
 Work with github
 =======================================
