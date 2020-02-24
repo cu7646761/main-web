@@ -17,6 +17,7 @@ class User(mongoengine.Document, SearchableMixin):
     favorite_stores = mongoengine.ListField()
     gender = mongoengine.IntField()
     comments_list = mongoengine.ListField()
+    active = mongoengine.IntField(default=0)
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)

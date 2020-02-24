@@ -29,6 +29,17 @@ class Config:
     # before it starts deleting some, default 500
     SESSION_FILE_THRESHOLD = 100
 
+
+    MAIL_SERVER = 'smtp.gmail.com'
+    SMTP_TLS_PORT = 587
+    MAIL_DEFAULT_SENDER = 'vuongsponges@gmail.com'
+    MAIL_USERNAME = 'vuongsponges@gmail.com'
+    MAIL_PASSWORD = 'Vuong0935986100'
+    MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
+    # MAIL_USE_SSL = int(os.getenv('MAIL_USE_SSL', True))
+    MAIL_USE_TLS = int(os.getenv('MAIL_USE_TLS', True))
+
+
     @staticmethod
     def init_app(app):
         pass

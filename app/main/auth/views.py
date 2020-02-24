@@ -1,12 +1,12 @@
 from functools import wraps
-from flask import redirect, render_template, Blueprint, session, request
+from flask import redirect, render_template, Blueprint, session, request, Request
 
-from app import mail
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
 
+from app.email import send_email
 from utils import Utils
-from flask_mail import Message
+from constants import SERVER_NAME
 
 auth_blueprint = Blueprint(
     'auth', __name__, template_folder='templates')
@@ -22,16 +22,13 @@ def login_required(f):
         except:
             return redirect("/login")
         return f(*args, **kwargs)
+
     return wrap
 
 
 @auth_blueprint.route("/login", methods=["GET"])
 def get_login():
     form = LoginForm()
-    msg = Message("Hello",
-                  sender="phuongvuong98@gmail.com",
-                  recipients=["vuonglegend@gmail.com"])
-    mail.send(msg)
     return render_template('login.html', form=form)
 
 
@@ -61,11 +58,39 @@ def post_signup(error=None):
         if error is None:
             # the name is available, store it in the database
             hashed_passwd = Utils.hash_password(password)
-            new_user, error = UserModel.create(email, hashed_passwd)
+            new_user, error = UserModel.create(email, hashed_passwd, 0)
+
+            try:
+                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)
+                message = "Bạn đã đăng nhập vào hệ thống BlogAnUong. Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường xin sau:" + url
+                send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
+                           text_body=message,
+                           recipients=[str(email)])
+            except Exception as e:
+                print(str(e))
+
             if error:
                 return render_template('signup.html', error=error, success=None, form=form)
-            return render_template('signup.html', success="You have signed up successfully", form=form)
+
+            return render_template('signup.html',
+                                   success="You account is not activated. Please check email and confirm email to complete sign up",
+                                   form=form)
     return render_template('signup.html', error=error, form=form)
+
+
+@auth_blueprint.route('/confirm-email', methods=['GET'])
+def get_confirm_email(error=None):
+    email = request.args.get('email')
+    hashed_password = request.args.get('password')
+
+    user = UserModel()
+    user_1 = user.find_by_email(email)
+
+    if hashed_password[2:] == user_1[0].password:
+        user_active, error = user.turn_on_acc(email)
+        if error:
+            print(error)
+    return redirect('/login')
 
 
 @auth_blueprint.route('/login', methods=['POST'])
@@ -76,11 +101,15 @@ def post_login(error=None):
         user = UserModel()
         email = request.form.get("email", "")
         plain_text_password = request.form.get("password", "")
+
         user = user.find_by_email(email)
+
         if len(user) == 0:
             error = "Incorrect email or password"
         elif not Utils.check_password(plain_text_password, user[0].password):
             error = "Incorrect password"
+        elif user[0].active == 0:
+            error = "You account is not activated. Please check email and confirm email to complete sign up"
         if error is None:
             session['logged'] = True
             session['cur_user'] = user

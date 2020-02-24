@@ -30,10 +30,18 @@ class UserModel(UserEntity):
     #     except Exception as e:
     #         return False, e.__str__()
 
-    @classmethod
-    def create(cls, email, password):
+    def turn_on_acc(self, email):
         try:
-            UserEntity(email=email, password=password).save()
+            self.objects(email__exact=email).update(set__active=1)
+            # UserEntity.reindex()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
+    @classmethod
+    def create(cls, email, password, active):
+        try:
+            UserEntity(email=email, password=password, active=active).save()
             # UserEntity.reindex()
             return True, None
         except Exception as e:

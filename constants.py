@@ -11,5 +11,4 @@ class Errors(enum.Flag):
     ERROR_EXIST = "Error: this fields is exist"
 
 
-class Server(enum.Flag):
-    SERVER_NAME = "http://localhost:5000"
+SERVER_NAME = "http://127.0.0.1:5000"
