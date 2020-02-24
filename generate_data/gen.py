@@ -9,33 +9,33 @@ client = MongoClient(port=27017)
 db = client.main_1
 
 # --------- Create category ----------
-# names = []
-# names_link = []
-# with open(os.path.abspath(os.path.dirname(__file__)) + '/category.csv') as csv_file:
-#     csv_reader = csv.reader(csv_file, delimiter=',')
-#     line_count = 0
-#     for row in csv_reader:
-#         if line_count == 0:
-#             print(f'Column names are {", ".join(row)}')
-#             line_count += 1
-#         else:
-#             names.append(row[0])
-#             names_link.append(row[1])
-#             line_count += 1
-#     print(f'Processed {line_count} lines.')
-# for x in range(0, 14):
-#     cate = {
-#         '_cls': 'Category',
-#         'name': names[x],
-#         'name_link': names_link[x]
-#     }
-#     try:
-#         result = db.category.insert_one(cate)
-#     except:
-#         continue
-#     print('Created {0}'.format(x))
-#
-# print('finished create category')
+names = []
+names_link = []
+with open(os.path.abspath(os.path.dirname(__file__)) + '/category.csv') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    line_count = 0
+    for row in csv_reader:
+        if line_count == 0:
+            print(f'Column names are {", ".join(row)}')
+            line_count += 1
+        else:
+            names.append(row[0])
+            names_link.append(row[1])
+            line_count += 1
+    print(f'Processed {line_count} lines.')
+for x in range(0, 14):
+    cate = {
+        '_cls': 'Category',
+        'name': names[x],
+        'name_link': names_link[x]
+    }
+    try:
+        result = db.category.insert_one(cate)
+    except:
+        continue
+    print('Created {0}'.format(x))
+
+print('finished create category')
 
 # --------- Create store ----------
 data = []
@@ -127,3 +127,20 @@ for each in data:
 
     print('Created {0}'.format(each['name']))
 
+# --------- Add link foody to store ----------
+data_link = []
+with open(os.path.abspath(os.path.dirname(__file__)) + '/foody_link.json') as f:
+    for line in f:
+        data_link.append(json.loads(line))
+
+for each in data_link:
+    _store = db.store.find({"name": each['name']})
+    try:
+        if _store:
+            link_gg = loads(dumps(_store))[0]['link_image']
+            new_list = each['link_list']
+            new_list.insert(0, link_gg[0])
+            update_store = db.store.update_one({"name": each['name'], "link_image": link_gg},
+                                               {"$set": {"name": each['name'], "link_image": new_list}})
+    except:
+        continue
