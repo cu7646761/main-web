@@ -11,5 +11,5 @@ class Errors(enum.Flag):
     ERROR_EXIST = "Error: this fields is exist"
 
 
-# SERVER_NAME = "http://127.0.0.1:5000"
-SERVER_NAME = "https://blog-an-uong.herokuapp.com"
+SERVER_NAME = "http://127.0.0.1:5000"
+# SERVER_NAME = "https://blog-an-uong.herokuapp.com"
