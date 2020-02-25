@@ -114,7 +114,8 @@ def post_login(error=None):
         if error is None:
             session['logged'] = True
             session['cur_user'] = user
-            return redirect('/')
+            print(user)
+            return render_template("index.html", error=error, form=form)
     return render_template("login.html", error=error, form=form)
 
 
