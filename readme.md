@@ -45,3 +45,10 @@ Work with Flask gmail
 1.1. https://pythonhosted.org/Flask-Mail/ <br>
 1.2. https://stackoverflow.com/questions/10147455/how-to-send-an-email-with-gmail-as-provider-using-python/27515833#27515833<br>
 1.3. https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support<br>
+
+How to config mail with sendgrid
+=======================================
+1. Steps <br>
+1.1. echo "export SENDGRID_API_KEY='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'" > sendgrid.env <br>
+1.2. echo "sendgrid.env" >> .gitignore <br>
+1.3. source ./sendgrid.env <br>

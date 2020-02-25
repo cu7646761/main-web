@@ -12,4 +12,5 @@ class Errors(enum.Flag):
 
 
 SERVER_NAME = "http://127.0.0.1:5000"
+AMIN_MAIL = "phuongvuong98@gmail.com"
 # SERVER_NAME = "https://blog-an-uong.herokuapp.com"
