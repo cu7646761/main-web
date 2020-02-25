@@ -7,12 +7,10 @@ from config import config
 # from app.cache import cache
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from flask_mail import Mail
 
 db = MongoEngine()
 bcrypt = Bcrypt()
 sess = Session()
-mail = Mail()
 
 
 def create_app(config_name):
@@ -24,7 +22,6 @@ def create_app(config_name):
 
     db.init_app(app)
     # cache.init_app(app)
-    mail.init_app(app)
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
         if app.config['ELASTICSEARCH_URL'] else None

@@ -139,4 +139,4 @@ dmypy.json
 
 project_env/
 
-flask_session/
+flask_session/sendgrid.env

@@ -54,18 +54,32 @@ def post_signup(error=None):
             error = "Repeat password is incorrect"
 
         elif len(user.find_by_email(email)) == 1:
-            error = "User {0} is already registered.".format(email)
+            if user.find_by_email(email)[0].active == 1:
+                error = "User {0} is already registered.".format(email)
+            elif user.find_by_email(email)[0].active == 0:
+                try:
+                    url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(
+                        user.find_by_email(email)[0].password)
+                    message = "Bạn đã đăng nhập vào hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường link sau:" + url
+                    res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
+                                     html_content=message,
+                                     recipients=str(email))
+                    return render_template('signup.html',
+                                           success="You account is not activated. Please check email and confirm email to complete sign up",
+                                           form=form)
+                except Exception as e:
+                    print(str(e))
         if error is None:
             # the name is available, store it in the database
             hashed_passwd = Utils.hash_password(password)
             new_user, error = UserModel.create(email, hashed_passwd, 0)
 
             try:
-                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)
-                message = "Bạn đã đăng nhập vào hệ thống BlogAnUong. Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường xin sau:" + url
-                send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
-                           text_body=message,
-                           recipients=[str(email)])
+                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)[:2]
+                message = "Bạn đã đăng nhập vào hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường link sau:" + url
+                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
+                                 html_content=message,
+                                 recipients=str(email))
             except Exception as e:
                 print(str(e))
 
@@ -86,7 +100,7 @@ def get_confirm_email(error=None):
     user = UserModel()
     user_1 = user.find_by_email(email)
 
-    if hashed_password[2:] == user_1[0].password:
+    if hashed_password == user_1[0].password:
         user_active, error = user.turn_on_acc(email)
         if error:
             print(error)
