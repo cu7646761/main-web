@@ -161,42 +161,50 @@
                                 {% endif %}
                             </ul>
                         </nav>
+                        <div class="col-12"><p>Danh sách hàng quán</p></div>
                         {% for data in datas %}
-                            <div class="col-12"><p>Danh sách sản phẩm</p></div>
-                            <div class="col-sm-12 col-lg-12 col-xl-12 featured-responsive">
+                            
+                            <div class="col-sm-12 col-lg-12 col-xl-12 featured-responsive" style="margin-bottom: 15px;">
                                 <div class="featured-place-wrap">
                                     <a href="/stores/{{ data['store'].id }}">
-                                        <img src="{{ data['store'].link_image[0] }}" class="img-fluid" alt="#">
-                                        <span class="featured-rating-orange ">6.5</span>
-                                        <div class="featured-title-box">
-                                            <h6>{{ data['store'].name }}</h6>
-                                            {% for cate in data['cates'] %}
-                                                <p>{{ cate[0].name }}</p> <span> • </span>
-                                            {% endfor %}
-                                            <br>
-                                            <p>{{ data['store'].reviewer_quant }} Reviews</p>
-
-                                            <ul>
-                                                <li><span class="icon-location-pin"></span>
-                                                    <p>{{ data['address'][0].detail }}</p>
-                                                </li>
-                                                <li><span class="icon-screen-smartphone"></span>
-                                                    <p>+44 20 7336 8898</p>
-                                                </li>
-                                                <li><span class="icon-link"></span>
-                                                    <p>https://burgerandlobster.com</p>
-                                                </li>
-
-                                            </ul>
-                                            <div class="bottom-icons">
-                                                <div class="closed-now">CLOSED NOW</div>
-                                                <span class="ti-heart"></span>
-                                                <span class="ti-bookmark"></span>
+                                        <div class="row">
+                                            <div class="featured-title-box col-lg-4 col-sm-4 col-xs-12">
+                                                <img height="200px" src="{{ data['store'].link_image[0] }}"  alt="#">
+                                            </div>
+                                            
+                                            <span class="featured-rating-orange ">6.5</span>
+                                            <div class="featured-title-box col-lg-8 col-sm-8 col-xs-12">
+                                                <h6>{{ data['store'].name }}</h6>
+                                                {% for cate in data['cates'] %}
+                                                    <p>{{ cate[0].name }}</p> <span> • </span>
+                                                {% endfor %}
+                                                <br>
+                                                <p>{{ data['store'].reviewer_quant }} Reviews</p>
+    
+                                                <ul>
+                                                    <li><span class="icon-location-pin"></span>
+                                                        <p>{{ data['address'][0].detail }}</p>
+                                                    </li>
+                                                    <li><span class="icon-screen-smartphone"></span>
+                                                        <p>+44 20 7336 8898</p>
+                                                    </li>
+                                                    <li><span class="icon-link"></span>
+                                                        <p>https://burgerandlobster.com</p>
+                                                    </li>
+    
+                                                </ul>
+                                                <div class="bottom-icons">
+                                                    <!-- <div class="closed-now">CLOSED NOW</div> -->
+                                                    <span class="ti-heart"></span>
+                                                    <span class="ti-bookmark"></span>
+                                                </div>
                                             </div>
                                         </div>
+                                        
                                     </a>
                                 </div>
                             </div>
+                            
                         {% endfor %}
 
 

@@ -6,6 +6,7 @@ from app.main.store.forms import StoreForm
 from app.main.store.models import StoreModel
 from app.main.category.models import CategoryModel
 from app.main.address.models import AddressModel
+from app.main.auth.views import login_required
 
 from utils import Utils
 
@@ -44,7 +45,7 @@ def countStar(store):
 
 
 @store_blueprint.route('/stores/', methods=['GET'])
-# @login_required
+@login_required
 def stores():
     page = request.args.get('page', 1, type=int)
     store_model = StoreModel()
