@@ -18,6 +18,7 @@ class AddressModel(AddressEntity):
 
     def find_by_id(self, address_id):
         return self.objects(id__exact=address_id)
+        
     def findAllById(self, listIds):
         categories =[]
         for x in listIds: 

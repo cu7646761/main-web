@@ -13,7 +13,14 @@ class AuthForm(FlaskForm):
         'password',
         validators=[DataRequired(), Length(min=3, max=25)]
     )
+
+
+class SignupForm(AuthForm):
     password_confirm = PasswordField(
         'password_confirm',
         validators=[DataRequired(), Length(min=3, max=25)]
     )
+
+
+class LoginForm(AuthForm):
+    pass

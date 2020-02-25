@@ -5,16 +5,18 @@ from app.main.search.models import SearchableMixin
 
 class Store(mongoengine.Document, SearchableMixin):
     __tablename__ = 'store_mongo'
-    __searchable__ = ['store']
+    __searchable__ = ['name']
 
-    name = mongoengine.StringField(max_length=255)
-
+    name = mongoengine.StringField(max_length=255, required=True)
     address_id = mongoengine.ObjectIdField()
     categories_id = mongoengine.ListField()
     min_price = mongoengine.StringField()
     max_price = mongoengine.StringField()
     link_image = mongoengine.ListField()
 
+    stars = mongoengine.FloatField()
+    link_gg = mongoengine.StringField()
+    link_foody = mongoengine.StringField()
     stars = mongoengine.FloatField()
     star_s1 = mongoengine.IntField()
     star_s2 = mongoengine.IntField()

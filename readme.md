@@ -38,3 +38,10 @@ How to run generate_data
 Work with github
 =======================================
 1. Link docs: https://docs.google.com/document/d/1dyJDHd9g7ZIg4bhdWCf1m3j3L5yI3tpefdt1XyxIaLY/edit
+
+Work with Flask gmail
+=======================================
+1. Link docs: <br>
+1.1. https://pythonhosted.org/Flask-Mail/ <br>
+1.2. https://stackoverflow.com/questions/10147455/how-to-send-an-email-with-gmail-as-provider-using-python/27515833#27515833<br>
+1.3. https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support<br>

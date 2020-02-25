@@ -10,16 +10,23 @@ class StoreModel(StoreEntity):
         return self.objects.get(id=store_id).name
 
     def query_all(self):
-        print(StoreEntity.objects)
         return self.objects
 
     def query_paginate(self, page):
         stores = Pagination(self.objects, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
+    def query_paginate_sort(self, page):
+        stores_sorted = self.objects.order_by("-classification")
+        stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
+        return stores.items, stores.pages
+
     def find_by_id(self, store_id):
         return self.objects(id__exact=store_id)
 
+
+    def get_cate(self, categories_id):
+        return ["sang-trong", "buffet"]
 
     # def edit(self, _id, email):
     #     try:

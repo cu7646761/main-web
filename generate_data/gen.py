@@ -116,9 +116,10 @@ for each in data:
     for cmt in each['comment_list']:
         comment_1 = {
             '_cls': 'Comment',
-            'detail': json.dumps(cmt['comment']).strip(),
+            'detail': json.dumps(cmt['comment'])[1:-1],
             'star_num': int(json.dumps(cmt['star_num']['$numberInt']).replace('"', "")),
-            'store_id': store_new_id
+            'store_id': store_new_id,
+            'cus_name': json.dumps(cmt['author'])[1:-1]
         }
         res_cmt = db.comment.insert_one(comment_1)
         comment_list_id.append(res_cmt.inserted_id)
@@ -126,3 +127,20 @@ for each in data:
 
     print('Created {0}'.format(each['name']))
 
+# --------- Add link foody to store ----------
+data_link = []
+with open(os.path.abspath(os.path.dirname(__file__)) + '/foody_link.json') as f:
+    for line in f:
+        data_link.append(json.loads(line))
+
+for each in data_link:
+    _store = db.store.find({"name": each['name']})
+    try:
+        if _store:
+            link_gg = loads(dumps(_store))[0]['link_image']
+            new_list = each['link_list']
+            new_list.insert(0, link_gg[0])
+            update_store = db.store.update_one({"name": each['name'], "link_image": link_gg},
+                                               {"$set": {"name": each['name'], "link_image": new_list}})
+    except:
+        continue

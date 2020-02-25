@@ -18,6 +18,7 @@ class CategoryModel(CategoryEntity):
 
     def find_by_id(self, category_id):
         return self.objects(id__exact=category_id)
+        
     def findAllById(self, listIds):
         categories =[]
         for x in listIds: 

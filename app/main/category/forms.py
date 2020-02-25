@@ -5,11 +5,4 @@ from wtforms.validators import (DataRequired, Regexp, Length, Email)
 
 
 class CategoryForm(FlaskForm):
-    email = EmailField(
-        'email',
-        [DataRequired(), Regexp(r'[^@]+@[^@]+\.[^@]+'), Length(min=4, max=25)]
-    )
-    password = PasswordField(
-        'password',
-        validators=[DataRequired(), Length(min=3, max=25)]
-    )
+    pass
