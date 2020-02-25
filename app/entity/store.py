@@ -5,7 +5,7 @@ from app.main.search.models import SearchableMixin
 
 class Store(mongoengine.Document, SearchableMixin):
     __tablename__ = 'store_mongo'
-    __searchable__ = ['store']
+    __searchable__ = ['name']
 
     name = mongoengine.StringField(max_length=255)
 

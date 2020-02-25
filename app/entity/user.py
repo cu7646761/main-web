@@ -5,7 +5,7 @@ from app.main.search.models import SearchableMixin
 
 class User(mongoengine.Document, SearchableMixin):
     __tablename__ = 'user_mongo'
-    __searchable__ = ['auth']
+    __searchable__ = ['email']
 
     email = mongoengine.StringField(max_length=255, required=True, unique=True)
     password = mongoengine.StringField(max_length=255)
@@ -18,6 +18,8 @@ class User(mongoengine.Document, SearchableMixin):
     gender = mongoengine.IntField()
     comments_list = mongoengine.ListField()
     active = mongoengine.IntField(default=0)
+
+    link_image = mongoengine.ListField()
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
