@@ -4,5 +4,5 @@ from wtforms.fields.html5 import EmailField
 from wtforms.validators import (DataRequired, Regexp, Length, Email)
 
 
-class StoreForm(FlaskForm):
+class CategoryForm(FlaskForm):
     pass

@@ -5,7 +5,7 @@ from app.main.search.models import SearchableMixin
 
 class User(mongoengine.Document, SearchableMixin):
     __tablename__ = 'user_mongo'
-    __searchable__ = ['auth']
+    __searchable__ = ['email']
 
     email = mongoengine.StringField(max_length=255, required=True, unique=True)
     password = mongoengine.StringField(max_length=255)

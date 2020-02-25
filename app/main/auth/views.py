@@ -4,6 +4,7 @@ from flask import redirect, render_template, Blueprint, session, request, Reques
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
 
+
 from app.email import send_email
 from utils import Utils
 from constants import SERVER_NAME

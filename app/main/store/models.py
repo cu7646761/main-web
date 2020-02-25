@@ -1,27 +1,32 @@
 from flask_mongoengine import Pagination
 from app.entity.store import Store as StoreEntity
 from constants import Pages
-
+from bson import ObjectId
 
 class StoreModel(StoreEntity):
     objects = StoreEntity.objects
 
-    def get_name_by_id(self, user_id):
-        return self.objects.get(id=user_id).name
+    def get_name_by_id(self, store_id):
+        return self.objects.get(id=store_id).name
 
     def query_all(self):
-        print(StoreEntity.objects)
         return self.objects
 
     def query_paginate(self, page):
-        users = Pagination(self.objects, int(page), int(Pages['NUMBER_PER_PAGE']))
-        return users.items, users.pages
+        stores = Pagination(self.objects, int(page), int(Pages['NUMBER_PER_PAGE']))
+        return stores.items, stores.pages
 
-    def find_by_id(self, user_id):
-        return self.objects(id__exact=user_id)
+    def query_paginate_sort(self, page):
+        stores_sorted = self.objects.order_by("-classification")
+        stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
+        return stores.items, stores.pages
 
-    def find_by_email(self, email):
-        return self.objects(email__exact=email)
+    def find_by_id(self, store_id):
+        return self.objects(id__exact=store_id)
+
+
+    def get_cate(self, categories_id):
+        return ["sang-trong", "buffet"]
 
     # def edit(self, _id, email):
     #     try:
