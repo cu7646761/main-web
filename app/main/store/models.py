@@ -2,6 +2,8 @@ from flask_mongoengine import Pagination
 from app.entity.store import Store as StoreEntity
 from constants import Pages
 from bson import ObjectId
+from constants import PRED_LIST, CLASS_LIST
+from mongoengine.queryset.visitor import Q
 
 class StoreModel(StoreEntity):
     objects = StoreEntity.objects
@@ -16,17 +18,34 @@ class StoreModel(StoreEntity):
         stores = Pagination(self.objects, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
-    def query_paginate_sort(self, page):
+    def query_paginate_sort(self, page, filter):
+        classify = None
+        level = None
+        for key, value in filter.items():
+            if key == "classification" and value != "":
+                classify = PRED_LIST[value]
+            elif key == "level" and value != "":
+                level = PRED_LIST[value]
+
+
         stores_sorted = self.objects.order_by("classification")
+
+        if level:
+            if level == 2:
+                stores_sorted = stores_sorted.filter(classification__lte=2)
+            elif level == 4:
+                stores_sorted = stores_sorted.filter(Q(classification__lte=4) & Q(classification__gt=2))
+            elif level in (8, 12, 16, 20, 24, 28):
+                stores_sorted = stores_sorted.filter(Q(classification__lte=level) & Q(classification__gt=level-4))
+
+        elif classify:
+            stores_sorted = stores_sorted.filter(classification=classify)
+        
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
     def find_by_id(self, store_id):
         return self.objects(id__exact=store_id)
-
-
-    def get_cate(self, categories_id):
-        return ["sang-trong", "buffet"]
 
     # def edit(self, _id, email):
     #     try:
