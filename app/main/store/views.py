@@ -9,6 +9,7 @@ from app.main.address.models import AddressModel
 from app.main.auth.views import login_required
 
 from utils import Utils
+from constants import CLASS_LIST
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -22,10 +23,11 @@ def view_detail(store_id=None):
     store = stores.find_by_id(store_id)
     category = categories.findAllById(store[0].categories_id)
     address = AddressModel().find_by_id(store[0].address_id)
+    classify = CLASS_LIST[store[0].classification]
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
-                           avr_star=avr_star, cnt=cnt)
+                           avr_star=avr_star, cnt=cnt, classify=classify)
 
 
 def countStar(store):
@@ -56,11 +58,12 @@ def stores():
     for store in stores:
         address = AddressModel().find_by_id(store.address_id)
         cates = categories.findAllById(store.categories_id)
-        # cates = store_model.get_cate(store.categories_id)
+        classify = CLASS_LIST[store.classification]
         datas += [{
             "store": store,
             "cates": cates,
-            "address": address
+            "address": address,
+            "classify": classify
         }]
 
     # address = 
