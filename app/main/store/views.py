@@ -50,10 +50,23 @@ def countStar(store):
 @login_required
 def stores():
     page = request.args.get('page', 1, type=int)
+    class_filter = request.args.get('classification', '', type=str)
+    level_filter = request.args.get('level', '', type=str)
+
+    filter = {
+        "classification": class_filter,
+        "level": level_filter
+    }
+    
+    # add param
+    additional_params = ''
+    for key, value in filter.items():
+        if value != '':
+            additional_params += '&' + key + '=' + value
     store_model = StoreModel()
     categories = CategoryModel()
 
-    stores, pages = store_model.query_paginate_sort(page)
+    stores, pages = store_model.query_paginate_sort(page, filter)
     datas = []
     for store in stores:
         address = AddressModel().find_by_id(store.address_id)
@@ -67,7 +80,8 @@ def stores():
         }]
 
     # address = 
-    return render_template("listing.html", datas=datas, pages=pages, current_page=page)
+    return render_template("listing.html", datas=datas, pages=pages, 
+                            current_page=page, additional_params=additional_params)
 
 # @auth_blueprint.route("/detail-store", methods=["POST"])
 # def post_signup(error=None):
