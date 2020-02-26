@@ -17,7 +17,7 @@ class StoreModel(StoreEntity):
         return stores.items, stores.pages
 
     def query_paginate_sort(self, page):
-        stores_sorted = self.objects.order_by("-classification")
+        stores_sorted = self.objects.order_by("classification")
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
