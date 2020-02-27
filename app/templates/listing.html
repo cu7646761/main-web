@@ -30,6 +30,7 @@
                                         <option value="3">Three</option>
                                     </select>
                                 </form>
+                                
                                 <div class="map-responsive-wrap">
                                     <a class="map-icon" href="#"><span class="icon-location-pin"></span></a>
                                 </div>
@@ -37,98 +38,54 @@
                         </div>
                     </div>
                     <div class="row detail-checkbox-wrap">
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Bike Parking</span>
-                            </label>
-                        </div>
+                        {% for cate in categories%}
                         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                             <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
+                                <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}">
                                 <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Wireless Internet  </span>
+                                <span class="custom-control-descriptioBiken">{{cate.name}}</span>
                             </label>
                         </div>
-
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Smoking Allowed  </span>
-                            </label>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Street Parking</span>
-                            </label>
-                        </div>
-
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Special</span>
-                            </label>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Accepts Credit cards</span>
-                            </label>
-                        </div>
-
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Pets Friendly</span>
-                            </label>
-
-                        </div>
+                        {% endfor %}
+                        
                     </div>
-                    <div >
-                        <div class="row">
+                    <div class="row">
+                        <div class="row col-11">
                             <div class="col-6">
                                 <div class="row">
                                     <div class="col-3">
-                                        <a href="/stores/?level=SS" class="btn btn-danger col-6" style="box-shadow: 0px -2px 3px 2px orange;">SS</a>
+                                        <a href="/stores/?level=SS{{additional_params}}" class="btn btn-danger col-6" style="box-shadow: 0px -2px 3px 2px orange;">SS</a>
                                     </div>
                                     <div class="col-3">
-                                        <a href="/stores/?level=S" class="btn btn-danger col-6">S</a>
+                                        <a href="/stores/?level=S{{additional_params}}" class="btn btn-danger col-6">S</a>
                                     </div>
                                     <div class="col-3">
-                                        <a href="/stores/?level=A" class="btn btn-warning col-6">A</a>    
+                                        <a href="/stores/?level=A{{additional_params}}" class="btn btn-warning col-6">A</a>    
                                     </div>
                                     <div class="col-3">
-                                        <a href="/stores/?level=B" class="btn btn-primary col-6">B</a>    
+                                        <a href="/stores/?level=B{{additional_params}}" class="btn btn-primary col-6">B</a>    
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="row">
                                     <div class="col-3">
-                                        <a href="/stores/?level=C" class="btn btn-info col-6">C</a>
+                                        <a href="/stores/?level=C{{additional_params}}" class="btn btn-info col-6">C</a>
                                     </div>
                                     <div class="col-3">
-                                        <a href="/stores/?level=D" class="btn btn-success col-6">D</a>
+                                        <a href="/stores/?level=D{{additional_params}}" class="btn btn-success col-6">D</a>
                                     </div>
                                     <div class="col-3">
-                                        <a href="/stores/?level=E" class="btn btn-secondary col-6">E</a>
+                                        <a href="/stores/?level=E{{additional_params}}" class="btn btn-secondary col-6">E</a>
                                     </div>
                                     <div class="col-3">
-                                        <a href="/stores/?level=F" class="btn btn-dark col-6">F</a>
+                                        <a href="/stores/?level=F{{additional_params}}" class="btn btn-dark col-6">F</a>
                                     </div>    
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-1">
+                            <a id="a_id" href="/stores/?" class="btn btn-light"><i class="fa fa-search"></i></a>
                         </div>
                     </div>
                     <div class="row light-bg detail-options-wrap">
@@ -324,23 +281,21 @@
                 </div>
             </div>
         </div>
-    </section>
-    <script>
-        function getUrlVars() {
-            var vars = {};
-            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-                vars[key] = value;
-            });
-            return vars;
-        }
-        function getUrlParam(parameter, defaultvalue){
-            var urlparameter = defaultvalue;
-            if(window.location.href.indexOf(parameter) > -1){
-                urlparameter = getUrlVars()[parameter];
+        <script>
+            function updateParamSearch(){
+                var cates = document.getElementsByTagName("input");
+                var link ="/stores/?categories="
+                for (cate of cates){
+                    if (cate.checked == true){
+                        link+=cate.name+','
+                    }
                 }
-            return urlparameter;
-        }
-    </script>
+                link = link.substring(0, link.length - 1);
+                document.getElementById("a_id").href = link
+            }
+            updateParamSearch()
+        </script>
+    </section>
 
     <!--//END DETAIL -->
 {% endblock %}
