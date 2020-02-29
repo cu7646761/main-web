@@ -75,10 +75,9 @@ def post_signup(error=None):
             new_user, error = UserModel.create(email, hashed_passwd, 0)
 
             try:
-                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)[:2]
+                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)[2:]
                 message = "Bạn đã đăng nhập vào hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường link sau:" + url
-                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
-                                 html_content=message,
+                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong", html_content=message,
                                  recipients=str(email))
             except Exception as e:
                 print(str(e))
