@@ -17,6 +17,7 @@ class User(mongoengine.Document, SearchableMixin):
     favorite_stores = mongoengine.ListField()
     gender = mongoengine.IntField()
     comments_list = mongoengine.ListField()
+    address_id = mongoengine.ObjectIdField()
     active = mongoengine.IntField(default=0)
 
     # save avatar

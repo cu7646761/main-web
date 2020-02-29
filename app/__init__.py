@@ -32,9 +32,11 @@ def create_app(config_name):
     from app.main.auth.views import auth_blueprint
     from app.main.search.views import search_blueprint
     from app.main.store.views import store_blueprint
+    from app.main.user.views import user_blueprint
 
     app.register_blueprint(auth_blueprint, url_prefix='/')
     app.register_blueprint(search_blueprint, url_prefix='/search')
     app.register_blueprint(store_blueprint, url_prefix='/')
+    app.register_blueprint(user_blueprint, url_prefix='/profile')
 
     return app

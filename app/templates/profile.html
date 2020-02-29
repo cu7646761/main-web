@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="main-content-container container-fluid px-4">
+        <!-- Page Header -->
+        <div class="page-header row no-gutters py-4">
+            <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+                <h3 class="page-title">Thông tin cá nhân</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card card-small mb-4">
+                    <div class="card-header border-bottom text-center">
+                        <div class="mb-3 mx-auto">
+                            <img class="rounded-circle"
+                                 src="https://static.kt.city/ck4unf3o512530972t7p0mwfp__1dcdb464-8c34-4afd-9dd4-a41bf1c5b7ad.JPG"
+                                 alt="User Avatar" width="140" height="140">
+                        </div>
+                        <h4 class="mb-0">vuonglegend</h4>
+                        <span class="text-muted d-block mb-2">User</span>
+
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <form action="{{ url_for('user.upload') }}" method="POST" enctype=multipart/form-data>
+                                    <button type="submit" class="mb-2 btn btn-sm btn-pill btn-outline-primary w-100">
+                                        Cập nhật ảnh
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <form action="{{ url_for('user.upload') }}" method="POST">
+                                    <button type="button" class="mb-2 btn btn-sm btn-pill btn-outline-danger w-100">
+                                        Xoá ảnh
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-4">
+                            <div class="progress-wrapper">
+                                <strong class="text-muted d-block mb-2">Mức độ hoàn thành</strong>
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="74"
+                                         aria-valuemin="0" aria-valuemax="100" style="width: 74%;">
+                                        <span class="progress-value">74%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card card-small mb-4">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <form>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="feEmailAddress">Email</label>
+                                                <input type="email" class="form-control" id="feEmailAddress"
+                                                       placeholder="Email" value="vuonglegend@gmail.com" disabled></div>
+                                            <div class="form-group col-md-6">
+                                                <label for="birthday">Ngày sinh</label>
+                                                <input type="text" class="form-control" id="birthday"
+                                                       placeholder="dd/mm/yyyy" value=""></div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="permission">Loại tài khoản</label>
+                                                <input type="text" class="form-control" id="permission"
+                                                       placeholder="User" value="User" disabled>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="gender">Giới tính</label>
+                                                <select id="gender" class="form-control">
+                                                    <option selected="">Nam</option>
+                                                    <option selected="">Nữ</option>
+                                                    <option selected="">Khác</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="love_cate">Danh mục yêu thích</label>
+                                                <select multiple id="love_ca" class="form-control">
+                                                    <option selected="">Sang trọng</option>
+                                                    <option selected="">Tiệc tận nơi</option>
+                                                    <option selected="">Tiệm bánh</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="ity">Thành phố</label>
+                                                <select id="city" class="form-control">
+                                                    <option selected="">Quảng Ngãi</option>
+                                                    <option selected="">Hồ chí Minh</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="district">Quận/huyện</label>
+                                                <select id="district" class="form-control">
+                                                    <option selected="">Quận 1</option>
+                                                    <option selected="">Quận 2</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="address">Địa chỉ</label>
+                                                <input type="text" class="form-control" id="address"
+                                                       placeholder="số 123, đường, Phường, Quận, Thành phố">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row justify-content-center">
+                                            <button type="submit" class="btn btn-primary">CẬP NHẬT THÔNG TIN</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+            </div>
+            <div class="col-lg-8">
+                <div class="card card-small mb-4">
+                    <div class="card-header border-bottom">
+                        <h6 class="m-0">Thay đổi Password</h6>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <form>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="old_password">Mật khẩu cũ</label>
+                                                <input type="password" class="form-control" id="old_password">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="new_password_1">Mật khẩu mới</label>
+                                                <input type="password" class="form-control" id="new_password_1">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="new_password_2">Nhập lại mật khẩu mới</label>
+                                                <input type="password" class="form-control" id="new_password_2">
+                                            </div>
+                                        </div>
+                                        <div class="form-row justify-content-center">
+                                            <button type="submit" class="btn btn-primary">THAY ĐỔI</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
