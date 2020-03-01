@@ -1,5 +1,5 @@
 import enum
-
+import os
 
 class Pages(enum.IntEnum):
     NUMBER_PER_PAGE = 10
@@ -12,8 +12,12 @@ class Errors(enum.Flag):
 
 
 SERVER_NAME = "http://127.0.0.1:5000"
-AMIN_MAIL = "phuongvuong98@gmail.com"
+ADMIN_MAIL = "phuongvuong98@gmail.com"
 # SERVER_NAME = "https://blog-an-uong.herokuapp.com"
+
+# upload file
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app/static/images')
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 CLASS_LIST = {
     1: 'SS', 2: 'SS', 3: 'S', 4: 'S',

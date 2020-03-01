@@ -28,7 +28,6 @@ def create_app(config_name):
 
     sess.init_app(app)
 
-
     from app.main.auth.views import auth_blueprint
     from app.main.search.views import search_blueprint
     from app.main.store.views import store_blueprint

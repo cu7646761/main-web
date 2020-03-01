@@ -29,9 +29,6 @@ class Config:
     # before it starts deleting some, default 500
     SESSION_FILE_THRESHOLD = 100
 
-    UPLOAD_FOLDER = '/path/to/the/static/images'
-    ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
-
     @staticmethod
     def init_app(app):
         pass

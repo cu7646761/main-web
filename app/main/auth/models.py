@@ -30,6 +30,14 @@ class UserModel(UserEntity):
     #     except Exception as e:
     #         return False, e.__str__()
 
+    def update_link_image(self, email, link_image):
+        try:
+            self.objects(email__exact=email).update(set__link_image=link_image)
+            # UserEntity.reindex()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
     def turn_on_acc(self, email):
         try:
             self.objects(email__exact=email).update(set__active=1)
