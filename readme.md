@@ -49,6 +49,6 @@ Work with Flask gmail
 How to config mail with sendgrid
 =======================================
 1. Steps <br>
-1.1. echo "export SENDGRID_API_KEY='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'" > sendgrid.env <br>
+1.1. echo "export SENDGRID_API_KEY='this is private'" > sendgrid.env <br>
 1.2. echo "sendgrid.env" >> .gitignore <br>
 1.3. source ./sendgrid.env <br>
