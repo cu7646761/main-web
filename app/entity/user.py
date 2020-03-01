@@ -1,6 +1,9 @@
+import os
+
 import mongoengine
 import datetime
 from app.main.search.models import SearchableMixin
+from constants import SERVER_NAME
 
 
 class User(mongoengine.Document, SearchableMixin):
@@ -21,7 +24,7 @@ class User(mongoengine.Document, SearchableMixin):
     active = mongoengine.IntField(default=0)
 
     # save avatar
-    link_image = mongoengine.StringField()
+    link_image = mongoengine.StringField(default=os.path.join(SERVER_NAME + '/static/images/', 'avatar_an_danh.jpg'))
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)

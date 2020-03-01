@@ -14,7 +14,7 @@
                     <div class="card-header border-bottom text-center">
                         <div class="mb-3 mx-auto">
                             <img class="rounded-circle"
-                                 src="https://static.kt.city/ck4unf3o512530972t7p0mwfp__1dcdb464-8c34-4afd-9dd4-a41bf1c5b7ad.JPG"
+                                 src="{{ user.link_image }}"
                                  alt="User Avatar" width="140" height="140">
                         </div>
                         <h4 class="mb-0">vuonglegend</h4>
@@ -24,6 +24,7 @@
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <form action="{{ url_for('user.upload') }}" method="POST" enctype=multipart/form-data>
+                                    <input type=file name=file>
                                     <button type="submit" class="mb-2 btn btn-sm btn-pill btn-outline-primary w-100">
                                         Cập nhật ảnh
                                     </button>
