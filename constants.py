@@ -12,12 +12,16 @@ class Errors(enum.Flag):
 
 
 SERVER_NAME = "http://127.0.0.1:5000"
-ADMIN_MAIL = "phuongvuong98@gmail.com"
+LINK_IMG = SERVER_NAME + "/static/images/"
+LINK_IMG_AVATAR_DEF = os.path.join(LINK_IMG, 'avatar_an_danh.jpg')
+ADMIN_MAIL = "vuongsponges@gmail.com"
 # SERVER_NAME = "https://blog-an-uong.herokuapp.com"
+
+GENDER = {"Name": 0, "Nữ": 1, "Khác": 2}
 
 # upload file
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app/static/images')
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 CLASS_LIST = {
     1: 'SS', 2: 'SS', 3: 'S', 4: 'S',

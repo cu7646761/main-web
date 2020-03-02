@@ -23,4 +23,7 @@ class CategoryModel(CategoryEntity):
         categories =[]
         for x in listIds: 
             categories = categories + [self.objects(id__exact=x)]
-        return categories    
+        return categories
+
+    def find_by_name(self, name):
+        return self.objects(name__exact=name)

@@ -3,7 +3,7 @@ import os
 import mongoengine
 import datetime
 from app.main.search.models import SearchableMixin
-from constants import SERVER_NAME
+from constants import SERVER_NAME, LINK_IMG, LINK_IMG_AVATAR_DEF
 
 
 class User(mongoengine.Document, SearchableMixin):
@@ -18,13 +18,15 @@ class User(mongoengine.Document, SearchableMixin):
     permission = mongoengine.IntField()
     favorite_categories = mongoengine.ListField()
     favorite_stores = mongoengine.ListField()
+
+    # nam:0, nu:1, khac:2
     gender = mongoengine.IntField()
     comments_list = mongoengine.ListField()
     address_id = mongoengine.ObjectIdField()
     active = mongoengine.IntField(default=0)
 
     # save avatar
-    link_image = mongoengine.StringField(default=os.path.join(SERVER_NAME + '/static/images/', 'avatar_an_danh.jpg'))
+    link_image = mongoengine.StringField(default=LINK_IMG_AVATAR_DEF)
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)

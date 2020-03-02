@@ -3,6 +3,7 @@ from app.entity.address import Address as AddressEntity
 from constants import Pages
 from bson import ObjectId
 
+
 class AddressModel(AddressEntity):
     objects = AddressEntity.objects
 
@@ -18,9 +19,21 @@ class AddressModel(AddressEntity):
 
     def find_by_id(self, address_id):
         return self.objects(id__exact=address_id)
-        
+
+    def find_by_detail(self, detail):
+        return self.objects(detail__exact=detail)
+
     def findAllById(self, listIds):
-        categories =[]
-        for x in listIds: 
+        categories = []
+        for x in listIds:
             categories = categories + [self.objects(id__exact=x)]
-        return categories    
+        return categories
+
+    @classmethod
+    def create(cls, detail):
+        try:
+            AddressEntity(detail=detail).save()
+            # UserEntity.reindex()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()

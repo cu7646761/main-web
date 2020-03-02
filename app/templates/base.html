@@ -73,6 +73,9 @@
                                 </div>
                             </li>
                             <li class="nav-item active">
+                                <a class="nav-link" href="/stores/">Cửa hàng</a>
+                            </li>
+                            <li class="nav-item active">
                                 <a class="nav-link" href="#">Về chúng tôi</a>
                             </li>
                             <li class="nav-item">
@@ -98,6 +101,13 @@
     </div>
 </div>
 <!--//END HEADER -->
+
+
+<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+
 {% block content %}{% endblock %}
 {#<!--============================= FOOTER =============================-->#}
 {#<footer class="main-block dark-bg">#}
@@ -123,11 +133,7 @@
 {#<!--//END FOOTER -->#}
 
 
-<!-- jQuery, Bootstrap JS. -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
 
 <script>
     $(window).scroll(function () {
