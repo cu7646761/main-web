@@ -127,9 +127,8 @@ def post_login(error=None):
             error = "You account is not activated. Please check email and confirm email to complete sign up"
         if error is None:
             session['logged'] = True
-            session['cur_user'] = user
-            print(user)
-            return render_template("index.html", error=error, form=form)
+            session['cur_user'] = user[0]
+            return render_template("index.html", error=error, form=form, user=user[0])
     return render_template("login.html", error=error, form=form)
 
 
@@ -142,4 +141,4 @@ def get_logout():
 @auth_blueprint.route('/', methods=['GET'])
 @login_required
 def home():
-    return render_template("index.html")
+    return render_template("index.html", user=session['cur_user'])
