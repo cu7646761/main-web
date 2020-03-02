@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import random
 
-conn = MongoClient()    
+conn = MongoClient()
 db = conn['main_1']
 collection = db.store
 all_data = collection.find()
@@ -16,14 +16,14 @@ class_list = {
     25: 'FF+', 26: 'FF', 27: 'F+', 28: 'F'
 }
 
-cl =['SS+','SS','S+','S',
-    'AA+','AA','A+','A',
-    'BB+','BB','B+','B',
-    'CC+','CC','C+','C',
-    'DD+','DD','D+','D',
-    'EE+','EE','E+','E',
-    'FF+','FF','F+','F'
-]
+cl = ['SS+', 'SS', 'S+', 'S',
+      'AA+', 'AA', 'A+', 'A',
+      'BB+', 'BB', 'B+', 'B',
+      'CC+', 'CC', 'C+', 'C',
+      'DD+', 'DD', 'D+', 'D',
+      'EE+', 'EE', 'E+', 'E',
+      'FF+', 'FF', 'F+', 'F'
+      ]
 
 cl_list = [
     1, 2, 3, 4,
@@ -35,6 +35,4 @@ cl_list = [
     25, 26, 27, 28
 ]
 for data in all_data:
-    collection.update_one({"_id": data['_id']},{"$set": {"classification": random.choice(cl_list)}})
-
-
+    collection.update_one({"_id": data['_id']}, {"$set": {"classification": random.choice(cl_list)}})
