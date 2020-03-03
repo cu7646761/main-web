@@ -82,9 +82,20 @@ def stores():
         }]
 
     all_cates = categories.query_all()
+    selected_cates = categories_filter.split(',')
+    selected_dics = {
+        "cates": {},
+        "level": level_filter,
+        "address": {}
+    }
+    for cate in all_cates:
+        selected_dics["cates"][cate.name_link] = False
+        if cate.name_link in selected_cates:
+            selected_dics["cates"][cate.name_link] = True
     # address = 
     return render_template("listing.html", datas=datas, pages=pages, 
-                            current_page=page, additional_params=additional_params, categories=all_cates)
+                            current_page=page, additional_params=additional_params, 
+                            categories=all_cates, selected_dics=selected_dics)
 
 # @auth_blueprint.route("/detail-store", methods=["POST"])
 # def post_signup(error=None):

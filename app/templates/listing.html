@@ -41,7 +41,11 @@
                         {% for cate in categories%}
                         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                             <label class="custom-control custom-checkbox">
+                                {% if selected_dics["cates"][cate.name_link] %}
+                                <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}" checked>
+                                {% else %}
                                 <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}">
+                                {% endif %}
                                 <span class="custom-control-indicator"></span>
                                 <span class="custom-control-descriptioBiken">{{cate.name}}</span>
                             </label>
@@ -156,8 +160,22 @@
                         </nav>
 
 
-                        <div class="col-12"><p>Tìm thấy khoảng {{pages*10}} cửa hàng</p></div>
+                        <div class="col-12"><p>Tìm thấy khoảng {{pages*10}} cửa hàng
+                            
+                            {% if selected_dics['level']%}
+                                cấp <b style="color: red;">{{selected_dics['level']}}</b>
+                            {% endif %}
+                            {% for k,v in selected_dics["cates"].items() %}
+                                {% if v %}
+                                    , <i style="color: blue;">{{k}}</i>
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        </div>
                         {% for data in datas %}
+                        
+                        
+                        
                             
                             <div class="col-sm-12 col-lg-12 col-xl-12 featured-responsive" style="margin-bottom: 15px;">
                                 <div class="featured-place-wrap">
