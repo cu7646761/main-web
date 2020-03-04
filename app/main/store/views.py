@@ -50,10 +50,25 @@ def countStar(store):
 @login_required
 def stores():
     page = request.args.get('page', 1, type=int)
+    class_filter = request.args.get('classification', '', type=str)
+    level_filter = request.args.get('level', '', type=str)
+    categories_filter = request.args.get('categories', '', type=str)
+    filter = {
+        "classification": class_filter,
+        "level": level_filter,
+        "categories": categories_filter
+    }
+    
+    
+    # add param
+    additional_params = ''
+    for key, value in filter.items():
+        if value != '':
+            additional_params += '&' + key + '=' + value
     store_model = StoreModel()
     categories = CategoryModel()
 
-    stores, pages = store_model.query_paginate_sort(page)
+    stores, pages = store_model.query_paginate_sort(page, filter)
     datas = []
     for store in stores:
         address = AddressModel().find_by_id(store.address_id)
@@ -66,8 +81,21 @@ def stores():
             "classify": classify
         }]
 
+    all_cates = categories.query_all()
+    selected_cates = categories_filter.split(',')
+    selected_dics = {
+        "cates": {},
+        "level": level_filter,
+        "address": {}
+    }
+    for cate in all_cates:
+        selected_dics["cates"][cate.name_link] = False
+        if cate.name_link in selected_cates:
+            selected_dics["cates"][cate.name_link] = True
     # address = 
-    return render_template("listing.html", datas=datas, pages=pages, current_page=page)
+    return render_template("listing.html", datas=datas, pages=pages, 
+                            current_page=page, additional_params=additional_params, 
+                            categories=all_cates, selected_dics=selected_dics)
 
 # @auth_blueprint.route("/detail-store", methods=["POST"])
 # def post_signup(error=None):
