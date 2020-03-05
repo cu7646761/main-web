@@ -31,6 +31,8 @@ class CommentModel(CommentEntity):
         comments =[]
         for x in listIds: 
             comments = comments + [comments_sorted(id=x)]
+        # comments = comments.sort(key=lambda tup: tup[1], reverse=True)
+        
         return comments    
     @classmethod
     def create(cls, store_id, detail, star, user_id):
