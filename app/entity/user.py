@@ -14,6 +14,7 @@ class User(mongoengine.Document, SearchableMixin):
     password = mongoengine.StringField(max_length=255)
     email_fb = mongoengine.StringField(max_length=255)
     id_fb = mongoengine.StringField(max_length=255)
+    name = mongoengine.StringField(max_length=255)
     birthday = mongoengine.DateTimeField()
     permission = mongoengine.IntField()
     favorite_categories = mongoengine.ListField()

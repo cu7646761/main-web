@@ -1,22 +1,29 @@
 from functools import wraps
+import time
 import math
-from flask import redirect, render_template, Blueprint, session, request
+import requests
+from constants import Pages, CLASS_LIST
+from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
+
 
 from app.main.store.forms import StoreForm
 from app.main.store.models import StoreModel
+from app.main.comment.forms import AddCommentForm
 from app.main.category.models import CategoryModel
 from app.main.address.models import AddressModel
+from app.main.comment.models import CommentModel
 from app.main.auth.views import login_required
 
 from utils import Utils
-from constants import CLASS_LIST
+from flask.helpers import url_for
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
 
-
-@store_blueprint.route("/stores/<string:store_id>", methods=["GET"])
-def view_detail(store_id=None):
+@store_blueprint.route("/stores/<string:store_id>", methods=["GET","POST"])
+def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
+    if form is None:
+        form = AddCommentForm()
     # form = StoreForm()
     stores = StoreModel()
     categories = CategoryModel()
@@ -25,10 +32,70 @@ def view_detail(store_id=None):
     address = AddressModel().find_by_id(store[0].address_id)
     classify = CLASS_LIST[store[0].classification]
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
+    
+    # page = request.args.get('page', 1, type=int)
+    # comments, pages = CommentModel().query_paginate_sort(page)
+    # datas = []
+    # for comment in comments:
+    #     if (str(store_id) == str(comment.store_id)):
+    #         datas += [{
+    #             "detail": comment.detail,
+    #             "star_num": comment.star_num,
+    #         }]
+    current_user = session['cur_user'] 
+    
+    if request.method == 'POST':
+        form = AddCommentForm()
+        commentModel = CommentModel()
+        print("AAAAAAAA")
+        if form.validate_on_submit():
+            name=request.form.get("name", "")
+            comment=request.form.get("comment", "")
+            star=request.form.get("star","")
+            print(star)
+            if not comment:
+                error = "Star is required"
+            if error is None:
+                
+                if current_user:
+                    new_comment, error = CommentModel.create(store_id, comment, star, current_user[0].id)
+                    
+                else:
+                    new_comment, error = CommentModel.create(store_id, comment, star, None)
+                if error:
+                    return render_template('detail.html', store=store[0], category=category, address=address[0],star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,current_user = current_user, form=form, error=error)
+                return redirect(request.url)
+    #session['logged'] = True
+    
     return render_template('detail.html', store=store[0], category=category, address=address[0],
-                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
-                           avr_star=avr_star, cnt=cnt, classify=classify)
+                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,current_user = current_user, form=form
+                           )
 
+@store_blueprint.route("/load/<string:store_id>")
+def load(store_id):
+    """ Route to return the posts """
+    stores = StoreModel()
+    store = stores.find_by_id(store_id)
+    db = CommentModel().findAllById(store[0].comment_list)
+    time.sleep(0.5)# Used to simulate delay
+    if request.args:
+        counter = int(request.args.get("c"))  # The 'counter' value sent in the QS
+
+        if counter == 0:
+            print(f"Returning posts 0 to {int(Pages['NUMBER_PER_PAGE'])}")
+            # Slice 0 -> quantity from the db
+            res = make_response(jsonify(db[0: int(Pages['NUMBER_PER_PAGE'])]), 200)
+
+        elif counter == len(db):
+            print("No more posts")
+            res = make_response(jsonify({}), 200)
+
+        else:
+            print(f"Returning posts {counter} to {counter + int(Pages['NUMBER_PER_PAGE'])}")
+            # Slice counter -> quantity from the db
+            res = make_response(jsonify(db[counter: counter + int(Pages['NUMBER_PER_PAGE'])]), 200)
+
+    return res    
 
 def countStar(store):
     if (store[0].reviewer_quant != 0):
@@ -37,8 +104,7 @@ def countStar(store):
         star_s3 = round((store[0].star_s3 / store[0].reviewer_quant * 100), 2)
         star_s4 = round((store[0].star_s4 / store[0].reviewer_quant * 100), 2)
         star_s5 = round((store[0].star_s5 / store[0].reviewer_quant * 100), 2)
-        avr_star = round(((store[0].star_s1 * 1 + store[0].star_s2 * 2 + store[0].star_s3 * 3 + store[0].star_s4 * 4 +
-                           store[0].star_s5 * 5) / store[0].reviewer_quant), 1)
+        avr_star = round(((store[0].star_s1 * 1 + store[0].star_s2 * 2 + store[0].star_s3 * 3 + store[0].star_s4 * 4 + store[0].star_s5 * 5) / store[0].reviewer_quant), 1)
         cnt = math.floor(avr_star)
 
         return star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt
