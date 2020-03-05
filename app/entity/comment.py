@@ -19,7 +19,7 @@ class Comment(mongoengine.Document, SearchableMixin):
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
 
     meta = {'allow_inheritance': True,
-            'ordering': ['-star_num']}
+            'ordering': ['-updated_on']}
 
     def __repr__(self):
         return '<Comment %r>' % (self.detail)
