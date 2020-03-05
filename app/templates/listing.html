@@ -30,6 +30,7 @@
                                         <option value="3">Three</option>
                                     </select>
                                 </form>
+                                
                                 <div class="map-responsive-wrap">
                                     <a class="map-icon" href="#"><span class="icon-location-pin"></span></a>
                                 </div>
@@ -37,62 +38,58 @@
                         </div>
                     </div>
                     <div class="row detail-checkbox-wrap">
+                        {% for cate in categories%}
                         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
                             <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
+                                {% if selected_dics["cates"][cate.name_link] %}
+                                <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}" checked>
+                                {% else %}
+                                <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}">
+                                {% endif %}
                                 <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Bike Parking</span>
+                                <span class="custom-control-descriptioBiken">{{cate.name}}</span>
                             </label>
                         </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Wireless Internet  </span>
-                            </label>
+                        {% endfor %}
+                        
+                    </div>
+                    <div class="row">
+                        <div class="row col-11">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <a href="/stores/?level=SS{{additional_params}}" class="btn btn-danger col-6" style="box-shadow: 0px -2px 3px 2px orange;">SS</a>
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="/stores/?level=S{{additional_params}}" class="btn btn-danger col-6">S</a>
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="/stores/?level=A{{additional_params}}" class="btn btn-warning col-6">A</a>    
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="/stores/?level=B{{additional_params}}" class="btn btn-primary col-6">B</a>    
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <a href="/stores/?level=C{{additional_params}}" class="btn btn-info col-6">C</a>
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="/stores/?level=D{{additional_params}}" class="btn btn-success col-6">D</a>
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="/stores/?level=E{{additional_params}}" class="btn btn-secondary col-6">E</a>
+                                    </div>
+                                    <div class="col-3">
+                                        <a href="/stores/?level=F{{additional_params}}" class="btn btn-dark col-6">F</a>
+                                    </div>    
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Smoking Allowed  </span>
-                            </label>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Street Parking</span>
-                            </label>
-                        </div>
-
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Special</span>
-                            </label>
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Accepts Credit cards</span>
-                            </label>
-                        </div>
-
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-
-                            <label class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input">
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-description">Pets Friendly</span>
-                            </label>
-
+                        <div class="col-1">
+                            <a id="a_id" href="/stores/?" class="btn btn-light"><i class="fa fa-search"></i></a>
                         </div>
                     </div>
                     <div class="row light-bg detail-options-wrap">
@@ -107,19 +104,19 @@
                                         <a class="page-link" href="">{{ current_page }}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}">
+                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}{{additional_params}}">
                                             {{ current_page+1}}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page+2 }}">
+                                        <a class="page-link" href="/stores/?page={{ current_page+2 }}{{additional_params}}">
                                             {{ current_page+2}}</a>
                                     </li>
                                 {% else %}
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page=1" tabindex="-1">Đầu</a>
+                                        <a class="page-link" href="/stores/?page=1{{additional_params}}" tabindex="-1">Đầu</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page-1 }}"
+                                        <a class="page-link" href="/stores/?page={{ current_page-1 }}{{additional_params}}"
                                            aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                             <span class="sr-only">Previous</span>
@@ -128,7 +125,7 @@
 
                                     <li class="page-item">
                                         <a class="page-link"
-                                           href="/stores/?page={{ current_page-1 }}">{{ current_page-1 }}</a>
+                                           href="/stores/?page={{ current_page-1 }}{{additional_params}}">{{ current_page-1 }}</a>
                                     </li>
                                     <li class="page-item active">
                                         <a class="page-link" href="">{{ current_page }}</a>
@@ -147,12 +144,12 @@
                                 {% else %}
                                     {% if current_page !=1 %}
                                         <li class="page-item">
-                                            <a class="page-link" href="/stores/?page={{ current_page+1 }}">
+                                            <a class="page-link" href="/stores/?page={{ current_page+1 }}{{additional_params}}">
                                                 {{ current_page+1}}</a>
                                         </li>
                                     {% endif %}
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}"
+                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}{{additional_params}}"
                                            aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                             <span class="sr-only">Next</span>
@@ -161,8 +158,24 @@
                                 {% endif %}
                             </ul>
                         </nav>
-                        <div class="col-12"><p>Danh sách hàng quán</p></div>
+
+
+                        <div class="col-12"><p>Tìm thấy khoảng {{pages*10}} cửa hàng
+                            
+                            {% if selected_dics['level']%}
+                                cấp <b style="color: red;">{{selected_dics['level']}}</b>
+                            {% endif %}
+                            {% for k,v in selected_dics["cates"].items() %}
+                                {% if v %}
+                                    , <i style="color: blue;">{{k}}</i>
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        </div>
                         {% for data in datas %}
+                        
+                        
+                        
                             
                             <div class="col-sm-12 col-lg-12 col-xl-12 featured-responsive" style="margin-bottom: 15px;">
                                 <div class="featured-place-wrap">
@@ -219,19 +232,19 @@
                                         <a class="page-link" href="">{{ current_page }}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}">
+                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}{{additional_params}}">
                                             {{ current_page+1}}</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page+2 }}">
+                                        <a class="page-link" href="/stores/?page={{ current_page+2 }}{{additional_params}}">
                                             {{ current_page+2}}</a>
                                     </li>
                                 {% else %}
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page=1" tabindex="-1">Đầu</a>
+                                        <a class="page-link" href="/stores/?page=1{{additional_params}}" tabindex="-1">Đầu</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page-1 }}"
+                                        <a class="page-link" href="/stores/?page={{ current_page-1 }}{{additional_params}}"
                                            aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                             <span class="sr-only">Previous</span>
@@ -240,7 +253,7 @@
 
                                     <li class="page-item">
                                         <a class="page-link"
-                                           href="/stores/?page={{ current_page-1 }}">{{ current_page-1 }}</a>
+                                           href="/stores/?page={{ current_page-1 }}{{additional_params}}">{{ current_page-1 }}</a>
                                     </li>
                                     <li class="page-item active">
                                         <a class="page-link" href="">{{ current_page }}</a>
@@ -259,12 +272,12 @@
                                 {% else %}
                                     {% if current_page !=1 %}
                                         <li class="page-item">
-                                            <a class="page-link" href="/stores/?page={{ current_page+1 }}">
+                                            <a class="page-link" href="/stores/?page={{ current_page+1 }}{{additional_params}}">
                                                 {{ current_page+1}}</a>
                                         </li>
                                     {% endif %}
                                     <li class="page-item">
-                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}"
+                                        <a class="page-link" href="/stores/?page={{ current_page+1 }}{{additional_params}}"
                                            aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                             <span class="sr-only">Next</span>
@@ -286,6 +299,20 @@
                 </div>
             </div>
         </div>
+        <script>
+            function updateParamSearch(){
+                var cates = document.getElementsByTagName("input");
+                var link ="/stores/?categories="
+                for (cate of cates){
+                    if (cate.checked == true){
+                        link+=cate.name+','
+                    }
+                }
+                link = link.substring(0, link.length - 1);
+                document.getElementById("a_id").href = link
+            }
+            updateParamSearch()
+        </script>
     </section>
 
     <!--//END DETAIL -->
