@@ -142,3 +142,7 @@ project_env/
 flask_session/sendgrid.env
 
 flask_session/*
+
+venv/
+
+env/

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "base.html" %}
 {% block content %}
     <div class="main-content-container container-fluid px-4">
@@ -310,4 +311,318 @@
 
 
     </script>
+=======
+{% extends "base.html" %}
+{% block content %}
+    <div class="main-content-container container-fluid px-4">
+        {% if error %}
+            <div class="input-group mb-2 mt-2">
+                <div class="alert alert-danger fade show mb-0 w-100"
+                     role="alert">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <i class="fa fa-info mx-2"></i>
+                    <strong>{{ error }}</strong>
+                </div>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="input-group mb-3 mt-3">
+                <div class="alert alert-primary fade show mb-0 w-100"
+                     role="alert">
+                    <button type="button" class="close" data-dismiss="alert"
+                            aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <i class="fa fa-thumbs-up mx-2"></i>
+                    <strong>
+                        {{ success }}
+                    </strong>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Page Header -->
+        <div class="page-header row no-gutters py-4">
+            <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+                <h3 class="page-title">Thông tin cá nhân</h3>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card card-small mb-4">
+                    <div class="card-header border-bottom text-center">
+                        <div class="mb-3 mx-auto">
+                            <img class="rounded-circle"
+                                 src="{{ user.link_image }}"
+                                 alt="User Avatar" width="140" height="140">
+                        </div>
+                        <h4 class="mb-0">{{ user.email[:user.email.find('@')] }}</h4>
+                        <span class="text-muted d-block mb-2">User</span>
+
+
+                        <div class="row">
+                            <form action="{{ url_for('user.upload') }}" method="POST" enctype=multipart/form-data
+                                  class="form-inline">
+                                <div class="form-group col-md-6">
+                                    <input type="file" name="file" style="display: inline-block;">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <button type="submit" class="mb-2 btn btn-sm btn-pill btn-primary w-100">
+                                        Cập nhật ảnh
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <a type="button" href='/profile/delete-img'
+                                   class="mb-2 btn btn-sm btn-pill btn-danger w-100">
+                                    Xoá ảnh
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-4">
+                            <div class="progress-wrapper">
+                                <strong class="text-muted d-block mb-2">Mức độ hoàn thành</strong>
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="74"
+                                         aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
+                                        <span class="progress-value">50%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card card-small mb-4">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <form action="/profile/update-basic" method="POST">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="feEmailAddress">Email</label>
+                                                <input type="email" class="form-control" id="feEmailAddress"
+                                                       placeholder="Email" value="{{ user.email }}" disabled></div>
+                                            <div class="form-group col-md-6">
+                                                <label for="birthday">Ngày sinh</label>
+                                                <input type="text" class="form-control" id="birthday" name="birthday"
+                                                       placeholder="dd/mm/yyyy" value="" required></div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="permission">Loại tài khoản</label>
+                                                <input type="text" class="form-control" id="permission"
+                                                       placeholder="User" value="User" disabled>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="gender">Giới tính</label>
+                                                <select id="gender" name="gender" class="form-control">
+                                                    <option selected="">Nam</option>
+                                                    <option selected="">Nữ</option>
+                                                    <option selected="">Khác</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="love_cate">Danh mục yêu thích</label>
+                                                <select multiple="multiple" id="love_ca" name="love_ca" class="form-control" required>
+                                                    {% for cate in cate_list %}
+                                                        <option value="{{ cate.name }}" name="{{ cate.name }}">{{ cate.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <input type="text" class="form-control" id="love_cate" name="love_cate" style="display: none;">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="city">Thành phố</label>
+                                                <select id="city_edit" name="select-city" class="form-control"
+                                                        onchange="getDistrictByCity()">
+                                                    {% for pro in province_list %}
+                                                        <option value="{{ pro.code }}" name="{{ pro.name }}">{{ pro.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="district_edit">Quận/huyện</label>
+                                                <select id="district_edit" name="district_id" class="form-control"
+                                                        disabled>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="address">Địa chỉ</label>
+                                                <input type="text" class="form-control" id="address" name="address"
+                                                       placeholder="Số và đường" required>
+                                                <label name="res-address" id="res-address"></label>
+                                                <input type="text" class="form-control" id="result-address" name="result-address" style="display: none;">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row justify-content-center">
+                                            <button type="submit" class="btn btn-primary btn-block">
+                                                CẬP NHẬT THÔNG TIN
+                                            </button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+            </div>
+            <div class="col-lg-8">
+                <div class="card card-small mb-4">
+                    <div class="card-header border-bottom">
+                        <h6 class="m-0">Thay đổi Password</h6>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item p-3">
+                            <div class="row">
+                                <div class="col">
+                                    <form action="/profile/update_pass" method="POST">
+                                        {{ form.csrf_token }}
+
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <label for="old_password">Mật khẩu cũ</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                {{ form.old_password(placeholder="Password", class="form-control") }}
+                                            </div>
+                                        </div>
+
+                                        {% if form.old_password.errors %}
+                                            {% for error in form.old_password.errors %}
+                                                <div class="form-group">
+                                                    <strong class="text-warning d-block mb-2">
+                                                        {{ error }}
+                                                    </strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <label for="new_password_1">Mật khẩu mới</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                {{ form.new_password_1(placeholder="Password", class="form-control") }}
+                                            </div>
+                                        </div>
+
+                                        {% if form.new_password_1.errors %}
+                                            {% for error in form.new_password_1.errors %}
+                                                <div class="form-group">
+                                                    <strong class="text-warning d-block mb-2">
+                                                        {{ error }}
+                                                    </strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <label for="new_password_2">Nhập lại mật khẩu mới</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                {{ form.new_password_2(placeholder="Password Confirm", class="form-control") }}
+                                            </div>
+                                        </div>
+
+                                        {% if form.new_password_2.errors %}
+                                            {% for error in form.new_password_2.errors %}
+                                                <div class="form-group">
+                                                    <strong class="text-warning d-block mb-2">
+                                                        {{ error }}
+                                                    </strong>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
+
+                                        <div class="form-row justify-content-center">
+                                            <button type="submit" class="btn btn-primary btn-block">THAY ĐỔI</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var getDistrictByCity = (cityId) => {
+            if (cityId == undefined) {
+                cityId = $("#city_edit :selected").val();
+            }
+
+            $.ajax({
+                url: '/profile/district' + `?city_id=${cityId}`,
+                method: 'GET',
+                contentType: 'application/json',
+                beforeSend: function () {
+                    $("#district_edit").empty();
+                    $("#district_edit").attr("disabled", false);
+                },
+                success: function (data) {
+                    data = data.district
+                    if (data.length > 0) {
+                        $('#district_edit').attr("disabled", false);
+                        for (let i = 0; i < data.length; i++) {
+                            $('#district_edit').append(
+                                $('<option>', {
+                                    name:data[i][0],
+                                    value: data[i][1],
+                                    text: data[i][0],
+                                }));
+                        }
+
+                    } else {
+                        $("#district_edit").attr("disabled", true);
+                    }
+                }
+            });
+        }
+
+        $("#address").on("input", function (data) {
+            $("#res-address").empty();
+            var city = $('#city_edit').find('option:selected').attr("name");
+            var district = $('#district_edit').find('option:selected').attr("name");
+            $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
+            $("#result-address").val($("#address").val() + ", " + district + ", " + city);
+            $("#love_cate").val($("#love_ca").val());
+        });
+
+
+    </script>
+>>>>>>> features/user
 {% endblock %}
