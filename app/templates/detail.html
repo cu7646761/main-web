@@ -159,9 +159,7 @@
                             <template id="post_template">
                                 
                                 <div class="customer-review_wrap">
-                                    <div class="customer-img">
-                                        <img src="{{url_for('static',filename='images/noname.png')}}" class="img-fluid"  alt="#">
-                                        <p id="username">Ẩn danh</p>
+                                    <div class="customer-img" id = "show-comment-user">
                                     </div>
                                     
                                     <div class="customer-content-wrap">
@@ -407,20 +405,25 @@ function loadItems() {
             }
             // Iterate over the items in the response
             for (let i = 0; i < data.length; i++) {
-                
                 // Clone the HTML template
                 let template_clone = template.content.cloneNode(true);
                 
                 // // Query & update the template content
                 let j = 0;
                 var userStar = "";
-                for (; j < data[i][0].star_num; j++) {
+                var userStar = "";
+                var showUser = "<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">Ẩn danh</p>";
+                if (data[i].users[0]){
+                    showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                }
+                for (; j < data[i].comments[0].star_num; j++) {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";
                 }
-                template_clone.querySelector("#detail").innerHTML = data[i][0].detail;
-                template_clone.querySelector("#star-num").innerHTML = data[i][0].star_num;
-                template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i][0].star_num} sao.`;
+                template_clone.querySelector("#detail").innerHTML = data[i].comments[0].detail;
+                template_clone.querySelector("#star-num").innerHTML = data[i].comments[0].star_num;
+                template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].comments[0].star_num} sao.`;
                 template_clone.querySelector("#show-star-user").innerHTML = userStar;
+                template_clone.querySelector("#show-comment-user").innerHTML = showUser;
 
                 // Append template to dom
                 scroller.appendChild(template_clone);

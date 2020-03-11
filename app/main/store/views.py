@@ -16,6 +16,7 @@ from app.main.auth.views import login_required
 
 from utils import Utils
 from flask.helpers import url_for
+from app.main.auth.models import UserModel
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -52,18 +53,17 @@ def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
     if request.method == 'POST':
         form = AddCommentForm()
         commentModel = CommentModel()
-        print("AAAAAAAA")
         if form.validate_on_submit():
             name=request.form.get("name", "")
             comment=request.form.get("comment", "")
             star=request.form.get("star","")
-            print(star)
             if not comment:
                 error = "Star is required"
             if error is None:
                 
                 if current_user:
-                    new_comment, error = CommentModel.create(store_id, comment, star, current_user[0].id)
+                    print(current_user.id)
+                    new_comment, error = CommentModel.create(store_id, comment, star, current_user.id)
                     
                 else:
                     new_comment, error = CommentModel.create(store_id, comment, star, None)
@@ -82,6 +82,7 @@ def load(store_id):
     stores = StoreModel()
     store = stores.find_by_id(store_id)
     db = CommentModel().findAllById(store[0].comment_list)
+    
     time.sleep(0.5)# Used to simulate delay
     if request.args:
         counter = int(request.args.get("c"))  # The 'counter' value sent in the QS
