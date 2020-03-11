@@ -11,33 +11,33 @@ tables_client = automl.TablesClient(project=PROJECT_ID, region=COMPUTE_REGION)
 list_models = tables_client.list_models()
 inputs = {
     "Age" : 18,
-    "Categories": "Quán",
-    "Cmt_1": 204,
-    "Cmt_2": 53,
-    "Cmt_3": 38,
-    "Cmt_4": 55,
-    "Cmt_5": 76,
-    "Cmt_6": 8,
-    "Cmt_7": 10,
-    "Cmt_8": 15,
-    "Cmt_9": 19,
-    "Cmt_10": 14,
-    "Distances": 15,
-    "Max_prices": 2000000,
-    "Min_prices": 20000,
-    "Star_s1": 47,
-    "Star_s2": 26,
-    "Star_s3": 187,
-    "Star_s4": 387,
-    "Star_s5": 545
+    "Categories": '["quan-nhau"]',
+    "Cmt_1": 64,
+    "Cmt_2": 11,
+    "Cmt_3": 14,
+    "Cmt_4": 7,
+    "Cmt_5": 6,
+    "Cmt_6": 1,
+    "Cmt_7": 2,
+    "Cmt_8": 1,
+    "Cmt_9": 0,
+    "Cmt_10": 1,
+    "Distances": 30,
+    "Max_prices": 490000,
+    "Min_prices": 70000,
+    "Star_s1": 108,
+    "Star_s2": 60,
+    "Star_s3": 21,
+    "Star_s4": 3,
+    "Star_s5": 3
 }
 for model in list_models:
-    if model.display_name == "data_training_dem_20200130113713":
+    if model.display_name == "data_training_v3__20200308094451":
         prediction_result = tables_client.predict(model=model, inputs=inputs)
 
 print(prediction_result)
-predictions = [(prediction.tables.score, prediction.tables.value.string_value) 
-               for prediction in prediction_result.payload]
-predictions = sorted(
-    predictions, key=lambda tup: (tup[0],tup[1]), reverse=True)
-print('Prediction is: ', predictions[0])
+# predictions = [(prediction.tables.score, prediction.tables.value.string_value) 
+#                for prediction in prediction_result.payload]
+# predictions = sorted(
+#     predictions, key=lambda tup: (tup[0],tup[1]), reverse=True)
+# print('Prediction is: ', predictions[0])

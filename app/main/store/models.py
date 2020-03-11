@@ -35,11 +35,13 @@ class StoreModel(StoreEntity):
 
         if level:
             if level == 2:
-                stores_sorted = stores_sorted.filter(classification__lte=2)
+                stores_sorted = stores_sorted.filter(classification__lte=2.5)
             elif level == 4:
-                stores_sorted = stores_sorted.filter(Q(classification__lte=4) & Q(classification__gt=2))
-            elif level in (8, 12, 16, 20, 24, 28):
-                stores_sorted = stores_sorted.filter(Q(classification__lte=level) & Q(classification__gt=level-4))
+                stores_sorted = stores_sorted.filter(Q(classification__lte=4.5) & Q(classification__gt=2.5))
+            elif level in (8, 12, 16, 20, 24):
+                stores_sorted = stores_sorted.filter(Q(classification__lte=level+0.5) & Q(classification__gt=level-3.5))
+            elif level == 28:
+                stores_sorted = stores_sorted.filter(classification__gt=level-3.5)
 
         elif classify:
             stores_sorted = stores_sorted.filter(classifications=classify)

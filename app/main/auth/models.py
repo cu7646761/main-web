@@ -1,7 +1,7 @@
 from flask_mongoengine import Pagination
 from app.entity.user import User as UserEntity
 from constants import Pages
-from app.entity.user_store_rel import as USRelEntity
+from app.entity.user_store_rel import UserStoreRel as USRelEntity
 from app.entity.store import Store as StoreEntity
 
 
