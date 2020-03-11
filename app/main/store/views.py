@@ -73,7 +73,8 @@ def stores():
     for store in stores:
         address = AddressModel().find_by_id(store.address_id)
         cates = categories.findAllById(store.categories_id)
-        classify = CLASS_LIST[store.classification]
+        # classify = CLASS_LIST[store.classification]
+        classify = Utils.get_classification_by_score(store.classification)
         datas += [{
             "store": store,
             "cates": cates,
