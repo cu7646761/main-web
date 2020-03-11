@@ -127,8 +127,14 @@ def update_basic(error=None, form=None):
     love_cate = love_cate.split(',')
     list_obj_cate = []
     category = CategoryModel()
-    for cate in love_cate:
-        list_obj_cate.append(category.find_by_name(cate)[0].id)
+
+    print(love_cate)
+    
+    if isinstance(love_cate, str):
+        list_obj_cate.append(category.find_by_name(love_cate)[0].id)
+    else:
+        for cate in love_cate:
+            list_obj_cate.append(category.find_by_name(cate)[0].id)
 
     user = UserModel()
 
