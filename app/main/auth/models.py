@@ -22,12 +22,11 @@ class UserModel(UserEntity):
     def find_by_email(self, email):
         return self.objects(email__exact=email)
 
-    def update_basic(self, email, birthday=None, gender=None, favorite_categories=None, address_id=None):
+    def update_basic(self, email, birthday=None, gender=None, favorite_categories=None):
         try:
             self.objects(email__exact=email).update(set__birthday=birthday)
             self.objects(email__exact=email).update(set__gender=gender)
             self.objects(email__exact=email).update(set__favorite_categories=favorite_categories)
-            self.objects(email__exact=email).update(set__address_id=address_id)
             return True, None
         except Exception as e:
             return False, e.__str__()
