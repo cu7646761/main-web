@@ -1,4 +1,5 @@
 import os
+import googlemaps
 from datetime import datetime
 from flask import redirect, render_template, Blueprint, session, request, jsonify
 
@@ -16,6 +17,7 @@ from vietnam_provinces.enums.districts import ProvinceEnum, ProvinceDEnum, Distr
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
 
+gmaps = googlemaps.Client(key='')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -119,17 +121,30 @@ def update_basic(error=None, form=None):
     gender = request.form.get("gender")
     res_address = request.form.get("result-address")
     love_cate = request.form.get("love_cate")
-
+    district = request.form.get("district_edit")
+    geocode_result = gmaps.geocode(res_address)
+    latitude = geocode_result[0].get('geometry').get('location').get('lat')
+    lngtitude = geocode_result[0].get('geometry').get('location').get('lng')
     address = AddressModel()
-    res, err = address.create(res_address)
+    print(district)
+    current_user = None
+    # address_id = address.find_by_detail(res_address)[0].id
+    try: 
+        if session['logged'] == True:
+            current_user = session['cur_user']
+    except:
+        pass
+    if current_user.address_id:
+        print("KOKO")
+        res, err = address.update(current_user.address_id, res_address, district, latitude, lngtitude)
+    else:
+        print("KKKKK")
+        res, err = address.create(current_user.id, res_address, district, latitude, lngtitude)
     if err:
         return profile(error=err)
     love_cate = love_cate.split(',')
     list_obj_cate = []
     category = CategoryModel()
-
-    print(love_cate)
-    
     if isinstance(love_cate, str):
         list_obj_cate.append(category.find_by_name(love_cate)[0].id)
     else:
@@ -139,17 +154,15 @@ def update_basic(error=None, form=None):
     user = UserModel()
 
     email = session['cur_user'].email
-    address_id = address.find_by_detail(res_address)[0].id
-
+    
     if gender == 'Nam':
         gender = 0
     elif gender == 'Nữ':
         gender = 1
     else:
         gender = 2
-
-    result, err = user.update_basic(email, birthday, gender, list_obj_cate, address_id)
+    result, err = user.update_basic(email, birthday, gender, list_obj_cate)
     if err:
-        return profile(error=err)
+        return profile(error=err, gender = gender, birthday = birthday)
 
-    return profile(success="Your basic information is updated successfully")
+    return profile(success="Your basic information is updated successfully", gender = gender, birthday = birthday)
