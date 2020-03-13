@@ -23,7 +23,7 @@ def view_detail(store_id=None):
     store = stores.find_by_id(store_id)
     category = categories.findAllById(store[0].categories_id)
     address = AddressModel().find_by_id(store[0].address_id)
-    classify = CLASS_LIST[store[0].classification]
+    classify = round(store[0].classification, 2)
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
@@ -79,7 +79,7 @@ def stores():
             "store": store,
             "cates": cates,
             "address": address,
-            "classify": classify
+            "classify": round(store.classification,1)
         }]
 
     all_cates = categories.query_all()
