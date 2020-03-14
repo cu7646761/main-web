@@ -5,7 +5,6 @@ import requests
 from constants import Pages, CLASS_LIST
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
-
 from app.main.store.forms import StoreForm
 from app.main.store.models import StoreModel
 from app.main.comment.forms import AddCommentForm
@@ -21,8 +20,9 @@ from app.main.auth.models import UserModel
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
 
-@store_blueprint.route("/stores/<string:store_id>", methods=["GET","POST"])
-def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
+
+@store_blueprint.route("/stores/<string:store_id>", methods=["GET", "POST"])
+def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     if form is None:
         form = AddCommentForm()
     # form = StoreForm()
@@ -33,7 +33,7 @@ def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
     address = AddressModel().find_by_id(store[0].address_id)
     classify = CLASS_LIST[store[0].classification]
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
-    
+
     # page = request.args.get('page', 1, type=int)
     # comments, pages = CommentModel().query_paginate_sort(page)
     # datas = []
@@ -44,37 +44,41 @@ def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
     #             "star_num": comment.star_num,
     #         }]
     current_user = None
-    try: 
+    try:
         if session['logged'] == True:
             current_user = session['cur_user']
     except:
         pass
-    
+
     if request.method == 'POST':
         form = AddCommentForm()
         commentModel = CommentModel()
         if form.validate_on_submit():
-            name=request.form.get("name", "")
-            comment=request.form.get("comment", "")
-            star=request.form.get("star","")
+            name = request.form.get("name", "")
+            comment = request.form.get("comment", "")
+            star = request.form.get("star", "")
             if not comment:
                 error = "Star is required"
             if error is None:
-                
+
                 if current_user:
                     print(current_user.id)
                     new_comment, error = CommentModel.create(store_id, comment, star, current_user.id)
-                    
+
                 else:
                     new_comment, error = CommentModel.create(store_id, comment, star, None)
                 if error:
-                    return render_template('detail.html', store=store[0], category=category, address=address[0],star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,current_user = current_user, form=form, error=error)
+                    return render_template('detail.html', store=store[0], category=category, address=address[0],
+                                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
+                                           star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
+                                           current_user=current_user, form=form, error=error, user=session['cur_user'])
                 return redirect(request.url)
-    
-    
+
     return render_template('detail.html', store=store[0], category=category, address=address[0],
-                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,current_user = current_user, form=form
-                           )
+                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
+                           avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
+                           , user=session['cur_user'])
+
 
 @store_blueprint.route("/load/<string:store_id>")
 def load(store_id):
@@ -82,8 +86,8 @@ def load(store_id):
     stores = StoreModel()
     store = stores.find_by_id(store_id)
     db = CommentModel().findAllById(store[0].comment_list)
-    
-    time.sleep(0.5)# Used to simulate delay
+
+    time.sleep(0.5)  # Used to simulate delay
     if request.args:
         counter = int(request.args.get("c"))  # The 'counter' value sent in the QS
 
@@ -101,7 +105,8 @@ def load(store_id):
             # Slice counter -> quantity from the db
             res = make_response(jsonify(db[counter: counter + int(Pages['NUMBER_PER_PAGE'])]), 200)
 
-    return res    
+    return res
+
 
 def countStar(store):
     if (store[0].reviewer_quant != 0):
@@ -110,7 +115,8 @@ def countStar(store):
         star_s3 = round((store[0].star_s3 / store[0].reviewer_quant * 100), 2)
         star_s4 = round((store[0].star_s4 / store[0].reviewer_quant * 100), 2)
         star_s5 = round((store[0].star_s5 / store[0].reviewer_quant * 100), 2)
-        avr_star = round(((store[0].star_s1 * 1 + store[0].star_s2 * 2 + store[0].star_s3 * 3 + store[0].star_s4 * 4 + store[0].star_s5 * 5) / store[0].reviewer_quant), 1)
+        avr_star = round(((store[0].star_s1 * 1 + store[0].star_s2 * 2 + store[0].star_s3 * 3 + store[0].star_s4 * 4 +
+                           store[0].star_s5 * 5) / store[0].reviewer_quant), 1)
         cnt = math.floor(avr_star)
 
         return star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt
@@ -130,8 +136,7 @@ def stores():
         "level": level_filter,
         "categories": categories_filter
     }
-    
-    
+
     # add param
     additional_params = ''
     for key, value in filter.items():
@@ -165,9 +170,9 @@ def stores():
         if cate.name_link in selected_cates:
             selected_dics["cates"][cate.name_link] = True
     # address = 
-    return render_template("listing.html", datas=datas, pages=pages, 
-                            current_page=page, additional_params=additional_params, 
-                            categories=all_cates, selected_dics=selected_dics)
+    return render_template("listing.html", datas=datas, pages=pages,
+                           current_page=page, additional_params=additional_params,
+                           categories=all_cates, selected_dics=selected_dics, user=session['cur_user'])
 
 # @auth_blueprint.route("/detail-store", methods=["POST"])
 # def post_signup(error=None):
