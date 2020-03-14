@@ -129,7 +129,7 @@ def update_basic(error=None, form=None):
     category = CategoryModel()
 
     print(love_cate)
-    
+
     if isinstance(love_cate, str):
         list_obj_cate.append(category.find_by_name(love_cate)[0].id)
     else:
