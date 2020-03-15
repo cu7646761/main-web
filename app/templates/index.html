@@ -20,7 +20,7 @@
                             <div class="col-md-10">
 
                                 <form action="{{ url_for('search.full_text') }}" method="GET"
-                                      class="form-wrap mt-4" id="search_form">
+                                      class="form-wrap mt-4 mb-3" id="search_form">
                                     <div class="btn-group justify-content-center">
                                         {{ form.q(placeholder="Địa điểm,...", class="form-control", id="user_input") }}
                                         <button type="submit" class="btn-form"><span
@@ -31,16 +31,21 @@
                                 {% if search_obj == [] %}
                                     <div class="page-header row no-gutters py-4 mb-3 border-bottom">
                                         <div class="col-12 col-sm-12 text-center mb-0">
-                                            <h3 class="page-title">Don't have result</h3>
+                                            <h3 class="page-title" style="color: white;">Don't have result</h3>
                                         </div>
                                     </div>
                                 {% endif %}
                                 {% for obj in search_obj %}
-                                    <div class="page-header row no-gutters py-4 mb-3 border-bottom">
-                                        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
-                                            <span class="text-uppercase page-subtitle">{{ obj["_index"] }}</span>
-                                            <h3 class="page-title">{{ obj["_source"]["name"] }}</h3>
-                                        </div>
+                                    <div class="page-header row no-gutters mb-3 border-bottom"
+                                         style="background-color: #f2f2f2;">
+                                        <form method="POST" action="/store" class="form-control" style="border:0;padding:0;">
+                                            <div class="card" style="border:0;">
+                                                <button type="submit" class="card-body">
+                                                    {{ obj["_source"]["name"] }}
+                                                </button>
+                                                <input name="name" value="{{ obj["_source"]["name"] }}" style="display:none;">
+                                            </div>
+                                        </form>
                                     </div>
                                 {% endfor %}
                                 <div class="slider-link">
