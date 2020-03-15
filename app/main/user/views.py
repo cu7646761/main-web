@@ -1,4 +1,5 @@
 import os
+import googlemaps
 from datetime import datetime
 from flask import redirect, render_template, Blueprint, session, request, jsonify
 
@@ -15,6 +16,8 @@ from vietnam_provinces.enums.districts import ProvinceEnum, ProvinceDEnum, Distr
 
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
+
+gmaps = googlemaps.Client(key='AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q')
 
 
 def allowed_file(filename):
@@ -42,8 +45,16 @@ def profile(error=None, form=None, success=None):
     cate = CategoryModel()
     if form is None:
         form = UpdatePswForm()
+
+    address = AddressModel()
+    address_obj = address.find_by_id(session['cur_user'].address_id)[0]
+
+    category = CategoryModel()
+    lst_cate_choose = [category.find_by_id(x)[0].name for x in session['cur_user'].favorite_categories]
+
     return render_template("profile.html", user=session['cur_user'], error=error, form=form, success=success,
-                           province_list=province_list, cate_list=cate.query_all())
+                           province_list=province_list, cate_list=cate.query_all(), address=address_obj.detail,
+                           lst_cate_choose=lst_cate_choose)
 
 
 @user_blueprint.route('/', methods=['POST'])
@@ -118,38 +129,52 @@ def update_basic(error=None, form=None):
     birthday = request.form.get("birthday")
     gender = request.form.get("gender")
     res_address = request.form.get("result-address")
-    love_cate = request.form.get("love_cate")
-
+    love_cate = request.form.get("love_cate", "")
+    district = res_address.split(',')[1]
+    geocode_result = gmaps.geocode(res_address)
+    latitude = geocode_result[0].get('geometry').get('location').get('lat')
+    longtitude = geocode_result[0].get('geometry').get('location').get('lng')
     address = AddressModel()
-    res, err = address.create(res_address)
+    current_user = None
+
+    try:
+        if session['logged'] == True:
+            current_user = session['cur_user']
+    except:
+        pass
+    if current_user.address_id:
+        res, err = address.update(current_user.address_id, res_address, district, latitude, longtitude)
+    else:
+        res, err = address.create(current_user.id, res_address, district, latitude, longtitude)
     if err:
         return profile(error=err)
-    love_cate = love_cate.split(',')
-    list_obj_cate = []
-    category = CategoryModel()
 
-    print(love_cate)
-    
-    if isinstance(love_cate, str):
-        list_obj_cate.append(category.find_by_name(love_cate)[0].id)
+    list_obj_cate = []
+    if love_cate == "":
+        list_obj_cate = session['cur_user'].favorite_categories
     else:
-        for cate in love_cate:
-            list_obj_cate.append(category.find_by_name(cate)[0].id)
+        love_cate = love_cate.split(',')
+        category = CategoryModel()
+        if isinstance(love_cate, str):
+            list_obj_cate.append(category.find_by_name(love_cate)[0].id)
+        else:
+            for cate in love_cate:
+                list_obj_cate.append(category.find_by_name(cate)[0].id)
 
     user = UserModel()
-
     email = session['cur_user'].email
-    address_id = address.find_by_detail(res_address)[0].id
-
     if gender == 'Nam':
         gender = 0
     elif gender == 'Nữ':
         gender = 1
     else:
         gender = 2
-
-    result, err = user.update_basic(email, birthday, gender, list_obj_cate, address_id)
+    result, err = user.update_basic(email, birthday, gender, list_obj_cate)
     if err:
         return profile(error=err)
+
+    user = UserModel()
+    cur_user = user.find_by_id(session['cur_user'].id)[0]
+    session['cur_user'] = cur_user
 
     return profile(success="Your basic information is updated successfully")

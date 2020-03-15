@@ -42,7 +42,7 @@ def query_suggestion(index, query):
     if not current_app.elasticsearch:
         return [], 0
 
-    field_all = ["name", "detail", "store_name", "value", "price"]
+    field_all = ["name"]
 
     ids_all = []
     search_obj_all = []
