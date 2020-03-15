@@ -1,6 +1,8 @@
 from flask_mongoengine import Pagination
 from app.entity.user import User as UserEntity
 from constants import Pages
+from app.entity.user_store_rel import UserStoreRel as USRelEntity
+from app.entity.store import Store as StoreEntity
 
 
 class UserModel(UserEntity):
@@ -46,3 +48,12 @@ class UserModel(UserEntity):
             return True, None
         except Exception as e:
             return False, e.__str__()
+
+    def trigger_user_store_rel(self, uid):
+        stores = StoreEntity.objects
+        usrel = USRelEntity.objects
+        for store in stores:
+            classify = 1+2
+            usrel.create(uid, store.id, classify)
+            
+        
