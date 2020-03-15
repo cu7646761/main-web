@@ -37,7 +37,7 @@ class Store(mongoengine.Document, SearchableMixin):
     comments_s = mongoengine.IntField()
     comment_list = mongoengine.ListField()
 
-    classification = mongoengine.IntField()
+    classification = mongoengine.FloatField()
     reviewer_quant = mongoengine.IntField()
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)

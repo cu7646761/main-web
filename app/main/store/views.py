@@ -32,7 +32,7 @@ def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
     store = stores.find_by_id(store_id)
     category = categories.findAllById(store[0].categories_id)
     address = AddressModel().find_by_id(store[0].address_id)
-    classify = CLASS_LIST[store[0].classification]
+    classify = round(store[0].classification, 2)
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     
     # page = request.args.get('page', 1, type=int)
@@ -142,7 +142,8 @@ def stores():
     for store in stores:
         address = AddressModel().find_by_id(store.address_id)
         cates = categories.findAllById(store.categories_id)
-        classify = CLASS_LIST[store.classification]
+        # classify = CLASS_LIST[store.classification]
+        classify = Utils.get_classification_by_score(store.classification)
         datas += [{
             "store": store,
             "cates": cates,
