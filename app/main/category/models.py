@@ -9,6 +9,9 @@ class CategoryModel(CategoryEntity):
     def get_name_by_id(self, category_id):
         return self.objects.get(id=category_id).name
 
+    def get_name_link_by_id(self, category_id):
+        return self.objects.get(id=category_id).name_link
+
     def query_all(self):
         return self.objects
 
