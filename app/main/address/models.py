@@ -1,5 +1,6 @@
 from flask_mongoengine import Pagination
 from app.entity.address import Address as AddressEntity
+from app.entity.user import User as UserEntity
 from constants import Pages
 from bson import ObjectId
 
@@ -30,10 +31,26 @@ class AddressModel(AddressEntity):
         return categories
 
     @classmethod
-    def create(cls, detail):
+    def create(cls,user_id, detail, district, latitude, longtitude):
         try:
-            AddressEntity(detail=detail).save()
+            address = AddressEntity(detail=detail, district=district, latitude=latitude, longtitude=longtitude)
+            address.save()
+            user = UserEntity.objects(id=user_id).get()
+            user.address_id = address.id
+            user.save()     
             # UserEntity.reindex()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+    @classmethod
+    def update(cls,address_id, detail, district, latitude, longtitude):
+        try:
+            address = AddressEntity.objects(id=address_id).get()
+            address.detail = detail
+            address.district = district
+            address.latitude = latitude
+            address.longtitude = longtitude
+            address.save()
             return True, None
         except Exception as e:
             return False, e.__str__()
