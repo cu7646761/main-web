@@ -21,7 +21,6 @@ def full_text():
         if not isinstance(total, int):
             search_obj.extend(total)
 
-    # return jsonify({"data": search_obj})
     print(search_obj)
     return render_template('index.html', search_obj=search_obj, form=form, user=session['cur_user'])
 
@@ -44,7 +43,6 @@ def full_text():
 
 @search_blueprint.route('/suggestion', methods=['POST'])
 def suggestion():
-    print(request.data)
     search_term = request.data.decode("utf-8").split("=")[1]
     cls_model = [StoreModel]
     # reindex_all = [model.reindex() for model in cls_model]

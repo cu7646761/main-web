@@ -17,6 +17,7 @@ $('#user_input').on('input', function (e) {
         data: "q=" + user_input
     }
 
+
     $.ajax(settings).done(function (response) {
         console.log(response);
         var data = response.data;
@@ -45,6 +46,25 @@ $('#user_input').on('input', function (e) {
                     $('.ui-menu').css('box-shadow', '0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08)');
                     $('.ui-menu').css('list-style', 'none');
                     $('.ui-menu-item a').removeClass('ui-corner-all');
+                },
+                select: function (event, ui) {
+                    if (ui.item) {
+                        var settings_get_store = {
+                            "async": true,
+                            "crossDomain": true,
+                            "url": "/store",
+                            "method": "POST",
+                            "headers": {
+                                "cache-control": "no-cache",
+                                "Content-Type": "application/json"
+                            },
+                            "processData": false,
+                            data: "name=" + ui.item.value
+                        }
+                        $.ajax(settings_get_store).done(function (data) {
+                            window.location.href = "/stores/" + data.id;
+                        })
+                    }
                 }
 
             }
