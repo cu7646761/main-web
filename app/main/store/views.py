@@ -79,7 +79,7 @@ def stores():
             "store": store,
             "cates": cates,
             "address": address,
-            "classify": round(store.classification,1)
+            "classify": classify
         }]
 
     all_cates = categories.query_all()
