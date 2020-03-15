@@ -102,7 +102,8 @@
                                             <div class="form-group col-md-6">
                                                 <label for="birthday">Ngày sinh</label>
                                                 <input type="text" class="form-control" id="birthday" name="birthday"
-                                                       placeholder="dd/mm/yyyy" value="" required></div>
+                                                       placeholder="dd/mm/yyyy" value="{{ user.birthday }}" required>
+                                            </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
@@ -112,22 +113,28 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label for="gender">Giới tính</label>
-                                                <select id="gender" name="gender" class="form-control">
-                                                    <option selected="">Nam</option>
-                                                    <option selected="">Nữ</option>
-                                                    <option selected="">Khác</option>
+                                                <select id="gender" name="gender" class="form-control"
+                                                        value="{{ user.gender }}">
+                                                    <option {% if user.gender == 0 %} selected {% endif %}>Nam</option>
+                                                    <option {% if user.gender == 1 %} selected {% endif %}>Nữ</option>
+                                                    <option {% if user.gender == 2 %} selected {% endif %}>Khác</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label for="love_cate">Danh mục yêu thích</label>
-                                                <select multiple id="love_ca" name="love_ca" class="form-control" required>
+                                                <select multiple id="love_ca" name="love_ca" class="form-control"
+                                                        required>
                                                     {% for cate in cate_list %}
-                                                        <option value="{{ cate.name }}" name="{{ cate.name }}">{{ cate.name }}</option>
+                                                        <option value="{{ cate.name }}"
+                                                                name="{{ cate.name }}"
+                                                                {% if cate.name in lst_cate_choose %}
+                                                                selected {% endif %}>{{ cate.name }}</option>
                                                     {% endfor %}
                                                 </select>
-                                                <input type="text" class="form-control" id="love_cate" name="love_cate" style="display: none;">
+                                                <input type="text" class="form-control" id="love_cate" name="love_cate"
+                                                       style="display: none;">
                                             </div>
                                         </div>
                                         <div class="form-row">
@@ -136,7 +143,8 @@
                                                 <select id="city_edit" name="select-city" class="form-control"
                                                         onchange="getDistrictByCity()">
                                                     {% for pro in province_list %}
-                                                        <option value="{{ pro.code }}" name="{{ pro.name }}">{{ pro.name }}</option>
+                                                        <option value="{{ pro.code }}"
+                                                                name="{{ pro.name }}">{{ pro.name }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -152,9 +160,11 @@
                                             <div class="form-group col-md-12">
                                                 <label for="address">Địa chỉ</label>
                                                 <input type="text" class="form-control" id="address" name="address"
-                                                       placeholder="Số và đường" required>
+                                                       placeholder="Số và đường" value="{{ address }}" required>
                                                 <label name="res-address" id="res-address"></label>
-                                                <input type="text" class="form-control" id="result-address" name="result-address" style="display: none;">
+                                                <input type="text" class="form-control" id="result-address"
+                                                       name="result-address" style="display: none;"
+                                                       value="{{ address }}">
                                             </div>
                                         </div>
 
@@ -267,6 +277,8 @@
 
     <script>
         var getDistrictByCity = (cityId) => {
+            $("#address").val("");
+            $("#result-address").val("");
             if (cityId == undefined) {
                 cityId = $("#city_edit :selected").val();
             }
@@ -286,7 +298,7 @@
                         for (let i = 0; i < data.length; i++) {
                             $('#district_edit').append(
                                 $('<option>', {
-                                    name:data[i][0],
+                                    name: data[i][0],
                                     value: data[i][1],
                                     text: data[i][0],
                                 }));
@@ -305,8 +317,12 @@
             var district = $('#district_edit').find('option:selected').attr("name");
             $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
             $("#result-address").val($("#address").val() + ", " + district + ", " + city);
-            $("#love_cate").val($("#love_ca").val());
         });
+
+        $("#love_ca").on('change', function() {
+            $("#love_cate").val($("#love_ca").val());
+        })
+
 
 
     </script>
