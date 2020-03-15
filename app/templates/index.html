@@ -29,21 +29,25 @@
                                     </div>
                                 </form>
                                 {% if search_obj == [] %}
-                                    <div class="page-header row no-gutters py-4 mb-3 border-bottom">
-                                        <div class="col-12 col-sm-12 text-center mb-0">
-                                            <h3 class="page-title" style="color: white;">Don't have result</h3>
+                                    <div class="page-header row no-gutters mb-3">
+                                        <div class="card form-control" style="border:0;">
+                                            <h3 class="card-body">
+                                                Không có kết quả tìm kiếm
+                                            </h3>
                                         </div>
                                     </div>
                                 {% endif %}
                                 {% for obj in search_obj %}
                                     <div class="page-header row no-gutters mb-3 border-bottom"
                                          style="background-color: #f2f2f2;">
-                                        <form method="POST" action="/store" class="form-control" style="border:0;padding:0;">
+                                        <form method="POST" action="/store" class="form-control"
+                                              style="border:0;padding:0;">
                                             <div class="card" style="border:0;">
                                                 <button type="submit" class="card-body">
                                                     {{ obj["_source"]["name"] }}
                                                 </button>
-                                                <input name="name" value="{{ obj["_source"]["name"] }}" style="display:none;">
+                                                <input name="name" value="{{ obj["_source"]["name"] }}"
+                                                       style="display:none;">
                                             </div>
                                         </form>
                                     </div>
