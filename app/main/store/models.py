@@ -51,7 +51,7 @@ class StoreModel(StoreEntity):
             stores_sorted = stores_sorted.filter(categories_id__in=cates)
         
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
-        return stores.items, stores.pages
+        return [stores.items, stores.pages]
 
     def find_by_id(self, store_id):
         return self.objects(id__exact=store_id)

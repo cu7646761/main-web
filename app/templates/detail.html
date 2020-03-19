@@ -439,15 +439,15 @@ function loadItems() {
     // Create a new IntersectionObserver instance
     var intersectionObserver = new IntersectionObserver(entries => {
 
-    // Uncomment below to see the entry.intersectionRatio when
-    // the sentinel comes into view
+        // Uncomment below to see the entry.intersectionRatio when
+        // the sentinel comes into view
 
-    entries.forEach(entry => {
-      console.log(entry.intersectionRatio);
-    })
+        entries.forEach(entry => {
+            console.log(entry.intersectionRatio);
+        })
 
-    // If intersectionRatio is 0, the sentinel is out of view
-    // and we don't need to do anything. Exit the function
+        // If intersectionRatio is 0, the sentinel is out of view
+        // and we don't need to do anything. Exit the function
         // if (entries[0].intersectionRatio <= 0) {
         //     return;
         // }

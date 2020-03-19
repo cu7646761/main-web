@@ -92,7 +92,9 @@
                             <a id="a_id" href="/stores/?" class="btn btn-light"><i class="fa fa-search"></i></a>
                         </div>
                     </div>
-                    <div class="row light-bg detail-options-wrap">
+
+
+                    <div class="row light-bg detail-options-wrap" id="scroller">
                         <nav aria-label="Page navigation example" class="col-12">
                             <ul class="pagination justify-content-end">
                                 {% if current_page == 1 %}
@@ -299,6 +301,59 @@
                 </div>
             </div>
         </div>
+
+        <!-- element to trigger the IntersectionObserver -->
+        <div class="d-flex justify-content-center mb-3" id="sentinel">
+            <div class="spinner-border" role="status"></div>
+        </div>
+        <hr>
+
+        <template id="post_template">
+                                
+            <div class="col-sm-12 col-lg-12 col-xl-12 featured-responsive" style="margin-bottom: 15px;">
+                <div class="featured-place-wrap">
+                    <a href="">
+                        <div class="row">
+                            <div class="featured-title-box col-lg-4 col-sm-4 col-xs-12">
+                                <img height="200px" src=""  alt="#" id="img_store">
+                            </div>
+                            
+                            <span class="featured-rating-orange" id="classify_store"></span>
+                            <div class="featured-title-box col-lg-8 col-sm-8 col-xs-12">
+                                <h6 id="name_store"></h6>
+                                <div id="cates_store">
+                                   
+                                </div>
+                                
+                                <br>
+                                <p id="review_store"></p>
+
+                                <ul>
+                                    <li><span class="icon-location-pin"></span>
+                                        <p id="address_store"></p>
+                                    </li>
+                                    <li><span class="icon-screen-smartphone"></span>
+                                        <p>+44 20 7336 8898</p>
+                                    </li>
+                                    <li><span class="icon-link"></span>
+                                        <p>https://burgerandlobster.com</p>
+                                    </li>
+
+                                </ul>
+                                <div class="bottom-icons">
+                                    <!-- <div class="closed-now">CLOSED NOW</div> -->
+                                    <span class="ti-heart"></span>
+                                    <span class="ti-bookmark"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </a>
+                </div>
+            </div>
+        <hr>
+        </template>
+
         <script>
             function updateParamSearch(){
                 var cates = document.getElementsByTagName("input");
@@ -313,7 +368,92 @@
             }
             updateParamSearch()
         </script>
-    </section>
 
+    </section>
     <!--//END DETAIL -->
+
+    <script>
+        // Get references to the dom elements
+        var scroller = document.querySelector("#scroller");
+        var template = document.querySelector('#post_template');
+        // var loaded = document.querySelector("#loaded");
+        var sentinel = document.querySelector('#sentinel');
+        
+        // Set a counter to count the items loaded
+        var counter = 2;
+        
+        // Function to request new items and render to the dom
+        function loadItems() {
+        
+            // Use fetch to request data and pass the counter value in the QS
+            fetch(`/load_store/?c=${counter}{{additional_params}}`).then((response) => {
+                // Convert the response data to JSON
+                response.json().then((data) => {
+                    console.log(`{{additional_params}}`)
+        
+                    // If empty JSON, exit the function
+                    if (!data.length) {
+        
+                        // Replace the spinner with "No more posts"
+                        sentinel.innerHTML = "Không còn bình luận nào.";
+                        return;
+                    }
+                    // Iterate over the items in the response
+                    for (let i = 0; i < data.length; i++) {
+                        
+                        // Clone the HTML template
+                        let template_clone = template.content.cloneNode(true);
+                        
+                        // // Query & update the template content
+                        // let j = 0;
+                        cates = "";
+                        for (cate of data[i].cates) {
+                            cates += "<p>" + cate[0].name + "</p> <span> • </span>"
+                        }
+                        template_clone.querySelector("#name_store").innerHTML = data[i].store.name;
+                        template_clone.querySelector("#classify_store").innerHTML = data[i].classify;
+                        template_clone.querySelector("#review_store").innerHTML = data[i].store.reviewer_quant;
+                        template_clone.querySelector("#img_store").setAttribute("src", data[i].store.link_image[0]);
+                        template_clone.querySelector("#address_store").innerHTML = data[i].address[0].detail;
+                        template_clone.querySelector("#cates_store").innerHTML = cates;
+                        // template_clone.querySelector("#show-star-user").innerHTML = userStar;
+        
+                        // Append template to dom
+                        scroller.appendChild(template_clone);
+                        
+                        // Increment the counter
+                        counter = counter + 1;
+                        // Update the counter in the navbar
+                        // loaded.innerText = `${counter} bình luận được hiển thị.`;
+                        
+        
+                    }
+                })
+            })
+        }
+    
+        // Create a new IntersectionObserver instance
+        var intersectionObserver = new IntersectionObserver(entries => {
+    
+            // Uncomment below to see the entry.intersectionRatio when
+            // the sentinel comes into view
+    
+            entries.forEach(entry => {
+                console.log(entry.intersectionRatio);
+            })
+    
+            // If intersectionRatio is 0, the sentinel is out of view
+            // and we don't need to do anything. Exit the function
+            // if (entries[0].intersectionRatio <= 0) {
+            //     return;
+            // }
+    
+            // Call the loadItems function
+            loadItems();
+    
+        });
+    
+        // Instruct the IntersectionObserver to watch the sentinel
+        intersectionObserver.observe(sentinel);
+    </script>
 {% endblock %}

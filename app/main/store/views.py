@@ -167,6 +167,54 @@ def stores():
                             current_page=page, additional_params=additional_params, 
                             categories=all_cates, selected_dics=selected_dics)
 
+@store_blueprint.route("/load_store/")
+def load_store():
+    """ Route to return the posts """
+
+    class_filter = request.args.get('amp;classification', '', type=str)
+    level_filter = request.args.get('amp;level', '', type=str)
+    categories_filter = request.args.get('amp;categories', '', type=str)
+    filter = {
+        "classification": class_filter,
+        "level": level_filter,
+        "categories": categories_filter
+    }
+
+    if request.args:
+        counter = int(request.args.get("c"))  # The 'counter' value sent in the QS
+
+        store_model = StoreModel()
+        stores = store_model.query_paginate_sort(counter, filter)
+        time.sleep(0.5)# Used to simulate delay
+        datas = []
+        for store in stores[0]:
+            address = AddressModel().find_by_id(store.address_id)
+            cates = CategoryModel().findAllById(store.categories_id)
+            # classify = CLASS_LIST[store.classification]
+            classify = Utils.get_classification_by_score(store.classification)
+            datas.append({
+                "store": store,
+                "cates": cates,
+                "address": address,
+                "classify": classify
+            })
+        res = make_response(jsonify(datas), 200)
+
+        # if counter == 0:
+        #     print(f"Returning posts 0 to {int(Pages['NUMBER_PER_PAGE'])}")
+        #     # Slice 0 -> quantity from the db
+        #     res = make_response(jsonify(db[0: int(Pages['NUMBER_PER_PAGE'])]), 200)
+
+        if counter > stores[1]:
+            print("No more posts")
+            res = make_response(jsonify({}), 200)
+
+        # else:
+        #     print(f"Returning posts {counter} to {counter + int(Pages['NUMBER_PER_PAGE'])}")
+        #     # Slice counter -> quantity from the db
+        #     res = make_response(jsonify(db[counter: counter + int(Pages['NUMBER_PER_PAGE'])]), 200)
+
+    return res
 # @auth_blueprint.route("/detail-store", methods=["POST"])
 # def post_signup(error=None):
 #     form = DetailStoreForm()
