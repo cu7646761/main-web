@@ -11,12 +11,13 @@ from app.main.store.models import StoreModel
 from app.main.comment.forms import AddCommentForm
 from app.main.category.models import CategoryModel
 from app.main.address.models import AddressModel
-from app.main.comment.models import CommentModel
 from app.main.auth.views import login_required
 
 from utils import Utils
+from constants import CLASS_LIST
+from app.main.comment.models import CommentModel
+
 from flask.helpers import url_for
-from app.main.auth.models import UserModel
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -73,7 +74,8 @@ def view_detail(store_id=None, page = 1, db = list(), form=None, error=None):
     
     
     return render_template('detail.html', store=store[0], category=category, address=address[0],
-                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,current_user = current_user, form=form
+                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5, 
+                           avr_star=avr_star, cnt=cnt, store_id=store_id,current_user = current_user, form=form
                            )
 
 @store_blueprint.route("/load/<string:store_id>")
