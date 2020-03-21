@@ -95,7 +95,14 @@
                     <div class="row light-bg detail-options-wrap">
                         <nav aria-label="Page navigation example" class="col-12">
                             <ul class="pagination justify-content-end">
-                                {% if current_page == 1 %}
+                                {% if pages < 3 %}
+                                    {% for i in range(pages) %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="/stores/?page={{ i+1 }}{{additional_params}}">
+                                                {{i+1}}</a>
+                                        </li>
+                                    {% endfor %}
+                                {% elif current_page == 1 %}
                                     <li class="page-item disabled">
                                         <a class="page-link" href="" tabindex="-1">Đầu</a>
                                     </li>
@@ -133,7 +140,7 @@
 
                                 {% endif %}
 
-                                {% if current_page == pages %}
+                                {% if current_page == pages or pages == 0 %}
                                     <li class="page-item disabled">
                                         <a class="page-link" href="" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
@@ -223,7 +230,15 @@
 
                         <nav aria-label="Page navigation example" class="col-12">
                             <ul class="pagination justify-content-end">
-                                {% if current_page == 1 %}
+                                {% if pages < 3 %}
+                                    {% for i in range(pages) %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="/stores/?page={{ i+1 }}{{additional_params}}">
+                                                {{i+1}}</a>
+                                        </li>
+                                    {% endfor %}
+
+                                {% elif current_page == 1 %}
                                     <li class="page-item disabled">
                                         <a class="page-link" href="" tabindex="-1">Đầu</a>
                                     </li>
@@ -261,7 +276,7 @@
 
                                 {% endif %}
 
-                                {% if current_page == pages %}
+                                {% if current_page == pages  or pages == 0 %}
                                     <li class="page-item disabled">
                                         <a class="page-link" href="" aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
