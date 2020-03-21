@@ -56,6 +56,9 @@ class StoreModel(StoreEntity):
     def find_by_id(self, store_id):
         return self.objects(id__exact=store_id)
 
+    def find_by_name(self, name):
+        return self.objects(name__exact=name)[0]
+
     # def edit(self, _id, email):
     #     try:
     #         self.objects(id__exact=_id).update(set__email=email)
