@@ -132,8 +132,8 @@ def update_basic(error=None, form=None):
     love_cate = request.form.get("love_cate", "")
     district = res_address.split(',')[1]
     geocode_result = gmaps.geocode(res_address)
-    latitude = geocode_result[0].get('geometry').get('location').get('lat')
-    longtitude = geocode_result[0].get('geometry').get('location').get('lng')
+    latitude = str(geocode_result[0].get('geometry').get('location').get('lat'))
+    longtitude = str(geocode_result[0].get('geometry').get('location').get('lng'))
     address = AddressModel()
     current_user = None
 
