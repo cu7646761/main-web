@@ -17,7 +17,7 @@ from vietnam_provinces.enums.districts import ProvinceEnum, ProvinceDEnum, Distr
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
 
-gmaps = googlemaps.Client(key='AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q')
+gmaps = googlemaps.Client(key='')
 
 
 def allowed_file(filename):
@@ -47,13 +47,17 @@ def profile(error=None, form=None, success=None):
         form = UpdatePswForm()
 
     address = AddressModel()
-    address_obj = address.find_by_id(session['cur_user'].address_id)[0]
+    addr = ""
+    if session['cur_user'].address_id is None:
+        addr = ""
+    else:
+        addr = address.find_by_id(session['cur_user'].address_id)[0].detail
 
     category = CategoryModel()
     lst_cate_choose = [category.find_by_id(x)[0].name for x in session['cur_user'].favorite_categories]
 
     return render_template("profile.html", user=session['cur_user'], error=error, form=form, success=success,
-                           province_list=province_list, cate_list=cate.query_all(), address=address_obj.detail,
+                           province_list=province_list, cate_list=cate.query_all(), address=addr,
                            lst_cate_choose=lst_cate_choose)
 
 
