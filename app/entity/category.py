@@ -8,7 +8,7 @@ class Category(mongoengine.Document, SearchableMixin):
     __searchable__ = ['name']
 
     name = mongoengine.StringField()
-    name_link = mongoengine.StringField()
+    name_link = mongoengine.StringField(unique=True)
 
     meta = {'allow_inheritance': True}
 
