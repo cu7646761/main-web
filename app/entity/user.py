@@ -19,6 +19,7 @@ class User(mongoengine.Document, SearchableMixin):
     gender = mongoengine.IntField()
     comments_list = mongoengine.ListField()
     active = mongoengine.IntField(default=0)
+    address_id = mongoengine.ObjectIdField()
 
     # save avatar
     link_image = mongoengine.StringField()
