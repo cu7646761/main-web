@@ -35,6 +35,9 @@ How to run generate_data
 2. Run command
     > python gen.py <br>
 
+3. (Development) To generate fake classification, Run command
+    > python gen_classify.py <br>
+
 Work with github
 =======================================
 1. Link docs: https://docs.google.com/document/d/1dyJDHd9g7ZIg4bhdWCf1m3j3L5yI3tpefdt1XyxIaLY/edit
@@ -49,6 +52,6 @@ Work with Flask gmail
 How to config mail with sendgrid
 =======================================
 1. Steps <br>
-1.1. echo "export SENDGRID_API_KEY='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'" > sendgrid.env <br>
+1.1. echo "export SENDGRID_API_KEY='this is private'" > sendgrid.env <br>
 1.2. echo "sendgrid.env" >> .gitignore <br>
 1.3. source ./sendgrid.env <br>
