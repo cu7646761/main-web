@@ -126,6 +126,8 @@ def post_login(error=None):
         if error is None:
             session['logged'] = True
             session['cur_user'] = user[0]
+            if user[0].active == 2:
+                return redirect('/admin')
             return redirect('/')
     return render_template("login.html", error=error, form=form)
 
