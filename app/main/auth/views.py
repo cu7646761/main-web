@@ -3,6 +3,7 @@ from flask import redirect, render_template, Blueprint, session, request, Reques
 
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
+from app.main.search.forms import SearchForm
 
 from app.email import send_email
 from utils import Utils
@@ -75,10 +76,9 @@ def post_signup(error=None):
             new_user, error = UserModel.create(email, hashed_passwd, 0)
 
             try:
-                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)[:2]
+                url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)[2:]
                 message = "Bạn đã đăng nhập vào hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường link sau:" + url
-                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
-                                 html_content=message,
+                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong", html_content=message,
                                  recipients=str(email))
             except Exception as e:
                 print(str(e))
@@ -110,7 +110,6 @@ def get_confirm_email(error=None):
 @auth_blueprint.route('/login', methods=['POST'])
 def post_login(error=None):
     form = LoginForm()
-
     if form.validate_on_submit():
         user = UserModel()
         email = request.form.get("email", "")
@@ -126,7 +125,9 @@ def post_login(error=None):
             error = "You account is not activated. Please check email and confirm email to complete sign up"
         if error is None:
             session['logged'] = True
-            session['cur_user'] = user
+            session['cur_user'] = user[0]
+            if user[0].active == 2:
+                return redirect('/admin')
             return redirect('/')
     return render_template("login.html", error=error, form=form)
 
@@ -139,5 +140,7 @@ def get_logout():
 
 @auth_blueprint.route('/', methods=['GET'])
 @login_required
-def home():
-    return render_template("index.html")
+def home(form=None):
+    if form is None:
+        form = SearchForm()
+    return render_template("index.html", user=session['cur_user'], form=form)

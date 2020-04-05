@@ -11,7 +11,7 @@ db = client.main_1
 # --------- Create category ----------
 names = []
 names_link = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/category.csv') as csv_file:
+with open(os.path.abspath(os.path.dirname(__file__)) + '/category.csv', encoding="utf8") as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
     for row in csv_reader:
@@ -39,7 +39,7 @@ print('finished create category')
 
 # --------- Create store ----------
 data = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/store_json.json') as f:
+with open(os.path.abspath(os.path.dirname(__file__)) + '/store_json.json', encoding="utf8") as f:
     for line in f:
         data.append(json.loads(line))
 

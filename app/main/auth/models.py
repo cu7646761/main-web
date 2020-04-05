@@ -1,6 +1,8 @@
 from flask_mongoengine import Pagination
 from app.entity.user import User as UserEntity
 from constants import Pages
+from app.entity.user_store_rel import UserStoreRel as USRelEntity
+from app.entity.store import Store as StoreEntity
 
 
 class UserModel(UserEntity):
@@ -22,13 +24,29 @@ class UserModel(UserEntity):
     def find_by_email(self, email):
         return self.objects(email__exact=email)
 
-    # def edit(self, _id, email):
-    #     try:
-    #         self.objects(id__exact=_id).update(set__email=email)
-    #         UserEntity.reindex()
-    #         return True, None
-    #     except Exception as e:
-    #         return False, e.__str__()
+    def update_basic(self, email, birthday=None, gender=None, favorite_categories=None):
+        try:
+            self.objects(email__exact=email).update(set__birthday=birthday)
+            self.objects(email__exact=email).update(set__gender=gender)
+            self.objects(email__exact=email).update(set__favorite_categories=favorite_categories)
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
+    def update_psw(self, email, psw):
+        try:
+            self.objects(email__exact=email).update(set__password=psw)
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
+    def update_link_image(self, email, link_image):
+        try:
+            self.objects(email__exact=email).update(set__link_image=link_image)
+            # UserEntity.reindex()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
 
     def turn_on_acc(self, email):
         try:
@@ -46,3 +64,16 @@ class UserModel(UserEntity):
             return True, None
         except Exception as e:
             return False, e.__str__()
+
+    def trigger_user_store_rel(self, uid):
+        stores = StoreEntity.objects
+        usrel = USRelEntity.objects
+        for store in stores:
+            classify = 1 + 2
+            usrel.create(uid, store.id, classify)
+
+    def count(self):
+        return self.objects.count()
+
+    def query_recent(self):
+        return self.objects.order_by("created_at")

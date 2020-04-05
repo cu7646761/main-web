@@ -8,7 +8,7 @@ class Comment(mongoengine.Document, SearchableMixin):
     __searchable__ = ['detail']
 
     detail = mongoengine.StringField(max_length=255)
-    user_id = mongoengine.ObjectIdField()
+    user_id = mongoengine.ObjectIdField(default=None)
     store_id = mongoengine.ObjectIdField()
     # comment_type: s,a,b,c,d,e,f,g,h,i
     comment_type = mongoengine.StringField(max_length=10)
@@ -18,7 +18,8 @@ class Comment(mongoengine.Document, SearchableMixin):
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
 
-    meta = {'allow_inheritance': True}
+    meta = {'allow_inheritance': True,
+            'ordering': ['-updated_on']}
 
     def __repr__(self):
         return '<Comment %r>' % (self.detail)
