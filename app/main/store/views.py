@@ -208,3 +208,8 @@ def get_store_api():
     except:
         name = request.data.decode("utf-8").split("=")[1]
     return jsonify({"id": str(store.find_by_name(name).id)})
+
+###### COMPARISON
+@store_blueprint.route("/comparison", methods=["GET"])
+def comparison():
+    return render_template("comparison.html")
