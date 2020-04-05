@@ -28,13 +28,17 @@ def create_app(config_name):
 
     sess.init_app(app)
 
-
     from app.main.auth.views import auth_blueprint
     from app.main.search.views import search_blueprint
     from app.main.store.views import store_blueprint
+    from app.main.user.views import user_blueprint
 
     app.register_blueprint(auth_blueprint, url_prefix='/')
     app.register_blueprint(search_blueprint, url_prefix='/search')
     app.register_blueprint(store_blueprint, url_prefix='/')
+    app.register_blueprint(user_blueprint, url_prefix='/profile')
+
+    from app.admin.auth.views import auth_admin_blueprint
+    app.register_blueprint(auth_admin_blueprint, url_prefix='/admin')
 
     return app

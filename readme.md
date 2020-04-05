@@ -35,6 +35,9 @@ How to run generate_data
 2. Run command
     > python gen.py <br>
 
+3. (Development) To generate fake classification, Run command
+    > python gen_classify.py <br>
+
 Work with github
 =======================================
 1. Link docs: https://docs.google.com/document/d/1dyJDHd9g7ZIg4bhdWCf1m3j3L5yI3tpefdt1XyxIaLY/edit

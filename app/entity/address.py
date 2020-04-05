@@ -10,6 +10,7 @@ class Address(mongoengine.Document, SearchableMixin):
     district = mongoengine.StringField()
     latitude = mongoengine.FloatField()
     longtitude = mongoengine.FloatField()
+    
     meta = {'allow_inheritance': True}
     def __repr__(self):
         return '<Address %r>' % (self.detail)
