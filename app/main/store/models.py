@@ -6,6 +6,7 @@ from constants import PRED_LIST, CLASS_LIST
 from mongoengine.queryset.visitor import Q
 from app.main.category.models import CategoryModel
 
+
 class StoreModel(StoreEntity):
     objects = StoreEntity.objects
 
@@ -39,9 +40,10 @@ class StoreModel(StoreEntity):
             elif level == 4:
                 stores_sorted = stores_sorted.filter(Q(classification__lte=4.5) & Q(classification__gt=2.5))
             elif level in (8, 12, 16, 20, 24):
-                stores_sorted = stores_sorted.filter(Q(classification__lte=level+0.5) & Q(classification__gt=level-3.5))
+                stores_sorted = stores_sorted.filter(
+                    Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
             elif level == 28:
-                stores_sorted = stores_sorted.filter(classification__gt=level-3.5)
+                stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
 
         elif classify:
             stores_sorted = stores_sorted.filter(classifications=classify)
@@ -49,7 +51,7 @@ class StoreModel(StoreEntity):
         if categories:
             cates = [CategoryModel().objects(name_link__exact=cate)[0].id for cate in categories]
             stores_sorted = stores_sorted.filter(categories_id__in=cates)
-        
+
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
@@ -75,3 +77,9 @@ class StoreModel(StoreEntity):
             return True, None
         except Exception as e:
             return False, e.__str__()
+
+    def count(self):
+        return self.objects.count()
+
+    def query_recent(self):
+        return self.objects.order_by("created_at")

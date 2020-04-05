@@ -38,4 +38,7 @@ def create_app(config_name):
     app.register_blueprint(store_blueprint, url_prefix='/')
     app.register_blueprint(user_blueprint, url_prefix='/profile')
 
+    from app.admin.auth.views import auth_admin_blueprint
+    app.register_blueprint(auth_admin_blueprint, url_prefix='/admin')
+
     return app
