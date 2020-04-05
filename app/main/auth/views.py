@@ -78,8 +78,7 @@ def post_signup(error=None):
             try:
                 url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(hashed_passwd)[2:]
                 message = "Bạn đã đăng nhập vào hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất đăng nhập xin bạn hãy truy cập vào đường link sau:" + url
-                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong",
-                                 html_content=message,
+                res = send_email(subject="Xác nhận đăng nhập vào BlogAnUong", html_content=message,
                                  recipients=str(email))
             except Exception as e:
                 print(str(e))
@@ -127,6 +126,8 @@ def post_login(error=None):
         if error is None:
             session['logged'] = True
             session['cur_user'] = user[0]
+            if user[0].active == 2:
+                return redirect('/admin')
             return redirect('/')
     return render_template("login.html", error=error, form=form)
 

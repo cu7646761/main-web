@@ -69,7 +69,11 @@ class UserModel(UserEntity):
         stores = StoreEntity.objects
         usrel = USRelEntity.objects
         for store in stores:
-            classify = 1+2
+            classify = 1 + 2
             usrel.create(uid, store.id, classify)
-            
-        
+
+    def count(self):
+        return self.objects.count()
+
+    def query_recent(self):
+        return self.objects.order_by("created_at")
