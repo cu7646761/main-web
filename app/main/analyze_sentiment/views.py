@@ -32,28 +32,104 @@ from flask.helpers import url_for
 analyze_blueprint = Blueprint(
     'analyze', __name__, template_folder='templates')
 
+
+# do not run manual
 @analyze_blueprint.route("/analyze17273747", methods=["GET","POST"])
-def analyze(store_id=None, page = 1, db = list(), form=None, error=None):
+def analyze():
     all_stores = StoreModel().query_all()
     for store in all_stores:
         cmts = CommentModel().findAllById(store.comment_list)
-        print(cmts)
 
+        if store.entity_score:
+            continue
 
-@analyze_blueprint.route("/update_comment17273747", methods=["GET","POST"])
-def update_comment_to_analyze(store_id=None, page = 1, db = list(), form=None, error=None):
-    all_stores = StoreModel().query_all()
-    for store in all_stores:
-        cmts = CommentModel().findAllById(store.comment_list)
+        entity_dict = {}
+        entire_text_1 = ""
+        entire_text_2 = ""
+        entire_text_3 = ""
+        loops_no = 0
         for cmt in cmts:
+            if cmt[0].detail is None:
+                continue
             text = cmt[0].detail
             if text.startswith('(Translated by Google)'):
                 print(text)
                 text = text.split('(Translated by Google)')[-1][1:]
                 text = text.split('(Original)')[0]
-                cmt[0].update(set__detail=text)
-                print(cmt[0].detail)
+            if loops_no <= 400:
+                entire_text_1 += text
+            elif loops_no <= 800:
+                entire_text_2 += text
+            else:
+                entire_text_3 += text
+            loops_no += 1
+        
+        for sub_entire in (entire_text_1, entire_text_2, entire_text_3):
+            if sub_entire == "":
+                continue
+            # response = Utils.analyze_entity_sentiment(sub_entire)
                 
+            for entity in response.entities:
+                name = entity.name.upper()
+                name = name.replace("$","")
+                if not entity_dict.get(name, False):
+                    entity_dict[name] = {
+                        "quantity": 1,
+                        "sentiment": entity.sentiment.score
+                    }
+                else:
+                    entity_dict[name] = {
+                        "quantity": entity_dict[name]["quantity"]+1,
+                        "sentiment": entity_dict[name]["sentiment"]+entity.sentiment.score                   
+                    }
+                print((name, entity.sentiment.score))
+        # store.update(set__entity_score=entity_dict)
+        print(store.entity_score)
+                    
+        
+
+
+# @analyze_blueprint.route("/update_comment17273747", methods=["GET","POST"])
+# def update_comment_to_analyze(store_id=None, page = 1, db = list(), form=None, error=None):
+#     all_stores = StoreModel().query_all()
+#     for store in all_stores:
+#         cmts = CommentModel().findAllById(store.comment_list)
+#         for cmt in cmts:
+#             text = cmt[0].detail
+#             if text.startswith('(Translated by Google)'):
+#                 print(text)
+#                 text = text.split('(Translated by Google)')[-1][1:]
+#                 text = text.split('(Original)')[0]
+#                 cmt[0].update(set__detail=text)
+#                 print(cmt[0].detail)
+                
+# do not run manual 
+@analyze_blueprint.route("/remove_duplicate17273747", methods=["GET", "POST"])
+def remove_duplicate():
+    all_stores = StoreModel().query_all()
+    for store in all_stores:
+        for k,v in store.entity_sentiment.items():
+            if k[-1] == "S":
+                print((k, v))
+                text = k[:-1]
+                quant_l = v["quantity"]
+                sentiment_l = v["sentiment"]
+                entity_r = store.entity_sentiment.get(text, False)
+                if entity_r:
+                    quant = quant_l + entity_r["quantity"] 
+                    sentiment = sentiment_l + entity_r["sentiment"]
+                    print(text, quant, sentiment)
+            if k[-3:len(k)] == 1:
+                print((k, v))
+                text = k[:-3]
+                quant_l = v["quantity"]
+                sentiment_l = v["sentiment"]
+                entity_r = store.entity_sentiment.get(text, False)
+                if entity_r:
+                    quant = quant_l + entity_r["quantity"] 
+                    sentiment = sentiment_l + entity_r["sentiment"]
+                    print(text, quant, sentiment)
+
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/britcat2-0026abc98690.json"
 
