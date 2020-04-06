@@ -34,6 +34,26 @@ analyze_blueprint = Blueprint(
 
 
 # do not run manual
+@analyze_blueprint.route("/remove_character17273747", methods=["GET","POST"])
+def remove_inv_char():
+    all_stores = StoreModel().query_all()
+    for store in all_stores:
+        entity = store.entity_score
+        invalid_key = []
+        for k,v in entity.items():
+            if '.' in k or '$' in k:
+                print(k)
+                invalid_key.append(k)
+        for k in invalid_key:
+            newkey = k.replace("."," ")
+            newkey = newkey.replace("$"," ")
+            entity[newkey] = entity.pop(k)
+            print("----->", newkey)
+        if len(invalid_key) > 0:
+            store.update(set__entity_score=entity)
+            
+
+# do not run manual
 @analyze_blueprint.route("/analyze17273747", methods=["GET","POST"])
 def analyze():
     all_stores = StoreModel().query_all()
