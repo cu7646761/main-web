@@ -6,7 +6,12 @@ from app.main.search.models import SearchableMixin
 class Store(mongoengine.Document, SearchableMixin):
     __tablename__ = 'store_mongo'
     __searchable__ = ['name']
-
+    meta = {        
+        'indexes': [
+            {
+                'fields': ['+classification']	               
+            }]
+    }
     name = mongoengine.StringField(max_length=255, required=True)
     address_id = mongoengine.ObjectIdField()
     categories_id = mongoengine.ListField()
@@ -40,6 +45,7 @@ class Store(mongoengine.Document, SearchableMixin):
     classification = mongoengine.FloatField()
     reviewer_quant = mongoengine.IntField()
     entity_sentiment = mongoengine.DictField()
+    entity_score = mongoengine.DictField()
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)

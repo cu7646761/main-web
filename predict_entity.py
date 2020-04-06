@@ -119,5 +119,6 @@ def sample_analyze_entity_sentiment(text_content):
     # the automatically-detected language.
     print(u"Language of the text: {}".format(response.language))
 
-a = sample_analyze_entity_sentiment("Pizza 4P\u2019s, The best pizza in the world! The staffs in 4P\u2019s Thao Dien are excellent \ud83d\udc4c 1000%")
+
+a = sample_analyze_entity_sentiment("")
 print(a)
