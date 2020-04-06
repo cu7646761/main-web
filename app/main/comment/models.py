@@ -29,24 +29,25 @@ class CommentModel(CommentEntity):
         
     def findAllById(self, listIds):
         db =[]
-        i = 0
+
         for x in listIds: 
             comments = self.objects(id__exact=x)
             if comments[0].user_id:
                 users = UserModel().find_by_id(comments[0].user_id)
+                db = [{
+                    "users": users,
+                    "comments": comments
+                }] + db
+
             else:
                 users = [None]
-            i = i + 1
-            db += [{
-                "users": users,
-                "comments": comments
-            }]
-        db.reverse()
+                db += [{
+                    "users": users,
+                    "comments": comments
+                }]
         return db
        
-
-        
-        return comments    
+           
     @classmethod
     def create(cls, store_id, detail, star, user_id):
         try:
