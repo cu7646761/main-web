@@ -129,7 +129,7 @@ for each in data:
 
 # --------- Add link foody to store ----------
 data_link = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/foody_link.json') as f:
+with open(os.path.abspath(os.path.dirname(__file__)) + '/foody_link.json', encoding="utf8") as f:
     for line in f:
         data_link.append(json.loads(line))
 
