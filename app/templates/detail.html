@@ -411,10 +411,14 @@ function loadItems() {
                 // // Query & update the template content
                 let j = 0;
                 var userStar = "";
-                var userStar = "";
                 var showUser = "<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">Ẩn danh</p>";
                 if (data[i].users[0]){
-                    showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                    if (data[i].users[0].link_image){
+                        showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                    }
+                    else{
+                        showUser = `<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                    }
                 }
                 for (; j < data[i].comments[0].star_num; j++) {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";
