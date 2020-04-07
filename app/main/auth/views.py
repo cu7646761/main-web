@@ -3,11 +3,13 @@ from flask import redirect, render_template, Blueprint, session, request, Reques
 
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
-
+from app.main.search.forms import SearchForm
 
 from app.email import send_email
 from utils import Utils
 from constants import SERVER_NAME
+from flask.helpers import make_response
+from flask.json import jsonify
 
 auth_blueprint = Blueprint(
     'auth', __name__, template_folder='templates')
@@ -111,7 +113,6 @@ def get_confirm_email(error=None):
 @auth_blueprint.route('/login', methods=['POST'])
 def post_login(error=None):
     form = LoginForm()
-
     if form.validate_on_submit():
         user = UserModel()
         email = request.form.get("email", "")
@@ -127,9 +128,8 @@ def post_login(error=None):
             error = "You account is not activated. Please check email and confirm email to complete sign up"
         if error is None:
             session['logged'] = True
-            session['cur_user'] = user
-            print(user)
-            return render_template("index.html", error=error, form=form)
+            session['cur_user'] = user[0]
+            return redirect('/')
     return render_template("login.html", error=error, form=form)
 
 
@@ -141,5 +141,20 @@ def get_logout():
 
 @auth_blueprint.route('/', methods=['GET'])
 @login_required
-def home():
-    return render_template("index.html")
+def home(form=None):
+    session["pos"] = None
+    if form is None:
+        form = SearchForm()
+    return render_template("index.html", user=session['cur_user'], form=form)
+@auth_blueprint.route("/load_geolocation")
+def load_geolocation():
+    print("BOMBOM")
+    if request.args:
+        pos = {
+            "lat": request.args.get("lat"),
+            "lng": request.args.get("lng")
+        }
+        session["pos"] = pos
+    print(session["pos"])  
+    res = make_response(jsonify({"message": "OK"}), 200)
+    return res

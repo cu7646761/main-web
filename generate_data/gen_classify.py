@@ -15,7 +15,7 @@ COMPUTE_REGION = "us-central1" # Currently only supported region.
 automl_client = automl.AutoMlClient()
 tables_client = automl.TablesClient(project=PROJECT_ID, region=COMPUTE_REGION)
 
-conn = MongoClient()    
+conn = MongoClient()
 db = conn['main_1']
 collection = db.store
 categories = db.category
@@ -31,14 +31,14 @@ class_list = {
     25: 'FF+', 26: 'FF', 27: 'F+', 28: 'F'
 }
 
-cl =['SS+','SS','S+','S',
-    'AA+','AA','A+','A',
-    'BB+','BB','B+','B',
-    'CC+','CC','C+','C',
-    'DD+','DD','D+','D',
-    'EE+','EE','E+','E',
-    'FF+','FF','F+','F'
-]
+cl = ['SS+', 'SS', 'S+', 'S',
+      'AA+', 'AA', 'A+', 'A',
+      'BB+', 'BB', 'B+', 'B',
+      'CC+', 'CC', 'C+', 'C',
+      'DD+', 'DD', 'D+', 'D',
+      'EE+', 'EE', 'E+', 'E',
+      'FF+', 'FF', 'F+', 'F'
+      ]
 
 cl_list = [
     1, 2, 3, 4,
@@ -63,7 +63,10 @@ for model in list_models:
         break
 cnt = 0
 for data in all_data:
-    
+    if cnt <= 2670:
+        cnt+=1
+        print(cnt)
+        continue
     cates = []
     for oid in data['categories_id']:
         # if len(cates) > 2:
@@ -143,7 +146,7 @@ for data in all_data:
     cnt+=1
     print(cnt)
     if cnt % 50 == 0 :
-        time.sleep(15)
+        time.sleep(30)
 
 
 
