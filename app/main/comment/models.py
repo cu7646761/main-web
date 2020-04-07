@@ -4,6 +4,7 @@ from app.entity.user import User as UserEntity
 from app.entity.store import Store as StoreEntity
 from constants import Pages
 from bson import ObjectId
+from app.main.auth.models import UserModel
 
 class CommentModel(CommentEntity):
     objects = CommentEntity.objects
@@ -27,15 +28,30 @@ class CommentModel(CommentEntity):
         return self.objects(id__exact=comment_id)
         
     def findAllById(self, listIds):
-        comments_sorted = self.objects.order_by("-star_num").all()
-        comments =[]
+        db =[]
+
         for x in listIds: 
-            comments = comments + [comments_sorted(id=x)]
-        return comments    
+            comments = self.objects(id__exact=x)
+            if comments[0].user_id:
+                users = UserModel().find_by_id(comments[0].user_id)
+                db = [{
+                    "users": users,
+                    "comments": comments
+                }] + db
+
+            else:
+                users = [None]
+                db += [{
+                    "users": users,
+                    "comments": comments
+                }]
+        return db
+       
+           
     @classmethod
     def create(cls, store_id, detail, star, user_id):
         try:
-            comment = CommentEntity(store_id=store_id, detail=detail,star_num=star)
+            comment = CommentEntity(store_id=store_id, detail=detail,star_num=star, user_id = user_id)
             comment.save()
             user = UserEntity.objects(id=user_id).get()
             user.comments_list.append(comment.id)

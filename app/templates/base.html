@@ -12,11 +12,7 @@
     <!-- Font Awesome Icon Library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-        <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <!-- Animate CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <!-- Page Title -->
     <title>Blog Ăn Uống</title>
     <!-- Bootstrap CSS -->
@@ -40,59 +36,85 @@
 <body>
 <!-- content -->
 <!--============================= HEADER =============================-->
-    <div class="dark-bg sticky-top">
-          <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <nav class="navbar navbar-expand-lg navbar-light">
-                        <a class="navbar-brand" href="/">Blog Ăn Uống</a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse"
-                                data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
-                                aria-label="Toggle navigation">
-                            <span class="icon-menu"></span>
-                        </button>
-                        <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
-                            <ul class="navbar-nav">
+<div class="dark-bg sticky-top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="/">Blog Ăn Uống</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="icon-menu"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    Ăn uống
+                                    <span class="icon-arrow-down"></span>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="/stores/?categories=sang-trong">Sang trọng</a>
+                                    <a class="dropdown-item" href="/stores/?categories=buffet">Buffet</a>
+                                    <a class="dropdown-item" href="/stores/?categories=nha-hang">Nhà hàng</a>
+                                    <a class="dropdown-item" href="/stores/?categories=an-vat-via-he">Ăn vặt/ Vỉa hè</a>
+                                    <a class="dropdown-item" href="/stores/?categories=an-chay">Ăn chay</a>
+                                    <a class="dropdown-item" href="/stores/?categories=cafe">Cafe/Dessert</a>
+                                    <a class="dropdown-item" href="/stores/?categories=quan-an">Quán ăn</a>
+                                    <a class="dropdown-item" href="/stores/?categories=quan-nhau">Quán nhậu</a>
+                                    <a class="dropdown-item" href="/stores/?categories=beer-club">Beer Club</a>
+                                    <a class="dropdown-item" href="/stores/?categories=tiem-banh">Tiệm bánh</a>
+                                    <a class="dropdown-item" href="/stores/?categories=tiec-tan-noi">Tiệc tận nơi</a>
+                                    <a class="dropdown-item" href="/stores/?categories=shop-online">Shop Online</a>
+                                    <a class="dropdown-item" href="/stores/?categories=giao-com-van-phong">Giao cơm văn phòng</a>
+                                    <a class="dropdown-item" href="/stores/?categories=foodcourt">Khu Ẩm Thực</a>
+                                </div>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/stores/">Cửa hàng</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#">Về chúng tôi</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Blog</a>
+                            </li>
+
+                            {% if user %}
                                 <li class="nav-item dropdown">
                                     <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                                       aria-haspopup="true" aria-expanded="false">
-                                        Ăn uống
-                                        <span class="icon-arrow-down"></span>
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="dropdown-item" href="#">Sang trọng</a>
-                                        <a class="dropdown-item" href="#">Buffet</a>
-                                        <a class="dropdown-item" href="#">Nhà hàng</a>
-                                        <a class="dropdown-item" href="#">Ăn vặt/ Vỉa hè</a>
-                                        <a class="dropdown-item" href="#">Ăn chay</a>
-                                        <a class="dropdown-item" href="#">Cafe/Dessert</a>
-                                        <a class="dropdown-item" href="#">Quán ăn</a>
-                                        <a class="dropdown-item" href="#">Quán nhậu</a>
-                                        <a class="dropdown-item" href="#">Beer Club</a>
-                                        <a class="dropdown-item" href="#">Tiệm bánh</a>
-                                        <a class="dropdown-item" href="#">Tiệc tận nơi</a>
-                                        <a class="dropdown-item" href="#">Shop Online</a>
-                                        <a class="dropdown-item" href="#">Giao cơm văn phòng</a>
-                                        <a class="dropdown-item" href="#">Khu Ẩm Thực</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="#">Về chúng tôi</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Blog</a>
-                                </li>
+                                   aria-haspopup="true" aria-expanded="false">
+                                    {{ user.email }}
+                                    <span class="icon-arrow-down"></span>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="/profile/">Profile</a>
+                                    <a class="dropdown-item" href="/logout">Logout</a>
+                                </div>
+                            </li>
+                            {% else %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="/login">Đăng nhập</a>
                                 </li>
-                            </ul>
-                        </div>
-                    </nav>
-                </div>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                </nav>
             </div>
         </div>
     </div>
-    <!--//END HEADER -->
+</div>
+<!--//END HEADER -->
+
+
+<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+
 {% block content %}{% endblock %}
 {#<!--============================= FOOTER =============================-->#}
 {#<footer class="main-block dark-bg">#}
@@ -118,11 +140,7 @@
 {#<!--//END FOOTER -->#}
 
 
-<!-- jQuery, Bootstrap JS. -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
 
 <script>
     $(window).scroll(function () {

@@ -1067,4 +1067,8 @@ label.star:before {
   content: '\f006';
   font-family: FontAwesome;
 }
+
+#please-scroll{
+  height: calc(100vh - 110px); overflow-y: scroll
+}
 /*# sourceMappingURL=style.css.map */

@@ -6,8 +6,7 @@ from app.main.search.models import SearchableMixin
 class Comment(mongoengine.Document, SearchableMixin):
     __tablename__ = 'comment_mongo'
     __searchable__ = ['detail']
-
-    detail = mongoengine.StringField(max_length=255)
+    detail = mongoengine.StringField(max_length=1000)
     user_id = mongoengine.ObjectIdField()
     store_id = mongoengine.ObjectIdField()
     # comment_type: s,a,b,c,d,e,f,g,h,i
@@ -19,7 +18,7 @@ class Comment(mongoengine.Document, SearchableMixin):
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
 
     meta = {'allow_inheritance': True,
-            'ordering': ['-star_num']}
+            'ordering': ['-updated_on']}
 
     def __repr__(self):
         return '<Comment %r>' % (self.detail)
