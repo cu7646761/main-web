@@ -116,10 +116,10 @@ for each in data:
     for cmt in each['comment_list']:
         comment_1 = {
             '_cls': 'Comment',
-            'detail': json.dumps(cmt['comment'])[1:-1],
+            'detail': cmt['comment'],
             'star_num': int(json.dumps(cmt['star_num']['$numberInt']).replace('"', "")),
             'store_id': store_new_id,
-            'cus_name': json.dumps(cmt['author'])[1:-1]
+            'cus_name': cmt['author']
         }
         res_cmt = db.comment.insert_one(comment_1)
         comment_list_id.append(res_cmt.inserted_id)
