@@ -12,7 +12,9 @@ How to run server
      . venv/bin/activate <br>
      pip install -r requirements.txt
 4. Start mongo db
-5. Run server
+5. Create Index, go to mongo command
+    > db.store.createIndex({ classification: 1 })
+6. Run server
     > python flasky.py <br>
 
 How to run tdd test
