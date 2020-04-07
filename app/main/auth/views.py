@@ -8,6 +8,8 @@ from app.main.search.forms import SearchForm
 from app.email import send_email
 from utils import Utils
 from constants import SERVER_NAME
+from flask.helpers import make_response
+from flask.json import jsonify
 
 auth_blueprint = Blueprint(
     'auth', __name__, template_folder='templates')
@@ -140,6 +142,19 @@ def get_logout():
 @auth_blueprint.route('/', methods=['GET'])
 @login_required
 def home(form=None):
+    session["pos"] = None
     if form is None:
         form = SearchForm()
     return render_template("index.html", user=session['cur_user'], form=form)
+@auth_blueprint.route("/load_geolocation")
+def load_geolocation():
+    print("BOMBOM")
+    if request.args:
+        pos = {
+            "lat": request.args.get("lat"),
+            "lng": request.args.get("lng")
+        }
+        session["pos"] = pos
+    print(session["pos"])  
+    res = make_response(jsonify({"message": "OK"}), 200)
+    return res

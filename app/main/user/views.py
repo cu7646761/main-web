@@ -49,13 +49,17 @@ def profile(error=None, form=None, success=None):
         form = UpdatePswForm()
 
     address = AddressModel()
-    address_obj = address.find_by_id(session['cur_user'].address_id)[0]
+    addr = ""
+    if session['cur_user'].address_id is None:
+        addr = ""
+    else:
+        addr = address.find_by_id(session['cur_user'].address_id)[0].detail
 
     category = CategoryModel()
     lst_cate_choose = [category.find_by_id(x)[0].name for x in session['cur_user'].favorite_categories]
 
     return render_template("profile.html", user=session['cur_user'], error=error, form=form, success=success,
-                           province_list=province_list, cate_list=cate.query_all(), address=address_obj.detail,
+                           province_list=province_list, cate_list=cate.query_all(), address=addr,
                            lst_cate_choose=lst_cate_choose)
 
 
@@ -134,8 +138,8 @@ def update_basic(error=None, form=None):
     love_cate = request.form.get("love_cate", "")
     district = res_address.split(',')[1]
     geocode_result = gmaps.geocode(res_address)
-    latitude = geocode_result[0].get('geometry').get('location').get('lat')
-    longtitude = geocode_result[0].get('geometry').get('location').get('lng')
+    latitude = str(geocode_result[0].get('geometry').get('location').get('lat'))
+    longtitude = str(geocode_result[0].get('geometry').get('location').get('lng'))
     address = AddressModel()
     current_user = None
 

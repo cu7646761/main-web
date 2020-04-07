@@ -46,8 +46,8 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    MONGODB_DB = 'main_2'
-    MONGODB_HOST = 'mongodb://localhost:27017/main_2'
+    MONGODB_DB = 'main_3'
+    MONGODB_HOST = 'mongodb://localhost:27017/main_3'
 
     @classmethod
     def init_app(cls, app):
