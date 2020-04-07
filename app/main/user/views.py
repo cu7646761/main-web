@@ -13,11 +13,13 @@ from app.main.user.forms import UpdatePswForm
 from constants import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, LINK_IMG, LINK_IMG_AVATAR_DEF, SERVER_NAME, GENDER
 from utils import Utils
 from vietnam_provinces.enums.districts import ProvinceEnum, ProvinceDEnum, DistrictEnum, DistrictDEnum
+from constants import API_KEY
+
 
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
 
-gmaps = googlemaps.Client(key='AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q')
+gmaps = googlemaps.Client(key=API_KEY)
 
 
 def allowed_file(filename):
