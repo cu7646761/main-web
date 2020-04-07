@@ -282,7 +282,7 @@
                         </div> -->
                         <a href="#" class="btn btn-outline-danger btn-contact">CHỈ ĐƯỜNG</a>
                     </div>
-                    <div class="overflow-auto" style="height: 500px;">
+                    <div class="overflow-auto" id="please-scroll" style="height: 500px;">
                         {% for k,v in entity_dict %}
                             <button type="button" class="btn btn-warning col-12" style="margin-bottom: 5px; text-align: left;">
                                 <b style="color: red;">{{k}}</b> - Score: {{((v.sentiment/v.quantity+1)*5)|round(2)}} <span class="badge badge-light">{{v.quantity}}</span>
