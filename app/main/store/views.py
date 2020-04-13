@@ -32,6 +32,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     store = stores.find_by_id(store_id)
     category = categories.findAllById(store[0].categories_id)
     address = AddressModel().find_by_id(store[0].address_id)
+    recStore = stores.find_by_categories(store[0].categories_id)
     classify = round(store[0].classification, 2)
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
 
@@ -72,13 +73,13 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     return render_template('detail.html', store=store[0], category=category, address=address[0],
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
-                                           current_user=current_user, form=form, error=error, user=session['cur_user'])
+                                           current_user=current_user, form=form, error=error, user=session['cur_user'], recStore = recStore)
                 return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=session['cur_user'])
+                           , user=session['cur_user'], recStore = recStore)
 
 
 @store_blueprint.route("/load/<string:store_id>")
@@ -208,8 +209,4 @@ def get_store_api():
     except:
         name = request.data.decode("utf-8").split("=")[1]
     return jsonify({"id": str(store.find_by_name(name).id)})
-
-###### COMPARISON
-@store_blueprint.route("/comparison", methods=["GET"])
-def comparison():
-    return render_template("comparison.html")
+    
