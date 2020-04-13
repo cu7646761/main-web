@@ -4,7 +4,7 @@
     <!--============================= BOOKING =============================-->
     <div>
         <!-- Swiper -->
-        <div class="swiper-container">
+        <div class="swiper-container swiper1">
             <div class="swiper-wrapper">
                 {% for st in store.link_image %}
                 <div class="swiper-slide">
@@ -26,6 +26,7 @@
     <section class="reserve-block">
         <div class="container">
             <div class="row">
+                
                 <div class="col-md-6">
                     <h5>{{ store.name }}</h5>
 
@@ -50,7 +51,7 @@
                             <span>{{classify}}</span>
                         </div>
                         <div class="review-btn">
-                            <a href="#" class="btn btn-outline-danger">NHẬN XÉT</a>
+                            <a href="#comment" class="btn btn-outline-danger">NHẬN XÉT</a>
                             <span>{{ store.reviewer_quant }}</span>
                         </div>
                         <div class="reserve-btn">
@@ -68,6 +69,51 @@
     <section class="light-bg booking-details_wrap">
         <div class="container">
             <div class="row">
+                <!-- START Modal -->
+                <div class="modal fade bd-example-modal-lg" id="myModal-lg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Bảng so sánh các thông số</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body" style="text-align: center;">
+                            <table id="alter" align="center">
+                                <tr>
+                                    <th>Cửa hàng</th>
+                                    <th>Đánh giá</th>
+                                    <th>Số nhận xét</th>
+                                    <th>Khoảng cách</th>
+                                    <th>Phân loại</th>
+                                </tr> 
+                                <tr>
+                                    <td>{{store.name}}</td>
+                                    <td>{{store.stars}} <span class="fa fa-star checked " style="font-size:16px"></span></td>
+                                    <td>{{store.reviewer_quant}}</td>
+                                    <td>4km</td>
+                                    <td>S+</td>
+                                </tr>
+                                <tr>
+                                    <td id="show-storeRec"></td>
+                                    <td id ="show-starRec">  
+                                    <td id="show-reviewRec"></td>
+                                    <td>3km</td>
+                                    <td>S</td>
+                                </tr>
+                                
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                        <!-- <button type="button" class="btn btn-primary " href ="/stores/">Xem chi tiết</button> -->
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- END Modal -->
                 <div class="col-md-8 responsive-wrap">
                     <div class="booking-checkbox_wrap">
                         <div class="booking-checkbox">
@@ -146,7 +192,8 @@
 
 
                     </div>
-                    <div class="booking-checkbox_wrap mt-4" style="height:500px;overflow: auto">
+                    
+                    <div id = "comment" class="booking-checkbox_wrap mt-4" style="height:500px;overflow: auto">
                         <h5>{{ store.reviewer_quant }} nhận xét</h5>
                         <hr>
 
@@ -305,19 +352,76 @@
                         <a href="#">FOLLOW</a>
                     </div> -->
                 </div>
+                
+                <div class="col-md-8 responsive-wrap">
+                    <div style="padding-top: 30px;">
+                        <span class="heading">CÁC CỬA HÀNG LIÊN QUAN</span>
+                    </div>
+                    
+                    <div class="booking-checkbox_wrap mt-4">
+                        <div class="swiper-container swiper2">
+                            <div class="swiper-wrapper">
+                                {% for st in recStore %}
+                                <div class="swiper-slide swiper-slide-active" style="width: 248px; height: auto;">
+                                    <div class="content">              
+                                        <a href="/stores/{{st.id }}" class="grid image-link">
+                                            <img src="{{ st.link_image[1] }}" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
+                                        </a>   
+                                        <p class ="title">
+                                            {{st.name}}
+                                        </p>    
+                                        <p class ="price">
+                                            {{st.min_price}}đ - {{st.max_price}}đ
+                                        </p>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <!-- Button trigger modal -->
+                                    <button onclick="getValue(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="{{st.id}}" id = "recStore">
+                                        So sánh
+                                    </button>
+                                    </div>
+                                    
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- Add Arrows -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </section>
     <script src="{{ url_for('static', filename='js/swiper.min.js') }}"></script>
     <script>
-        var swiper = new Swiper('.swiper-container', {
+        var swiper1 = new Swiper('.swiper1', {
             slidesPerView: 3,
+            spaceBetween: 2,
             slidesPerGroup: 3,
-            loop: true,
+            loop: true ,
             loopFillGroupWithBlank: true,
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+        var swiper2 = new Swiper('.swiper2', {
+            slidesPerView: 3,
+            slidesPerColumn: 2,
+            spaceBetween: 20,
+            slidesPerGroup: 3,
+            loop: false ,
+            loopFillGroupWithBlank: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: false,
             },
             navigation: {
                 nextEl: '.swiper-button-next',
@@ -375,7 +479,7 @@
             text += "<span class=\"fa fa-star-half icon-c\"></span>";
         }
         document.getElementById("show-star").innerHTML = text;
-    </script>>
+    </script>
 
 
 <script>
@@ -462,5 +566,35 @@ function loadItems() {
 
     // Instruct the IntersectionObserver to watch the sentinel
     intersectionObserver.observe(sentinel);
+</script>
+</script>
+<script>
+    // document.getElementById("show-store").innerHTML = recStore;
+    function getValue(elem) {
+        console.log(elem.value)
+        console.log("haha")
+        recStore = elem.value; //someId
+    var i = 0;
+    var rec = JSON.parse('{{recStore|tojson}}');
+    // var classifyRec = "";
+    // var distanceRec = "";
+    var starRec = "";
+    var reviewRec= "";
+    var storeRec = "";
+    console.log(JSON.stringify(rec[0]._id))
+    console.log(JSON.stringify(recStore))
+    console.log()
+    for (x in "{{recStore}}"){
+        if (JSON.stringify(rec[x]._id).includes(JSON.stringify(recStore))){
+            starRec = rec[x].stars +" " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
+            reviewRec = rec[x].reviewer_quant;
+            storeRec = rec[x].name;
+            break;
+        }
+    }
+    document.getElementById("show-starRec").innerHTML = starRec;
+    document.getElementById("show-reviewRec").innerHTML = reviewRec;
+    document.getElementById("show-storeRec").innerHTML = storeRec;
+    }
 </script>
 {% endblock %}

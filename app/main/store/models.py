@@ -60,6 +60,13 @@ class StoreModel(StoreEntity):
 
     def find_by_name(self, name):
         return self.objects(name__exact=name)[0]
+    def find_by_categories(self, categories_id):
+        lst =[]
+        for x in self.objects:  
+            if categories_id == x.categories_id:
+                lst = lst + [x]
+        return lst
+
 
     # def edit(self, _id, email):
     #     try:
