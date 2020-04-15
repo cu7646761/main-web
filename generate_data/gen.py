@@ -4,7 +4,7 @@ from pymongo import MongoClient
 import json
 from bson.json_util import dumps
 from bson.json_util import loads
-client = MongoClient('mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority')
+client = MongoClient('mongodb+srv://hoangan11:hoangan11123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority')
 db = client.foodblog1
 
 conn = MongoClient()
