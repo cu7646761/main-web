@@ -63,7 +63,10 @@ for model in list_models:
         break
 cnt = 0
 for data in all_data:
-    
+    if cnt <= 2670:
+        cnt+=1
+        print(cnt)
+        continue
     cates = []
     for oid in data['categories_id']:
         # if len(cates) > 2:
@@ -143,7 +146,7 @@ for data in all_data:
     cnt+=1
     print(cnt)
     if cnt % 50 == 0 :
-        time.sleep(15)
+        time.sleep(30)
 
 
 
