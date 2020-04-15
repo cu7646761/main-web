@@ -329,6 +329,16 @@
                         </div> -->
                         <a href="#" class="btn btn-outline-danger btn-contact">CHỈ ĐƯỜNG</a>
                     </div>
+                    <div class="overflow-auto" id="please-scroll" style="height: 500px;">
+                        {% for k,v in entity_dict %}
+                            <button type="button" class="btn btn-warning col-12" style="margin-bottom: 5px; text-align: left;">
+                                <b style="color: red;">{{k}}</b> - Score: {{((v.sentiment/v.quantity+1)*5)|round(2)}} <span class="badge badge-light">{{v.quantity}}</span>
+                            </button>
+                            <br>
+
+                        {% endfor %}
+                    </div>
+
                     <!-- <div class="follow">
                         <div class="follow-img">
                             <img src="images/follow-img.jpg" class="img-fluid" alt="#">
@@ -515,10 +525,14 @@ function loadItems() {
                 // // Query & update the template content
                 let j = 0;
                 var userStar = "";
-                var userStar = "";
                 var showUser = "<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">Ẩn danh</p>";
                 if (data[i].users[0]){
-                    showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                    if (data[i].users[0].link_image){
+                        showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                    }
+                    else{
+                        showUser = `<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                    }
                 }
                 for (; j < data[i].comments[0].star_num; j++) {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";

@@ -36,6 +36,9 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     classify = round(store[0].classification, 2)
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
 
+    entity_dict = store[0].entity_score
+    entity_dict = sorted(entity_dict.items(), key=lambda x: x[1]["quantity"], reverse=True)
+
     # page = request.args.get('page', 1, type=int)
     # comments, pages = CommentModel().query_paginate_sort(page)
     # datas = []
@@ -64,22 +67,21 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             if error is None:
 
                 if current_user:
-                    print(current_user.id)
-                    new_comment, error = CommentModel.create(store_id, comment, star, current_user.id)
-
+                    new_comment, error = CommentModel.create(store_id, comment, star, current_user[0].id)
+                    
                 else:
                     new_comment, error = CommentModel.create(store_id, comment, star, None)
                 if error:
                     return render_template('detail.html', store=store[0], category=category, address=address[0],
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
-                                           current_user=current_user, form=form, error=error, user=session['cur_user'], recStore = recStore)
+                                           current_user=current_user, form=form, error=error, user=current_user, recStore= recStore)
                 return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=session['cur_user'], recStore = recStore)
+                           , user=current_user, entity_dict=entity_dict, recStore= recStore)
 
 
 @store_blueprint.route("/load/<string:store_id>")

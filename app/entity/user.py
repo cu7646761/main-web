@@ -25,6 +25,7 @@ class User(mongoengine.Document, SearchableMixin):
     comments_list = mongoengine.ListField()
     address_id = mongoengine.ObjectIdField()
     active = mongoengine.IntField(default=0)
+    address_id = mongoengine.ObjectIdField()
 
     # save avatar
     link_image = mongoengine.StringField(default=LINK_IMG_AVATAR_DEF)
