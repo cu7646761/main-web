@@ -151,6 +151,20 @@ def remove_duplicate():
                     print(text, quant, sentiment)
 
 
+# do not run manual 
+@analyze_blueprint.route("/add_position17273747", methods=["GET", "POST"])
+def add_position():
+    all_stores = StoreModel().query_all()
+    for store in all_stores:
+        address = AddressModel().find_by_id(store.address_id)[0]
+        pos={
+            "lat": address.latitude,
+            "lng": address.longtitude
+        }
+        store.update(set__position=pos)
+        print(store.name)
+    return jsonify({})
+        
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/britcat2-0026abc98690.json"
 
 # PROJECT_ID = "britcat2" #@param {type:"string"}
