@@ -3,6 +3,8 @@ from flask import redirect, render_template, Blueprint, session, request, Reques
 
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
+from app.main.store.models import StoreModel
+from app.main.address.models import AddressModel
 from app.main.search.forms import SearchForm
 
 from app.email import send_email
@@ -146,9 +148,28 @@ def home(form=None):
     if form is None:
         form = SearchForm()
     return render_template("index.html", user=session['cur_user'], form=form)
+
+
+@auth_blueprint.route('/load_geo_places')
+@login_required
+def load_geo_places():
+    stores = StoreModel().query_all()
+    datas = []
+    for store in stores:
+        # address = AddressModel().find_by_id(store.address_id)[0]
+        datas += [{
+            "lng": float(store.position["lng"]),
+            "lat": float(store.position["lat"]),
+            "id": str(store.id),
+            "name": store.name,
+            "link_img": store.link_image[0]
+        }]
+    res = make_response(jsonify(datas), 200)
+    return res
+
+
 @auth_blueprint.route("/load_geolocation")
 def load_geolocation():
-    print("BOMBOM")
     if request.args:
         pos = {
             "lat": request.args.get("lat"),
