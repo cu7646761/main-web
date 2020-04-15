@@ -147,6 +147,8 @@ def stores():
             additional_params += '&' + key + '=' + value
     store_model = StoreModel()
     categories = CategoryModel()
+    comment_model = CommentModel()
+    adr_model = AddressModel()
 
     stores, pages = store_model.query_paginate_sort(page, filter)
     datas = []
