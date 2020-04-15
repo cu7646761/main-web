@@ -569,7 +569,7 @@
         var map, infoWindow, pos;
         function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
-            center: {lat: -34.397, lng: 150.644},
+            center: {lat: 10.7822782, lng: 106.7046318},
             zoom: 8
         });
         infoWindow = new google.maps.InfoWindow;
@@ -583,9 +583,55 @@
             };
             curLat = position.coords.latitude;
             curLng = position.coords.longitude;
-            infoWindow.setPosition(pos);
-            infoWindow.setContent('Location found.');
-            infoWindow.open(map);
+            // infoWindow.setPosition(pos);
+            // infoWindow.setContent('Location found.');
+            // infoWindow.open(map);
+            
+            fetch(`/load_geo_places`)
+            .then(function(response) {
+                if (response.status !==200) {
+                    console.log(`Looks like there was a problem load place. Status code: ${response.status}`);
+                    return;
+                }
+                response.json().then(function(data) {
+                    locations = data
+                    var markers = locations.map(function(location) {
+                        return new google.maps.Marker({
+                            position: location,
+                            id: location.id,
+                            name: location.name,
+                            image: location.link_img
+                        });
+                    });
+                    var markerCluster = new MarkerClusterer(map, markers,
+                    {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+                    markers.map(function(marker){
+                        marker.addListener('click', function() {
+                            console.log(marker.getPosition().toString())
+                            console.log(marker.id)
+                            var infowindow = new google.maps.InfoWindow({
+                                content: `<a href="/stores/${marker.id}">
+                                            <div class="row">
+                                                <p class="col-12"><b>${marker.name}</b></p><br>
+                                            </div>
+                                            <div class="row">
+                                                <img class="col-12" src="${marker.image}" height="160px">
+                                            </div>
+                                          </a>`
+                            });
+
+                            infowindow.open(map, marker);
+
+                        });
+                    })
+                    
+                });
+
+            })
+            .catch(function(error) {
+                console.log("Fetch error: " + error);
+            });
+            
             map.setCenter(pos);
             fetch(`${window.origin}/load_geolocation?lat=${curLat}&lng=${curLng}`)
             .then(function(response) {
@@ -600,9 +646,10 @@
             .catch(function(error) {
                 console.log("Fetch error: " + error);
             });
-            }, function() {
+        }, 
+        function() {
             handleLocationError(true, infoWindow, map.getCenter());
-            });
+        });
         } else {
             // Browser doesn't support Geolocation
             handleLocationError(false, infoWindow, map.getCenter());
@@ -624,4 +671,5 @@
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js"></script>
 {% endblock %}
