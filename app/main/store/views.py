@@ -2,6 +2,7 @@ from functools import wraps
 import time
 import math
 import requests
+import math
 from constants import Pages, CLASS_LIST
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
@@ -17,6 +18,7 @@ from constants import CLASS_LIST
 from app.main.comment.models import CommentModel
 
 from flask.helpers import url_for
+from math import sqrt
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -32,9 +34,49 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     store = stores.find_by_id(store_id)
     category = categories.findAllById(store[0].categories_id)
     address = AddressModel().find_by_id(store[0].address_id)
-    recStore = stores.find_by_categories(store[0].categories_id)
-    classify = round(store[0].classification, 2)
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
+    current_user = None
+    userAddress = None
+    try:
+        if session['logged'] == True:
+            current_user = session['cur_user']
+            userAddress = AddressModel().find_by_id(current_user.address_id)
+    except:
+        pass
+    
+    recStore = stores.find_by_categories(store[0].categories_id)
+    datas = []
+    for rec in recStore:
+        classify = Utils.get_classification_by_score(rec.classification)
+        classCur =  Utils.get_classification_by_score(store[0].classification)
+        distance = "Không xác định"
+        disCur = "Không xác định"
+        x1 = float(rec.position.get("lat"))
+        y1 = float(rec.position.get("lng"))
+        xCur = float(store[0].position.get("lat"))
+        yCur = float(store[0].position.get("lng"))
+
+        if session["pos"] is not None:
+            x2 = float(session["pos"].get("lat"))
+            y2 = float(session["pos"].get("lng"))
+            distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+            disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+        else:
+            if session['logged'] == True:
+                x2 = float(userAddress[0].latitude)
+                y2 = float(userAddress[0].longtitude)
+                distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+        curStore ={
+            "classify":classCur,
+            "distance":disCur,
+        }
+        datas += [{
+            "store": rec,
+            "classify": classify,
+            "distance": distance,
+            "curStore" :curStore,
+        }]
 
     entity_dict = store[0].entity_score
     entity_dict = sorted(entity_dict.items(), key=lambda x: x[1]["quantity"], reverse=True)
@@ -48,12 +90,6 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     #             "detail": comment.detail,
     #             "star_num": comment.star_num,
     #         }]
-    current_user = None
-    try:
-        if session['logged'] == True:
-            current_user = session['cur_user']
-    except:
-        pass
 
     if request.method == 'POST':
         form = AddCommentForm()
@@ -75,13 +111,13 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     return render_template('detail.html', store=store[0], category=category, address=address[0],
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
-                                           current_user=current_user, form=form, error=error, user=current_user, recStore= recStore)
+                                           current_user=current_user, form=form, error=error, user=current_user, recStore= recStore, datas=datas)
                 return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=current_user, entity_dict=entity_dict, recStore= recStore)
+                           , user=current_user, entity_dict=entity_dict, recStore= recStore,datas=datas)
 
 
 @store_blueprint.route("/load/<string:store_id>")
@@ -127,6 +163,16 @@ def countStar(store):
     else:
         return 0, 0, 0, 0, 0, 0
 
+def getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2):
+    R = 6371
+    dLat = deg2rad(lat2-lat1)
+    dLon = deg2rad(lon2-lon1); 
+    a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(deg2rad(lat1))*math.cos(deg2rad(lat2))*math.sin(dLon/2)*math.sin(dLon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a)); 
+    d = R * c
+    return d
+def deg2rad(deg):
+    return deg*(math.pi/180)
 
 @store_blueprint.route('/stores/', methods=['GET'])
 @login_required
