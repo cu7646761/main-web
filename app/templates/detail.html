@@ -92,15 +92,15 @@
                                     <td>{{store.name}}</td>
                                     <td>{{store.stars}} <span class="fa fa-star checked " style="font-size:16px"></span></td>
                                     <td>{{store.reviewer_quant}}</td>
-                                    <td>4km</td>
-                                    <td>S+</td>
+                                    <td id="show-distanceCur"></td>
+                                    <td id="show-classifyCur"></td>
                                 </tr>
                                 <tr>
                                     <td id="show-storeRec"></td>
                                     <td id ="show-starRec">  
                                     <td id="show-reviewRec"></td>
-                                    <td>3km</td>
-                                    <td>S</td>
+                                    <td id="show-distanceRec"></td>
+                                    <td id="show-classifyRec"></td>
                                 </tr>
                                 
                             </table>
@@ -585,30 +585,37 @@ function loadItems() {
 <script>
     // document.getElementById("show-store").innerHTML = recStore;
     function getValue(elem) {
-        console.log(elem.value)
-        console.log("haha")
         recStore = elem.value; //someId
     var i = 0;
     var rec = JSON.parse('{{recStore|tojson}}');
-    // var classifyRec = "";
-    // var distanceRec = "";
+    var datas = JSON.parse('{{datas|tojson}}');
+    var classifyRec = "";
+    var distanceRec = "";
     var starRec = "";
     var reviewRec= "";
     var storeRec = "";
-    console.log(JSON.stringify(rec[0]._id))
-    console.log(JSON.stringify(recStore))
-    console.log()
+    var classifyCur = "";
+    var distanceCur = "";
     for (x in "{{recStore}}"){
         if (JSON.stringify(rec[x]._id).includes(JSON.stringify(recStore))){
-            starRec = rec[x].stars +" " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
-            reviewRec = rec[x].reviewer_quant;
-            storeRec = rec[x].name;
+            console.log("lala")
+            starRec = datas[x].store.stars +" " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
+            reviewRec = datas[x].store.reviewer_quant;
+            storeRec = datas[x].store.name;
+            distanceRec = datas[x].distance;
+            classifyRec = datas[x].classify;
+            distanceCur = datas[x].curStore.distance;
+            classifyCur = datas[x].curStore.classify;
             break;
         }
     }
     document.getElementById("show-starRec").innerHTML = starRec;
     document.getElementById("show-reviewRec").innerHTML = reviewRec;
     document.getElementById("show-storeRec").innerHTML = storeRec;
+    document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
+    document.getElementById("show-classifyRec").innerHTML = classifyRec;
+    document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
+    document.getElementById("show-classifyCur").innerHTML = classifyCur;
     }
 </script>
 {% endblock %}

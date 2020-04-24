@@ -19,7 +19,7 @@ from constants import API_KEY
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
 
-# gmaps = googlemaps.Client(key=API_KEY)
+gmaps = googlemaps.Client(key=API_KEY)
 
 
 def allowed_file(filename):

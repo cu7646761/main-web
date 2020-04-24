@@ -149,13 +149,11 @@ def home(form=None):
     return render_template("index.html", user=session['cur_user'], form=form)
 @auth_blueprint.route("/load_geolocation")
 def load_geolocation():
-    print("BOMBOM")
     if request.args:
         pos = {
             "lat": request.args.get("lat"),
             "lng": request.args.get("lng")
         }
-        session["pos"] = pos
-    print(session["pos"])  
+        session["pos"] = pos 
     res = make_response(jsonify({"message": "OK"}), 200)
     return res
