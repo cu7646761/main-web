@@ -17,7 +17,7 @@ from vietnam_provinces.enums.districts import ProvinceEnum, ProvinceDEnum, Distr
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
 
-gmaps = googlemaps.Client(key='')
+gmaps = googlemaps.Client(key='AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q')
 
 
 def allowed_file(filename):

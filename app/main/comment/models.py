@@ -28,6 +28,9 @@ class CommentModel(CommentEntity):
     def find_by_id(self, comment_id):
         return self.objects(id__exact=comment_id)
 
+    def find_by_store_id(self, store_id):
+        return self.objects(store_id__exact=store_id)
+
     def findAllById(self, listIds):
         db = []
         i = 0

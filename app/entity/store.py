@@ -17,7 +17,7 @@ class Store(mongoengine.Document, SearchableMixin):
     stars = mongoengine.FloatField()
     link_gg = mongoengine.StringField()
     link_foody = mongoengine.StringField()
-    stars = mongoengine.FloatField()
+
     star_s1 = mongoengine.IntField()
     star_s2 = mongoengine.IntField()
     star_s3 = mongoengine.IntField()
