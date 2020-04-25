@@ -50,4 +50,4 @@ def home(form=None):
         )
 
     return render_template("admin/index.html", user=session['cur_user'], form=form, count_stores=stores.count(),
-                           count_users=users.count(), count_cmts=cmts.count(), recent_cmts_detail=recent_cmts_detail,recent_store_detail=recent_store_detail)
+                           count_users=users.count(), count_cmts=cmts.count(), recent_cmts_detail=recent_cmts_detail,recent_store_detail=recent_store_detail, home_active="active")
