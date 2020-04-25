@@ -77,9 +77,9 @@ class StoreModel(StoreEntity):
     #         return False, e.__str__()
 
     @classmethod
-    def create(cls, name, description):
+    def create(cls, name, description, link_image, categories_id, address_id):
         try:
-            StoreEntity(name=name, description=description).save()
+            StoreEntity(name=name, description=description, link_image=link_image, categories_id=categories_id, address_id=address_id).save()
             # StoreEntity.reindex()
             return True, None
         except Exception as e:
