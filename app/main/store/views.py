@@ -88,25 +88,27 @@ def load(store_id):
     """ Route to return the posts """
     stores = StoreModel()
     store = stores.find_by_id(store_id)
-    db = CommentModel().findAllById(store[0].comment_list)
 
     time.sleep(0.5)  # Used to simulate delay
     if request.args:
         counter = int(request.args.get("c"))  # The 'counter' value sent in the QS
-
         if counter == 0:
+            cmt_list = store[0].comment_list[0: int(Pages['NUMBER_PER_PAGE'])]
+            db = CommentModel().findAllById(cmt_list)
             print(f"Returning posts 0 to {int(Pages['NUMBER_PER_PAGE'])}")
             # Slice 0 -> quantity from the db
-            res = make_response(jsonify(db[0: int(Pages['NUMBER_PER_PAGE'])]), 200)
+            res = make_response(jsonify(db), 200)
 
-        elif counter == len(db):
+        elif counter == len(store[0].comment_list):
             print("No more posts")
             res = make_response(jsonify({}), 200)
 
         else:
+            cmt_list = store[0].comment_list[counter : counter + int(Pages['NUMBER_PER_PAGE'])]
+            db = CommentModel().findAllById(cmt_list)
             print(f"Returning posts {counter} to {counter + int(Pages['NUMBER_PER_PAGE'])}")
             # Slice counter -> quantity from the db
-            res = make_response(jsonify(db[counter: counter + int(Pages['NUMBER_PER_PAGE'])]), 200)
+            res = make_response(jsonify(db), 200)
 
     return res
 
