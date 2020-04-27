@@ -44,8 +44,6 @@ class Store(mongoengine.Document, SearchableMixin):
 
     classification = mongoengine.FloatField()
     reviewer_quant = mongoengine.IntField()
-    entity_sentiment = mongoengine.DictField()
-    entity_score = mongoengine.DictField()
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
@@ -53,6 +51,7 @@ class Store(mongoengine.Document, SearchableMixin):
     entity_score = mongoengine.DictField()
     entity_sentiment = mongoengine.DictField()
     position = mongoengine.DictField()
+    type_store = mongoengine.DictField()
 
     meta = {'allow_inheritance': True}
 
