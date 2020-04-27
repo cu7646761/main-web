@@ -41,6 +41,7 @@ class Store(mongoengine.Document, SearchableMixin):
     comments_i = mongoengine.IntField()
     comments_s = mongoengine.IntField()
     comment_list = mongoengine.ListField()
+    type_store =mongoengine.DictField()
 
     classification = mongoengine.FloatField()
     reviewer_quant = mongoengine.IntField()

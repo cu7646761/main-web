@@ -40,10 +40,11 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     try:
         if session['logged'] == True:
             current_user = session['cur_user']
-            userAddress = AddressModel().find_by_id(current_user.address_id)
+            if current_user.address_id:
+                userAddress = AddressModel().find_by_id(current_user.address_id)
+            
     except:
         pass
-    
     recStore = stores.find_by_categories(store[0].categories_id)
     datas = []
     for rec in recStore:
@@ -63,10 +64,11 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
         else:
             if session['logged'] == True:
-                x2 = float(userAddress[0].latitude)
-                y2 = float(userAddress[0].longtitude)
-                distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-                disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+                if current_user.address_id:
+                    x2 = float(userAddress[0].latitude)
+                    y2 = float(userAddress[0].longtitude)
+                    distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                    disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
         curStore ={
             "classify":classCur,
             "distance":disCur,
