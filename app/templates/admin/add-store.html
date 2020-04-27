@@ -1,0 +1,250 @@
+{% extends "admin/base.html" %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/add-new-post.css') }}">
+{% endblock %}
+{% block content %}
+    <main class="main-content col-lg-10 col-md-9 col-sm-12 p-0 offset-lg-2 offset-md-3 px-4">
+        <div class="main-navbar sticky-top bg-white">
+            <!-- Main Navbar -->
+            <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
+                <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex"></form>
+                <ul class="navbar-nav border-left flex-row ">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#"
+                           role="button" aria-haspopup="true" aria-expanded="false">
+                            <img class="user-avatar rounded-circle mr-2"
+                                 src="{{ user.link_image }}" alt="User Avatar">
+                            <span class="d-none d-md-inline-block">{{ user.email }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-small">
+                            {#                            <a class="dropdown-item" href="user-profile-lite.html">#}
+                            {#                                <i class="material-icons">&#xE7FD;</i> Profile</a>#}
+                            {#                            <a class="dropdown-item" href="components-blog-posts.html">#}
+                            {#                                <i class="material-icons">vertical_split</i> Blog Posts</a>#}
+                            {#                            <a class="dropdown-item" href="add-new-post.html">#}
+                            {#                                <i class="material-icons">note_add</i> Add New Post</a>#}
+                            {#                            <div class="dropdown-divider"></div>#}
+                            <a class="dropdown-item text-danger" href="/logout">
+                                <i class="material-icons text-danger">&#xE879;</i> Đăng xuất </a>
+                        </div>
+                    </li>
+                </ul>
+                <nav class="nav">
+                    <a href="#"
+                       class="nav-link nav-link-icon toggle-sidebar d-md-inline d-lg-none text-center border-left"
+                       data-toggle="collapse" data-target=".header-navbar" aria-expanded="false"
+                       aria-controls="header-navbar">
+                        <i class="material-icons">&#xE5D2;</i>
+                    </a>
+                </nav>
+            </nav>
+        </div>
+
+
+        <div class="main-content-container container-fluid px-4">
+            <!-- Page Header -->
+            <div class="page-header row no-gutters py-4">
+                <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+                    <h3 class="page-title">Thêm cửa hàng</h3>
+                </div>
+            </div>
+            <!-- End Page Header -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <!-- Add New Post Form -->
+                    <div class="card card-small mb-3">
+                        <div class="card-body" id="editor">
+                            <form class="add-new-post">
+                                <input class="form-control form-control-lg mb-3" type="text"
+                                       placeholder="Tên cửa hàng"
+                                       id="post-title" oninput="onTypeTitle()" value="" required>
+                                <div id="editor-container" class="add-new-post__editor mb-1"
+                                     data-post-id="">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- / Add New Post Form -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card card-small mb-4">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item p-3">
+                                <div class="row">
+                                    <div class="col">
+                                        <div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="love_cate">Danh mục</label>
+                                                    <select multiple id="love_ca" name="love_ca" class="form-control"
+                                                            required>
+                                                        {% for cate in cate_list %}
+                                                            <option value="{{ cate.name }}"
+                                                                    name="{{ cate.name }}"
+                                                                    {% if cate.name in lst_cate_choose %}
+                                                                    selected {% endif %}>{{ cate.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <input type="text" class="form-control" id="love_cate"
+                                                           name="love_cate"
+                                                           style="display: none;">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <label for="city">Thành phố</label>
+                                                    <select id="city_edit" name="select-city" class="form-control"
+                                                            onchange="getDistrictByCity()">
+                                                        {% for pro in province_list %}
+                                                            <option value="{{ pro.code }}"
+                                                                    name="{{ pro.name }}">{{ pro.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="district_edit">Quận/huyện</label>
+                                                    <select id="district_edit" name="district_id" class="form-control"
+                                                            disabled>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-row">
+                                                <div class="form-group col-md-12">
+                                                    <label for="address">Địa chỉ</label>
+                                                    <input type="text" class="form-control" id="address" name="address"
+                                                           placeholder="Số và đường" value="{{ address }}" required>
+                                                    <label name="res-address" id="res-address"></label>
+                                                    <input type="text" class="form-control" id="result-address"
+                                                           name="result-address" style="display: none;"
+                                                           value="{{ address }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <!-- Post Overview -->
+
+                    <div class='card card-small mb-3'>
+                        <div class="card-header border-bottom">
+                            <h6 class="m-0">Hình ảnh</h6>
+                        </div>
+                        <div class='card-body p-0'>
+                            <ul class="list-group list-group-flush">
+                                <div class="file-upload">
+                                    <!-- <button class="file-upload-btn" type="button"
+                                      onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button> -->
+
+                                    <div class="image-upload-wrap" id="thumbnail-post"
+                                         data-thumbnail-post="">
+                                        <input class="file-upload-input" id="imgUpload" type='file'
+                                               onchange="readURL(this);"
+                                               accept="image/*" required/>
+                                        <div class="drag-text">
+                                            <h3>Chọn hình ảnh tải lên</h3>
+                                        </div>
+                                    </div>
+                                    <div class="file-upload-content">
+                                        <img class="file-upload-image" src="#" alt="your image"/>
+                                        <div class="image-title-wrap">
+                                            <button type="button" onclick="removeUpload()" class="remove-image">Xoá
+                                                <span class="image-title">
+                                                    Hình đã tải lên
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <li class="list-group-item d-flex px-3">
+                                  <button class="btn btn-sm btn-outline-accent">
+                                    <i class="material-icons">save</i> Save Draft</button>
+                                  <button class="btn btn-sm btn-accent ml-auto">
+                                    <i class="material-icons">file_copy</i> Publish</button>
+                                </li> -->
+                            </ul>
+
+                        </div>
+                    </div>
+                    <!-- / Post Overview -->
+                    <!-- Post Overview -->
+                    <li class="list-group-item px-3 mb-5">
+                        <button class="btn btn-sm btn-accent ml-auto" id="pulish-post-btn">
+                            <i class="material-icons">file_copy</i>
+                            Đăng bài
+                        </button>
+                    </li>
+                    <!-- <button type="button" class="mb-3 col-lg-12 btn btn-primary"><i
+                        class="material-icons">file_copy</i>Publish</button> -->
+                    <!-- / Post Overview -->
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block addition %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.6/quill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/to-markdown/3.0.4/to-markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.3.1/markdown-it.min.js"></script>
+    <script src="{{ url_for('static', filename='admin/scripts/app/add-store.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin/scripts/extras.1.1.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin/scripts/shards-dashboards.1.1.0.min.js') }}"></script>
+    <script>
+        var getDistrictByCity = (cityId) => {
+            $("#address").val("");
+            $("#result-address").val("");
+            if (cityId == undefined) {
+                cityId = $("#city_edit :selected").val();
+            }
+
+            $.ajax({
+                url: '/profile/district' + `?city_id=${cityId}`,
+                method: 'GET',
+                contentType: 'application/json',
+                beforeSend: function () {
+                    $("#district_edit").empty();
+                    $("#district_edit").attr("disabled", false);
+                },
+                success: function (data) {
+                    data = data.district
+                    if (data.length > 0) {
+                        $('#district_edit').attr("disabled", false);
+                        for (let i = 0; i < data.length; i++) {
+                            $('#district_edit').append(
+                                $('<option>', {
+                                    name: data[i][0],
+                                    value: data[i][1],
+                                    text: data[i][0],
+                                }));
+                        }
+
+                    } else {
+                        $("#district_edit").attr("disabled", true);
+                    }
+                }
+            });
+        }
+
+        $("#address").on("input", function (data) {
+            $("#res-address").empty();
+            var city = $('#city_edit').find('option:selected').attr("name");
+            var district = $('#district_edit').find('option:selected').attr("name");
+            $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
+            $("#result-address").val($("#address").val() + ", " + district + ", " + city);
+        });
+
+        $("#love_ca").on('change', function () {
+            $("#love_cate").val($("#love_ca").val());
+        })
+
+
+    </script>
+{% endblock %}

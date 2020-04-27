@@ -49,12 +49,21 @@ def list_store_api():
     comment = CommentModel()
     data = []
     for store in stores:
+        # data.append({
+        #     "store_id": str(store.id),
+        #     "name": store.name,
+        #     "description": store.description,
+        #     "stars": store.stars,
+        #     "cmt_count": comment.find_by_store_id(store.id).count(),
+        #     "address": address.find_by_id(store.address_id)[0].detail,
+        #     "price": store.min_price + "-" + store.max_price,
+        #     "create_at": store.created_at
+        # })
         data.append({
             "store_id": str(store.id),
             "name": store.name,
             "description": store.description,
             "stars": store.stars,
-            "cmt_count": len(comment.find_by_store_id(store.id)),
             "address": address.find_by_id(store.address_id)[0].detail,
             "price": store.min_price + "-" + store.max_price,
             "create_at": store.created_at
@@ -73,15 +82,13 @@ def store(form=None):
     store = StoreModel()
     stores, total_pages = store.query_paginate(1)
     return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
-                           total_pages=total_pages)
+                           total_pages=total_pages - 2)
 
 
-@store_admin_blueprint.route('/edit/', methods=['GET', 'POST'])
+@store_admin_blueprint.route('/add/', methods=['GET', 'POST'])
 @login_required
-def edit_store(form=None, store_id=None):
+def _store(form=None):
     store = StoreModel()
-    # if store_id is not None:
-    #     print(store_id)
 
     stores, total_pages = store.query_paginate(1)
 
@@ -99,6 +106,7 @@ def edit_store(form=None, store_id=None):
         categories = post_data.get("categories", "")
         address_detail = post_data.get("address_detail", "")
         address_district = post_data.get("address_district", "")
+        image_list = post_data.get("image_list", "")
 
         list_obj_cate = []
         for cate in categories:
@@ -110,15 +118,86 @@ def edit_store(form=None, store_id=None):
 
         address_id, err = address.create_store(address_detail, address_district, latitude, longtitude)
         if err:
-            return redirect('/admin/store/edit/')
+            return redirect('/admin/store/add/')
 
-        link_image = [image]
+        image_list.append(image)
 
-        res, err = StoreModel.create(name, description, link_image, list_obj_cate, address_id)
+        res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id)
 
         if err:
-            return redirect('/admin/store/edit/')
+            return redirect('/admin/store/add/')
         return Response(json.dumps({"success": "yes"}), 200)
 
-    return render_template("admin/edit-store.html", user=session['cur_user'], form=form, store_active="active",
+    return render_template("admin/add-store.html", user=session['cur_user'], form=form, store_active="active",
                            total_pages=total_pages, province_list=province_list, cate_list=category.query_all())
+
+
+@store_admin_blueprint.route('/edit/<string:store_id>', methods=['GET', 'POST'])
+@login_required
+def edit__store(form=None, store_id=None):
+    store = StoreModel()
+    store_detail = store.find_by_id(store_id)[0]
+
+    stores, total_pages = store.query_paginate(1)
+
+    province_list = list(ProvinceEnum)
+    category = CategoryModel()
+
+    address = AddressModel()
+
+    if request.method == 'POST':
+        post_data = request.get_json()
+
+        name = post_data.get("name", "")
+        description = post_data.get("description", "")
+        image = post_data.get("image", "")
+        categories = post_data.get("categories", "")
+        address_detail = post_data.get("address_detail", "")
+        address_district = post_data.get("address_district", "")
+        image_list = post_data.get("image_list", "")
+
+        delete_img = post_data.get("delete_img", "")
+
+        list_obj_cate = []
+        for cate in categories:
+            list_obj_cate.append(category.find_by_name(cate)[0].id)
+
+        geocode_result = gmaps.geocode(address_detail)
+        latitude = geocode_result[0].get('geometry').get('location').get('lat')
+        longtitude = geocode_result[0].get('geometry').get('location').get('lng')
+
+        res_address, err = AddressModel.update(store_detail.address_id, address_detail, address_district, latitude,
+                                               longtitude)
+
+        if err:
+            return redirect('/admin/store/edit/' + store_id)
+
+        image_list.append(image)
+        if delete_img != "":
+            image_list.remove(delete_img)
+
+        res, err = StoreModel.update(name, description, image_list, list_obj_cate, store_id, res_address.id)
+
+        if err:
+            return redirect('/admin/store/edit/' + store_id)
+        return Response(json.dumps({"success": "yes"}), 200)
+
+    address_obj = address.find_by_id(store_detail.address_id)[0]
+
+    category = CategoryModel()
+    lst_cate_choose = [category.find_by_id(x)[0].name for x in store_detail.categories_id]
+
+    return render_template("admin/edit-store.html", user=session['cur_user'], store_detail=store_detail,
+                           address=address_obj.detail, lst_cate_choose=lst_cate_choose, form=form,
+                           store_active="active",
+                           total_pages=total_pages, province_list=province_list, cate_list=category.query_all())
+
+
+@store_admin_blueprint.route('/delete/<string:store_id>', methods=['GET'])
+@login_required
+def delete_store(form=None, store_id=None):
+    store = StoreModel()
+    if store_id is not None:
+        deleted_at = datetime.now
+        res, err = StoreModel.delete(store_id, deleted_at)
+    return redirect('/admin/store')

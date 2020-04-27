@@ -62,6 +62,6 @@ class AddressModel(AddressEntity):
             address.latitude = latitude
             address.longtitude = longtitude
             address.save()
-            return True, None
+            return address, None
         except Exception as e:
             return False, e.__str__()

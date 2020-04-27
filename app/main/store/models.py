@@ -83,3 +83,26 @@ class StoreModel(StoreEntity):
 
     def query_recent(self):
         return self.objects.order_by("created_at")
+
+    @classmethod
+    def update(cls, name, description, link_image, categories_id, store_id, address_id):
+        try:
+            store = StoreEntity.objects(id=store_id).get()
+            store.description = description
+            store.link_image = link_image
+            store.address_id = address_id
+            store.categories_id = categories_id
+            store.save()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
+    @classmethod
+    def delete(cls, store_id, deleted_at):
+        try:
+            store = StoreEntity.objects(id=store_id).get()
+            store.deleted_at = deleted_at
+            store.save()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()

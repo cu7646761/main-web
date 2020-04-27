@@ -42,6 +42,7 @@ class Store(mongoengine.Document, SearchableMixin):
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
+    deleted_at = mongoengine.DateTimeField(default=None)
 
     meta = {'allow_inheritance': True}
 
