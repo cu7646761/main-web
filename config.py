@@ -36,8 +36,6 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # MONGODB_DB = 'foodblog1'
-    # MONGODB_HOST = 'mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority'
     MONGODB_DB = 'foodblog1'
     MONGODB_HOST = 'mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority'
 

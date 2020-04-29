@@ -1033,6 +1033,12 @@ footer {
 .swiper-container{
   background-color: black;
 }
+.swiper1{
+  background-color: black;
+}
+.swiper2{
+  background-color: white;
+}
 div.stars {
   width: 270px;
   display: inline-block;
@@ -1067,8 +1073,29 @@ label.star:before {
   content: '\f006';
   font-family: FontAwesome;
 }
-
-#please-scroll{
-  height: calc(100vh - 110px); overflow-y: scroll
-}
 /*# sourceMappingURL=style.css.map */
+.price{
+  font-weight: bold;
+}
+.title{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+table, th, td {  
+  border: 1px solid black;  
+  border-collapse: collapse;  
+}  
+th, td {  
+  padding: 10px;  
+}  
+table#alter tr:nth-child(even) {  
+  background-color: #eee;  
+}  
+table#alter tr:nth-child(odd) {  
+  background-color: #fff;  
+}  
+table#alter th {  
+  color: white;  
+  background-color: gray;  
+}  

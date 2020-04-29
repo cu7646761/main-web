@@ -6,6 +6,7 @@ from constants import PRED_LIST, CLASS_LIST
 from mongoengine.queryset.visitor import Q
 from app.main.category.models import CategoryModel
 
+
 class StoreModel(StoreEntity):
     objects = StoreEntity.objects
 
@@ -39,9 +40,10 @@ class StoreModel(StoreEntity):
             elif level == 4:
                 stores_sorted = stores_sorted.filter(Q(classification__lte=4.5) & Q(classification__gt=2.5))
             elif level in (8, 12, 16, 20, 24):
-                stores_sorted = stores_sorted.filter(Q(classification__lte=level+0.5) & Q(classification__gt=level-3.5))
+                stores_sorted = stores_sorted.filter(
+                    Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
             elif level == 28:
-                stores_sorted = stores_sorted.filter(classification__gt=level-3.5)
+                stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
 
         elif classify:
             stores_sorted = stores_sorted.filter(classifications=classify)
@@ -49,7 +51,7 @@ class StoreModel(StoreEntity):
         if categories:
             cates = [CategoryModel().objects(name_link__exact=cate)[0].id for cate in categories]
             stores_sorted = stores_sorted.filter(categories_id__in=cates)
-        
+
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
@@ -58,6 +60,27 @@ class StoreModel(StoreEntity):
 
     def find_by_name(self, name):
         return self.objects(name__exact=name)[0]
+    def find_by_categories(self, categories_id):
+        lst =[]
+        for x in self.objects:  
+            if categories_id == x.categories_id:
+                lst = lst + [x]
+        return lst
+
+    def find_optimize_by_categories(self, categories_id, begin):
+        lst =[]
+        count = 0
+        end = 0
+        for x in self.objects[begin:]:
+            end += 1  
+            if categories_id == x.categories_id:
+                lst = lst + [x]
+                count += 1
+            if count == 6:
+                break
+        print(begin)
+        print(end)
+        return lst, end
 
     # def edit(self, _id, email):
     #     try:
@@ -68,10 +91,39 @@ class StoreModel(StoreEntity):
     #         return False, e.__str__()
 
     @classmethod
-    def create(cls, name, description):
+    def create(cls, name, description, link_image, categories_id, address_id):
         try:
-            StoreEntity(name=name, description=description).save()
+            StoreEntity(name=name, description=description, link_image=link_image, categories_id=categories_id, address_id=address_id).save()
             # StoreEntity.reindex()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
+    def count(self):
+        return self.objects.count()
+
+    def query_recent(self):
+        return self.objects.order_by("created_at")
+
+    @classmethod
+    def update(cls, name, description, link_image, categories_id, store_id, address_id):
+        try:
+            store = StoreEntity.objects(id=store_id).get()
+            store.description = description
+            store.link_image = link_image
+            store.address_id = address_id
+            store.categories_id = categories_id
+            store.save()
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+
+    @classmethod
+    def delete(cls, store_id, deleted_at):
+        try:
+            store = StoreEntity.objects(id=store_id).get()
+            store.deleted_at = deleted_at
+            store.save()
             return True, None
         except Exception as e:
             return False, e.__str__()
