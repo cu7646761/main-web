@@ -45,7 +45,7 @@ def full_text():
 def suggestion():
     search_term = request.data.decode("utf-8").split("=")[1]
     cls_model = [StoreModel]
-    # reindex_all = [model.reindex() for model in cls_model]
+    #reindex_all = [model.reindex() for model in cls_model]
     kind_search = SuggestionSearch()
     search_model = [model.search(search_term, 1, 10, kind_search) for model in cls_model]
     search_obj = []

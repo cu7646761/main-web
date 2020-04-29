@@ -2,12 +2,14 @@
 from pymongo import MongoClient
 from google.cloud import language_v1
 from google.cloud.language_v1 import enums
+from google.cloud import translate
 from app.main.comment.models import CommentModel
 
-import os
 
 from app import create_app
 import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
+import csv, random, json
 
 from functools import wraps
 import time
@@ -164,6 +166,193 @@ def add_position():
         store.update(set__position=pos)
         print(store.name)
     return jsonify({})
+
+
+@analyze_blueprint.route("/gen-entity17273747", methods=["GET", "POST"])
+def gen_entity():
+    random.seed()
+    food_cate = {}
+    food_cate['japanese'] = {
+        'tiramisu':1, 'sushi':3, 'tempura':1, 'sashimi':1, 'kaiseki':1, 'ryori':1,    
+        'yakitori':1, 'mochi':1, 'tonkatsu':1, 'shabu':1, 'shabu-shabu':1, 'soba':1, 
+        'ramen':1, 'donburi':1, 'onigiri':1, 'japan':4, 'japanese':4, 'dorayaki':1,
+        'somen':1, 'miso':1, 'bento':1, 'salmon':1, 'wasabi':2, 'tokyo':3, 'miya':1 
+    }
+    food_cate['korean'] = {
+        'kimchi':2, 'tteokbokki':1, 'spicy':1, 'korea':3 , 'korean':4, 'bulgogi':1,
+        'tobboki':1, 'bibimbap':1, 'kimbap':1, 'tok':1, 'udon':1, 'tokbokki':1, 'jjajangmyeon':1,
+        'blackbean':1
+    }
+    food_cate['seafood'] = {
+        'shrimp':1, 'crab':1, 'fish':2, 'oysters':1, 'scallops':1, 'clam':1, 'seafood':3,
+        'crabs':1, 'shrimps':1, 'fishes':1, 'oyster':1, 'scallop':1, 'crustacean':1, 'crustaceans':1,
+        'lobster':1, 'sea':1, 'seafoods':1, 'snail':1, 'squid':1, 'squids':1, 'octopus':1
+    }
+    food_cate['fastfood'] = {
+        'pizza':1, 'pizzas':1, 'fastfood':1, 'fastfoods':1, 'hamburger':1, 'hamburgers':1, 'pasta':1, 'pastas':1,
+        'spaghetti':1, 'spaghetties':1, 'snack':1, 'snacks':1
+    }
+    food_cate['vegetarian'] = {
+        'vegetarian':1, 'veggie':1, 'mushroom':2, 'mushrooms':2, 'vegies':1, 'buddha':1, 'chay':1,
+        'bean':2, 'tofu':2, 'soy':2, 'vegetarians':1, 'tofus':1, 'soys':1, 'beans':1, 'veterinarian':1,
+        'veterinarians':1, 'seitan':1, 'seitans':1, 'vegan':1, 'vegans':1, 'monk':1, 'monks':1
+    }
+    food_cate['cafe'] = {
+        'drink':1, 'drinks':1, 'drinking':1, 'drinkings':1, 'cafe':1, 'coffee':1, 'matcha':1,
+        'ice':1, 'cream':1, 'parfait':1, 'tea':1, 'milks':1, 'milk':1, 'water':1, 'waters':1,
+        'topping':1, 'toppings':1, 'peach':1, 'music':1, 'espresso':1, 'machiato':1,
+        'capuchino':1, 'bubble':1, 'latte':1
+    }
+    food_cate['smoothie'] = {
+        'fruit':1, 'fruits':1, 'smoothie':1, 'juice':1, 'juices':1, 'milk':1, 'beams':1, 'beam':1,
+        'avocado':1, 'avocados':1, 'durian':1, 'durians':1, 'yogurt':1, 'yogurts':1, 'melon':1,
+        'yoghurt':1, 'yoghurts':1, 'icecream':1, 'butter':1, 'peach':1
+    }
+    food_cate['cate'] = {
+        'cake':2, 'cakes':2, 'chocolate':1, 'chocolates':1, 'dessert':1, 'desserts':1, 'tiramisu':1,
+        'cookie':1, 'cookies':1, 'pastry':1, 'muffin':1, 'bakery':1, 'bread':1, 'breads':1
+    }
+    food_cate['drinking'] = {
+        'beer':2, 'beers':2, 'wine':1, 'wines':1, 'pot':1, 'pots':1, 'sheep':1,
+        'lamb':1, 'goat':1, 'calve':1, 'calves':1, 'goats':1, 'lamps':1, 'sheeps':1,
+        'gang':1, 'gangs':1, 'cider':1, 'ciders':1, 'ancohol':1, 'heineken':1
+    }
+    food_cate['meat-beaf'] = {
+        'meat':1, 'meats':1, 'rib':1, 'dip':1, 'grill':1, 'grills':1, 'ribs':1, 'dips':1,
+        'beef':1, 'beefs':1, 'bbq':1, 'steak':1, 'steaks':1, 'barbecues':1, 'barbecue':1,
+        'beefsteak':1, 'beefsteaks':1, 'cow':1, 'cows':1, 'pig':1, 'pigs':1, 'kebab':1, 'kebabs':1,
+        'shawarma':1
+    }
+    food_cate['chicken'] = {
+        'chicken':1, 'chickens':1, 'kfc':1, 'texas':1, 'french':1, 'lotteria':1
+    }
+    food_cate['water-dish'] = {
+        'soup':3, 'soups':3, 'vermicelli':1, 'vermicellies':1, 'noodles':1, 'noodle':1,
+        'bun':1, 'pho':1, 'powder':1, 'broth':1, 'broths':1, 'porridge':1, 'porridges':1,
+        'bowl':1, 'bowls':1
+    }
+    food_cate['bar-club'] = {
+        'bar':1, 'bars':1, 'pub':1, 'pubs':1, 'beers':1, 'beer':1, 'wine':1, 'club':1,
+        'clubs':1, 'dance':1, 'edm':1, 'vinahouse':1
+    }
+    neutral = {
+        'staff':3, 'staffs':3, 'food':3, 'foods':3, 'place':3, 'places':3, 'service':3,
+        'service':1, 'services':1, 'restaurant':1, 'restaurants':1, 'space':1, 'spaces':1,
+        'atmosphere':1, 'price':1, 'prices':1, 'taste':1, 'table':1, 'shop':1, 'seat':1,
+        'seats':1, 'family':1, 'meal':1, 'people':1, 'meals':1, 'dinner':1, 'view':1, 'design':1,
+        'friend':1, 'friends':1, 'customer':1, 'customers':1, 'waiter':1, 'waitress':1, 'dish':1, 'dishes':1,
+        'time':1, 'times':1, 'quality':1, 'location':1, 'decoration':1, 'lunch':1, 'style':1, 'town':1, 'experience':1,
+        'floor':1, 'cuisine':1, 'center':1, 'everything':1, 'air':1, 'money':1, 'one':1, 'some':1, 'more':1, 'choice':1
+    }
+    with open('food_entity2.csv', mode='w') as f:
+        f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        f_writer.writerow(['text', 'classsification'])
+        
+        for i in range(100):
+            text_noise = ""
+            sentence_neutral = random.randint(1, 10)
+            for j in range(sentence_neutral):
+                temp = random.choice(list(neutral.keys()))
+                text_noise += temp + " "
+            print(text_noise)
+            f_writer.writerow([text_noise, 'other'])    
+        for k,v in food_cate.items():
+            choice = []
+            for text,factor in v.items():
+                for i in range(factor):
+                    choice.append(text)
+                f_writer.writerow([text, k])
+
+            for i in range(len(v.items())*150):
+                sentence1 = random.randint(2, 100)
+                sentence2 = random.randint(101, 500)
+                sentence3 = random.randint(500, 1000)
+                text1 = ""
+                text2 = ""
+                text3 = ""
+                for j in range(sentence1):
+                    temp = random.choice(choice)
+                    noise = random.choice(list(neutral.keys()))
+                    text1 += temp + " " + noise + " " + noise + " " + noise + " "
+                for j in range(sentence2):
+                    temp = random.choice(choice)
+                    noise = random.choice(list(neutral.keys()))
+                    text2 += temp + " " + noise + " " + noise + " " + noise + " "
+                for j in range(sentence3):
+                    temp = random.choice(choice)
+                    noise = random.choice(list(neutral.keys()))
+                    text3 += temp + " " + noise + " " + noise + " " + noise + " "
+                print(text1)
+                print(text2)
+                print(text3)
+                f_writer.writerow([text1, k])
+                f_writer.writerow([text2, k])
+                f_writer.writerow([text3, k])
+        
+    f.close()
+    return jsonify({})
+
+
+# do not run manual 
+@analyze_blueprint.route("/add-classify-cate17273747", methods=["GET", "POST"])
+def add_classify():
+    all_stores = StoreModel().query_all()
+    for store in all_stores:
+        dict_entity = store.entity_score
+        text = ""
+        for entity in dict_entity.keys():
+            for i in range(dict_entity[entity]["quantity"]):
+                text += entity.lower() + " "
+        tsl = sample_translate_text(store.name, "en-US", "britcat3")
+        text += " " + tsl.translations[0].translated_text.lower()
+        data = {
+            "instances": [{
+                "text": text
+            }]
+        }
+        response = requests.post('http://localhost:8080/predict', json=data)
+        result = json.loads(response.content)
+        print(text)
+        rsfm = result['predictions'][0]
+        type_store = {}
+        for i in range(len(rsfm["classes"])):
+            type_store[rsfm["classes"][i]] = rsfm["scores"][i]
+
+        store.update(set__type_store=type_store)
+    return jsonify({})
+
+
+def sample_translate_text(text, target_language, project_id):
+    """
+    Translating Text
+
+    Args:
+      text The content to translate in string format
+      target_language Required. The BCP-47 language code to use for translation.
+    """
+
+    client = translate.TranslationServiceClient()
+
+    # TODO(developer): Uncomment and set the following variables
+    # text = 'Text you wish to translate'
+    # target_language = 'fr'
+    # project_id = '[Google Cloud Project ID]'
+    contents = [text]
+    parent = client.location_path(project_id, "global")
+
+    response = client.translate_text(
+        parent=parent,
+        contents=contents,
+        mime_type='text/plain',  # mime types: text/plain, text/html
+        source_language_code='vi',
+        target_language_code=target_language)
+    # Display the translation for each input text provided
+    for translation in response.translations:
+        print(u"Translated text: {}".format(translation.translated_text))
+
+    return response
+
+
         
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/britcat2-0026abc98690.json"
 

@@ -31,7 +31,7 @@ class AddressModel(AddressEntity):
         return categories
 
     @classmethod
-    def create(cls,user_id, detail, district, latitude, longtitude):
+    def create(cls, user_id, detail, district, latitude, longtitude):
         try:
             address = AddressEntity(detail=detail, district=district, latitude=latitude, longtitude=longtitude)
             address.save()
@@ -42,8 +42,19 @@ class AddressModel(AddressEntity):
             return True, None
         except Exception as e:
             return False, e.__str__()
+
     @classmethod
-    def update(cls,address_id, detail, district, latitude, longtitude):
+    def create_store(cls, detail, district, latitude, longtitude):
+        try:
+            address = AddressEntity(detail=detail, district=district, latitude=latitude, longtitude=longtitude)
+            address.save()
+            # UserEntity.reindex()
+            return address.id, None
+        except Exception as e:
+            return None, e.__str__()
+
+    @classmethod
+    def update(cls, address_id, detail, district, latitude, longtitude):
         try:
             address = AddressEntity.objects(id=address_id).get()
             address.detail = detail
@@ -51,6 +62,6 @@ class AddressModel(AddressEntity):
             address.latitude = latitude
             address.longtitude = longtitude
             address.save()
-            return True, None
+            return address, None
         except Exception as e:
             return False, e.__str__()
