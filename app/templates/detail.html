@@ -4,7 +4,7 @@
     <!--============================= BOOKING =============================-->
     <div>
         <!-- Swiper -->
-        <div class="swiper-container">
+        <div class="swiper-container swiper1">
             <div class="swiper-wrapper">
                 {% for st in store.link_image %}
                 <div class="swiper-slide">
@@ -21,11 +21,32 @@
             <div class="swiper-button-prev swiper-button-white"></div>
         </div>
     </div>
+    <template id="relst-template">
+        <div class="swiper-slide swiper-slide-active" style="width: 248px; height: auto;">
+            <div class="content">              
+                <a href="" class="grid image-link" id="img-rl">
+                    <img src="" id="image-rl" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
+                </a>   
+                <p class ="title" id="title-rl">
+                </p>    
+                <p class ="price" id="price-rl">
+                </p>
+            </div>
+            <div style="text-align:center;">
+                <!-- Button trigger modal -->
+            <button onclick="getCompare(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="" id = "recStore">
+                So sánh
+            </button>
+            </div>
+            
+        </div>
+    </template>
     <!--//END BOOKING -->
     <!--============================= RESERVE A SEAT =============================-->
     <section class="reserve-block">
         <div class="container">
             <div class="row">
+                
                 <div class="col-md-6">
                     <h5>{{ store.name }}</h5>
 
@@ -50,7 +71,7 @@
                             <span>{{classify}}</span>
                         </div>
                         <div class="review-btn">
-                            <a href="#" class="btn btn-outline-danger">NHẬN XÉT</a>
+                            <a href="#comment" class="btn btn-outline-danger">NHẬN XÉT</a>
                             <span>{{ store.reviewer_quant }}</span>
                         </div>
                         <div class="reserve-btn">
@@ -68,6 +89,51 @@
     <section class="light-bg booking-details_wrap">
         <div class="container">
             <div class="row">
+                <!-- START Modal -->
+                <div class="modal fade bd-example-modal-lg" id="myModal-lg" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Bảng so sánh các thông số</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body" style="text-align: center;">
+                            <table id="alter" align="center">
+                                <tr>
+                                    <th>Cửa hàng</th>
+                                    <th>Đánh giá</th>
+                                    <th>Số nhận xét</th>
+                                    <th>Khoảng cách</th>
+                                    <th>Phân loại</th>
+                                </tr> 
+                                <tr>
+                                    <td>{{store.name}}</td>
+                                    <td>{{store.stars}} <span class="fa fa-star checked " style="font-size:16px"></span></td>
+                                    <td>{{store.reviewer_quant}}</td>
+                                    <td id="show-distanceCur"></td>
+                                    <td id="show-classifyCur"></td>
+                                </tr>
+                                <tr>
+                                    <td id="show-storeRec"></td>
+                                    <td id ="show-starRec">  
+                                    <td id="show-reviewRec"></td>
+                                    <td id="show-distanceRec"></td>
+                                    <td id="show-classifyRec"></td>
+                                </tr>
+                                
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                        <!-- <button type="button" class="btn btn-primary " href ="/stores/">Xem chi tiết</button> -->
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- END Modal -->
                 <div class="col-md-8 responsive-wrap">
                     <div class="booking-checkbox_wrap">
                         <div class="booking-checkbox">
@@ -146,7 +212,8 @@
 
 
                     </div>
-                    <div class="booking-checkbox_wrap mt-4" style="height:500px;overflow: auto">
+                    
+                    <div id = "comment" class="booking-checkbox_wrap mt-4" style="height:500px;overflow: auto">
                         <h5>{{ store.reviewer_quant }} nhận xét</h5>
                         <hr>
 
@@ -315,15 +382,51 @@
                         <a href="#">FOLLOW</a>
                     </div> -->
                 </div>
+                
+                <div class="col-md-8 responsive-wrap">
+                    <div style="padding-top: 30px;">
+                        <span class="heading">CÁC CỬA HÀNG LIÊN QUAN</span>
+                    </div>
+                    
+                    <div class="booking-checkbox_wrap mt-4">
+                        <div class="swiper-container">
+                            <div class="swiper-wrapper swiper2" id="swiper-rl">
+                                
+                            </div>
+                        </div>
+                        <!-- Add Arrows -->
+                        <div class="swiper-button-next" onclick="loadrlStore()"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </section>
     <script src="{{ url_for('static', filename='js/swiper.min.js') }}"></script>
     <script>
-        var swiper = new Swiper('.swiper-container', {
+        var swiper1 = new Swiper('.swiper1', {
             slidesPerView: 3,
+            spaceBetween: 2,
             slidesPerGroup: 3,
-            loop: true,
+            loop: true ,
+            loopFillGroupWithBlank: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+        var swiper2 = new Swiper('.swiper2', {
+            slidesPerView: 3,
+            slidesPerColumn: 2,
+            spaceBetween: 20,
+            slidesPerGroup: 3,
+            loop: false ,
             loopFillGroupWithBlank: true,
             pagination: {
                 el: '.swiper-pagination',
@@ -385,7 +488,7 @@
             text += "<span class=\"fa fa-star-half icon-c\"></span>";
         }
         document.getElementById("show-star").innerHTML = text;
-    </script>>
+    </script>
 
 
 <script>
@@ -476,5 +579,74 @@ function loadItems() {
 
     // Instruct the IntersectionObserver to watch the sentinel
     intersectionObserver.observe(sentinel);
+</script>
+
+<script>
+    var swiper = document.querySelector('#swiper-rl')
+    var rl_template = document.querySelector('#relst-template');
+    var begin = 0
+    function loadrlStore() {
+        fetch(`/load-relative-store/{{store_id}}?begin=${begin}`).then((response) => {
+            // Convert the response data to JSON
+            response.json().then((res) => {
+                
+                // If empty JSON, exit the function
+                if (!res.datas.length) {
+                    return;
+                }
+                // Iterate over the items in the response
+                for (let i = 0; i < res.datas.length; i++) {
+                    // Clone the HTML template
+                    let template_rel_clone = rl_template.content.cloneNode(true);
+                    // // Query & update the template content
+                    template_rel_clone.querySelector("#title-rl").innerHTML = res.datas[i].store.name;
+                    
+                    template_rel_clone.querySelector("#price-rl").innerHTML = res.datas[i].store.min_price + "đ - " +res.datas[i].store.max_price + "đ" ;
+                    template_rel_clone.querySelector("#image-rl").setAttribute('src', res.datas[i].store.link_image[0]) 
+                    template_rel_clone.querySelector("#recStore").setAttribute('value', res.datas[i].store._id.$oid)
+                    // Append template to dom
+                    swiper.appendChild(template_rel_clone);
+                    console.log(res.end)
+                    // Increment the counter
+                    begin += res.end;
+                    
+                }
+            })
+        })
+        // document.getElementById("show-store").innerHTML = recStore;
+
+    }
+    loadrlStore()
+    function getCompare(elem) {
+        fetch(`/load-compare/{{store.id}}/${elem.value}`).then((response) => {
+            // Convert the response data to JSON)
+            response.json().then((res) => {
+                recStore = elem.value; //someId
+                var classifyRec = res.class_tar;
+                var distanceRec = res.dis_tar;
+                var starRec = res.star_tar;
+                var reviewRec= res.review_tar;
+                var storeRec = res.name_tar;
+                var classifyCur = res.class_cur;
+                var distanceCur = res.dis_cur;
+
+                starRec += " " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
+                distanceCur = res.dis_cur;
+                classifyCur = res.class_cur;
+ 
+
+                document.getElementById("show-starRec").innerHTML = starRec;
+                document.getElementById("show-reviewRec").innerHTML = reviewRec;
+                document.getElementById("show-storeRec").innerHTML = storeRec;
+                document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
+                document.getElementById("show-classifyRec").innerHTML = classifyRec;
+                document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
+                document.getElementById("show-classifyCur").innerHTML = classifyCur;
+            }
+            )
+        })
+
+    }
+    
 </script>
 {% endblock %}
