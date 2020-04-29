@@ -7,7 +7,8 @@ class Comment(mongoengine.Document, SearchableMixin):
     __tablename__ = 'comment_mongo'
     __searchable__ = ['detail']
     detail = mongoengine.StringField(max_length=1000)
-    user_id = mongoengine.ObjectIdField()
+    user_id = mongoengine.ObjectIdField(default=None)
+
     store_id = mongoengine.ObjectIdField()
     # comment_type: s,a,b,c,d,e,f,g,h,i
     comment_type = mongoengine.StringField(max_length=10)

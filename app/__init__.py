@@ -2,9 +2,9 @@ from flask import Flask
 from flask_mongoengine import MongoEngine
 from elasticsearch import Elasticsearch
 
+# from app.cache import cache
 from app.decorators import async_func
 from config import config
-# from app.cache import cache
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 
@@ -37,5 +37,11 @@ def create_app(config_name):
     app.register_blueprint(search_blueprint, url_prefix='/search')
     app.register_blueprint(store_blueprint, url_prefix='/')
     app.register_blueprint(analyze_blueprint, url_prefix='/')
+
+    from app.admin.auth.views import auth_admin_blueprint
+    app.register_blueprint(auth_admin_blueprint, url_prefix='/admin')
+
+    from app.admin.store.views import store_admin_blueprint
+    app.register_blueprint(store_admin_blueprint, url_prefix='/admin/store')
 
     return app
