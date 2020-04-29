@@ -210,7 +210,7 @@ def get_store_api():
     store = StoreModel()
     try:
         name = request.form.get("name")
-        return view_detail(store_id=str(store.find_by_name(name).id))
+        return redirect('/stores/' + str(store.find_by_name(name).id))
     except:
         name = request.data.decode("utf-8").split("=")[1]
     return jsonify({"id": str(store.find_by_name(name).id)})

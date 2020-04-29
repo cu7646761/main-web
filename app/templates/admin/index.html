@@ -1,0 +1,173 @@
+{% extends "admin/base.html" %}
+{% block content %}
+    <main class="main-content col-lg-10 col-md-9 col-sm-12 p-0 offset-lg-2 offset-md-3">
+        <div class="main-navbar sticky-top bg-white">
+            <!-- Main Navbar -->
+            <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
+                <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex"></form>
+                <ul class="navbar-nav border-left flex-row ">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#"
+                           role="button" aria-haspopup="true" aria-expanded="false">
+                            <img class="user-avatar rounded-circle mr-2"
+                                 src="{{ user.link_image }}" alt="User Avatar">
+                            <span class="d-none d-md-inline-block">{{ user.email }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-small">
+{#                            <a class="dropdown-item" href="user-profile-lite.html">#}
+{#                                <i class="material-icons">&#xE7FD;</i> Profile</a>#}
+{#                            <a class="dropdown-item" href="components-blog-posts.html">#}
+{#                                <i class="material-icons">vertical_split</i> Blog Posts</a>#}
+{#                            <a class="dropdown-item" href="add-new-post.html">#}
+{#                                <i class="material-icons">note_add</i> Add New Post</a>#}
+{#                            <div class="dropdown-divider"></div>#}
+                            <a class="dropdown-item text-danger" href="/logout">
+                                <i class="material-icons text-danger">&#xE879;</i> Đăng xuất </a>
+                        </div>
+                    </li>
+                </ul>
+                <nav class="nav">
+                    <a href="#"
+                       class="nav-link nav-link-icon toggle-sidebar d-md-inline d-lg-none text-center border-left"
+                       data-toggle="collapse" data-target=".header-navbar" aria-expanded="false"
+                       aria-controls="header-navbar">
+                        <i class="material-icons">&#xE5D2;</i>
+                    </a>
+                </nav>
+            </nav>
+        </div>
+        <!-- / .main-navbar -->
+        <div class="main-content-container container-fluid px-4">
+            <!-- Page Header -->
+            <div class="page-header row no-gutters py-4">
+                <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+                    <span class="text-uppercase page-subtitle"></span>
+                    <h3 class="page-title">Tổng quan</h3>
+                </div>
+            </div>
+            <!-- End Page Header -->
+            <!-- Small Stats Blocks -->
+            <div class="row">
+                <div class="col-lg col-md-6 col-sm-6 mb-4">
+                    <div class="stats-small stats-small--1 card card-small">
+                        <div class="card-body p-0 d-flex">
+                            <div class="d-flex flex-column m-auto">
+                                <div class="stats-small__data text-center">
+                                    <span class="stats-small__label text-uppercase">Cửa hàng</span>
+                                    <h6 class="stats-small__value count my-3">{{ count_stores }}</h6>
+                                </div>
+                            </div>
+                            <canvas height="120" class="blog-overview-stats-small-1"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg col-md-6 col-sm-6 mb-4">
+                    <div class="stats-small stats-small--1 card card-small">
+                        <div class="card-body p-0 d-flex">
+                            <div class="d-flex flex-column m-auto">
+                                <div class="stats-small__data text-center">
+                                    <span class="stats-small__label text-uppercase">Người dùng</span>
+                                    <h6 class="stats-small__value count my-3">{{ count_users }}</h6>
+                                </div>
+                            </div>
+                            <canvas height="120" class="blog-overview-stats-small-2"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg col-md-4 col-sm-6 mb-4">
+                    <div class="stats-small stats-small--1 card card-small">
+                        <div class="card-body p-0 d-flex">
+                            <div class="d-flex flex-column m-auto">
+                                <div class="stats-small__data text-center">
+                                    <span class="stats-small__label text-uppercase">Bình luận</span>
+                                    <h6 class="stats-small__value count my-3">{{ count_cmts }}</h6>
+                                </div>
+                            </div>
+                            <canvas height="120" class="blog-overview-stats-small-3"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Small Stats Blocks -->
+            <div class="row">
+                <!-- Discussions Component -->
+                <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                    <div class="card card-small blog-comments">
+                        <div class="card-header border-bottom">
+                            <h6 class="m-0">Bình luận gần nhất</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            {% for cmt in recent_cmts_detail %}
+                                <div class="blog-comments__item d-flex p-3">
+                                    <div class="blog-comments__avatar mr-1">
+                                        <img src="{{ cmt.user_link }}" alt="User avatar"/>
+                                    </div>
+                                    <div class="blog-comments__avatar mr-3"></div>
+                                    <div class="blog-comments__content">
+                                        <div class="blog-comments__meta text-muted">
+                                            <a class="text-secondary" href="#">
+                                                <strong>
+                                                    {{ cmt.user_name }}
+                                                </strong>
+                                            </a>
+                                            đã đăng trên cửa
+                                            <a class="text-secondary" href="#">
+                                                <strong>
+                                                    {{ cmt.store_name }}
+                                                </strong>
+                                            </a>
+                                        </div>
+                                        <p class="m-0 my-1 mb-2 text-muted">{{ cmt.detail }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer border-top">
+                            <div class="row">
+                                <div class="col text-center view-report">
+                                    <button type="submit" class="btn btn-white">Xem tất cả bình luận</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Discussions Component -->
+                <!-- Discussions Component -->
+                <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+                    <div class="card card-small blog-comments">
+                        <div class="card-header border-bottom">
+                            <h6 class="m-0">Cửa hàng mới nhất</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            {% for store in recent_store_detail %}
+                                <div class="blog-comments__item d-flex p-3">
+                                    <div class="blog-comments__avatar mr-1">
+                                        <img src="{{ store.link[0] }}" alt="User avatar"/>
+                                    </div>
+                                    <div class="blog-comments__avatar mr-3"></div>
+                                    <div class="blog-comments__content">
+                                        <div class="blog-comments__meta text-muted">
+                                            <a class="text-primary" href="#">
+                                                <strong>
+                                                    {{ store.name }}
+                                                </strong>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer border-top">
+                            <div class="row">
+                                <div class="col text-center view-report">
+                                    <a href="/admin/store" type="submit" class="btn btn-white">Xem tất cả cửa hàng</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Discussions Component -->
+            </div>
+        </div>
+    </main>
+{% endblock %}

@@ -22,7 +22,7 @@ class Store(mongoengine.Document, SearchableMixin):
     stars = mongoengine.FloatField()
     link_gg = mongoengine.StringField()
     link_foody = mongoengine.StringField()
-    stars = mongoengine.FloatField()
+
     star_s1 = mongoengine.IntField()
     star_s2 = mongoengine.IntField()
     star_s3 = mongoengine.IntField()
@@ -47,6 +47,7 @@ class Store(mongoengine.Document, SearchableMixin):
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
+    deleted_at = mongoengine.DateTimeField(default=None)
 
     entity_score = mongoengine.DictField()
     entity_sentiment = mongoengine.DictField()
