@@ -45,40 +45,6 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             
     except:
         pass
-    recStore = stores.find_by_categories(store[0].categories_id)
-    datas = []
-    for rec in recStore:
-        classify = Utils.get_classification_by_score(rec.classification)
-        classCur =  Utils.get_classification_by_score(store[0].classification)
-        distance = "Không xác định"
-        disCur = "Không xác định"
-        x1 = float(rec.position.get("lat"))
-        y1 = float(rec.position.get("lng"))
-        xCur = float(store[0].position.get("lat"))
-        yCur = float(store[0].position.get("lng"))
-
-        if session["pos"] is not None:
-            x2 = float(session["pos"].get("lat"))
-            y2 = float(session["pos"].get("lng"))
-            distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-            disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
-        else:
-            if session['logged'] == True:
-                if current_user.address_id:
-                    x2 = float(userAddress[0].latitude)
-                    y2 = float(userAddress[0].longtitude)
-                    distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-                    disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
-        curStore ={
-            "classify":classCur,
-            "distance":disCur,
-        }
-        datas += [{
-            "store": rec,
-            "classify": classify,
-            "distance": distance,
-            "curStore" :curStore,
-        }]
 
     entity_dict = store[0].entity_score
     entity_dict = sorted(entity_dict.items(), key=lambda x: x[1]["quantity"], reverse=True)
@@ -113,13 +79,129 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     return render_template('detail.html', store=store[0], category=category, address=address[0],
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
-                                           current_user=current_user, form=form, error=error, user=current_user, recStore= recStore, datas=datas)
+                                           current_user=current_user, form=form, error=error, user=current_user)
                 return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=current_user, entity_dict=entity_dict, recStore= recStore,datas=datas)
+                           , user=current_user, entity_dict=entity_dict)
+
+
+@store_blueprint.route("/load-relative-store/<string:store_id>")
+def load_relative_store(store_id):
+    stores = StoreModel()
+    categories = CategoryModel()
+    store = stores.find_by_id(store_id)
+    category = categories.findAllById(store[0].categories_id)
+    address = AddressModel().find_by_id(store[0].address_id)
+    # star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
+    current_user = None
+    userAddress = None
+    try:
+        if session['logged'] == True:
+            current_user = session['cur_user']
+            if current_user.address_id:
+                userAddress = AddressModel().find_by_id(current_user.address_id)
+            
+    except:
+        pass
+
+    if request.args:
+        begin = int(request.args.get("begin"))
+        recStore, end = stores.find_optimize_by_categories(store[0].categories_id, begin)
+        datas = []
+        for rec in recStore:
+            classify = Utils.get_classification_by_score(rec.classification)
+            classCur =  Utils.get_classification_by_score(store[0].classification)
+            distance = "Không xác định"
+            disCur = "Không xác định"
+            x1 = float(rec.position.get("lat"))
+            y1 = float(rec.position.get("lng"))
+            xCur = float(store[0].position.get("lat"))
+            yCur = float(store[0].position.get("lng"))
+
+            if session["pos"] is not None:
+                x2 = float(session["pos"].get("lat"))
+                y2 = float(session["pos"].get("lng"))
+                distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+            else:
+                if session['logged'] == True:
+                    if current_user.address_id:
+                        x2 = float(userAddress[0].latitude)
+                        y2 = float(userAddress[0].longtitude)
+                        distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                        disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+            curStore ={
+                "classify":classCur,
+                "distance":disCur,
+            }
+            datas += [{
+                "store": rec,
+                "classify": classify,
+                "distance": distance,
+                "curStore" :curStore,
+            }]
+        rs = {
+            "datas": datas,
+            "end": end
+        }
+        res = make_response(jsonify(rs), 200)
+        print(res)
+        return res
+
+
+@store_blueprint.route("/load-compare/<string:store_id_cur>/<string:store_id_target>")
+def load_compare(store_id_cur, store_id_target):
+    current_user = None
+    userAddress = None
+    try:
+        if session['logged'] == True:
+            current_user = session['cur_user']
+            if current_user.address_id:
+                userAddress = AddressModel().find_by_id(current_user.address_id)
+    except:
+        pass
+
+    store_model = StoreModel()
+    store_cur = store_model.find_by_id(store_id_cur)[0]
+    store_target = store_model.find_by_id(store_id_target)[0]
+    classCur =  Utils.get_classification_by_score(store_cur.classification)
+    classify_tar = Utils.get_classification_by_score(store_target.classification)
+    distance = "Không xác định"
+    disCur = "Không xác định"
+    x1 = float(store_target.position.get("lat"))
+    y1 = float(store_target.position.get("lng"))
+    xCur = float(store_cur.position.get("lat"))
+    yCur = float(store_cur.position.get("lng"))
+
+    if session["pos"] is not None:
+        x2 = float(session["pos"].get("lat"))
+        y2 = float(session["pos"].get("lng"))
+        distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+        disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+    else:
+        if session['logged'] == True:
+            if current_user.address_id:
+                x2 = float(userAddress[0].latitude)
+                y2 = float(userAddress[0].longtitude)
+                distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+    data = {
+        "class_cur":classCur,
+        "dis_cur":disCur,
+        "star_cur":store_cur.stars,
+        "review_cur":store_cur.reviewer_quant,
+        "name_cur": store_cur.name,
+        "class_tar":classify_tar,
+        "dis_tar":distance,
+        "star_tar":store_target.stars,
+        "review_tar":store_target.reviewer_quant,
+        "name_tar":store_target.name
+    }
+    res = make_response(jsonify(data), 200)
+    return res
 
 
 @store_blueprint.route("/load/<string:store_id>")

@@ -67,6 +67,20 @@ class StoreModel(StoreEntity):
                 lst = lst + [x]
         return lst
 
+    def find_optimize_by_categories(self, categories_id, begin):
+        lst =[]
+        count = 0
+        end = 0
+        for x in self.objects[begin:]:
+            end += 1  
+            if categories_id == x.categories_id:
+                lst = lst + [x]
+                count += 1
+            if count == 6:
+                break
+        print(begin)
+        print(end)
+        return lst, end
 
     # def edit(self, _id, email):
     #     try:

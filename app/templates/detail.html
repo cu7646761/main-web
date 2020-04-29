@@ -21,6 +21,26 @@
             <div class="swiper-button-prev swiper-button-white"></div>
         </div>
     </div>
+    <template id="relst-template">
+        <div class="swiper-slide swiper-slide-active" style="width: 248px; height: auto;">
+            <div class="content">              
+                <a href="" class="grid image-link" id="img-rl">
+                    <img src="" id="image-rl" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
+                </a>   
+                <p class ="title" id="title-rl">
+                </p>    
+                <p class ="price" id="price-rl">
+                </p>
+            </div>
+            <div style="text-align:center;">
+                <!-- Button trigger modal -->
+            <button onclick="getCompare(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="" id = "recStore">
+                So sánh
+            </button>
+            </div>
+            
+        </div>
+    </template>
     <!--//END BOOKING -->
     <!--============================= RESERVE A SEAT =============================-->
     <section class="reserve-block">
@@ -369,34 +389,13 @@
                     </div>
                     
                     <div class="booking-checkbox_wrap mt-4">
-                        <div class="swiper-container swiper2">
-                            <div class="swiper-wrapper">
-                                {% for st in recStore %}
-                                <div class="swiper-slide swiper-slide-active" style="width: 248px; height: auto;">
-                                    <div class="content">              
-                                        <a href="/stores/{{st.id }}" class="grid image-link">
-                                            <img src="{{ st.link_image[1] }}" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
-                                        </a>   
-                                        <p class ="title">
-                                            {{st.name}}
-                                        </p>    
-                                        <p class ="price">
-                                            {{st.min_price}}đ - {{st.max_price}}đ
-                                        </p>
-                                    </div>
-                                    <div style="text-align:center;">
-                                        <!-- Button trigger modal -->
-                                    <button onclick="getValue(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="{{st.id}}" id = "recStore">
-                                        So sánh
-                                    </button>
-                                    </div>
-                                    
-                                </div>
-                                {% endfor %}
+                        <div class="swiper-container">
+                            <div class="swiper-wrapper swiper2" id="swiper-rl">
+                                
                             </div>
                         </div>
                         <!-- Add Arrows -->
-                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-next" onclick="loadrlStore()"></div>
                         <div class="swiper-button-prev"></div>
                     </div>
 
@@ -431,7 +430,7 @@
             loopFillGroupWithBlank: true,
             pagination: {
                 el: '.swiper-pagination',
-                clickable: false,
+                clickable: true,
             },
             navigation: {
                 nextEl: '.swiper-button-next',
@@ -581,41 +580,73 @@ function loadItems() {
     // Instruct the IntersectionObserver to watch the sentinel
     intersectionObserver.observe(sentinel);
 </script>
-</script>
+
 <script>
-    // document.getElementById("show-store").innerHTML = recStore;
-    function getValue(elem) {
-        recStore = elem.value; //someId
-    var i = 0;
-    var rec = JSON.parse('{{recStore|tojson}}');
-    var datas = JSON.parse('{{datas|tojson}}');
-    var classifyRec = "";
-    var distanceRec = "";
-    var starRec = "";
-    var reviewRec= "";
-    var storeRec = "";
-    var classifyCur = "";
-    var distanceCur = "";
-    for (x in "{{recStore}}"){
-        if (JSON.stringify(rec[x]._id).includes(JSON.stringify(recStore))){
-            console.log("lala")
-            starRec = datas[x].store.stars +" " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
-            reviewRec = datas[x].store.reviewer_quant;
-            storeRec = datas[x].store.name;
-            distanceRec = datas[x].distance;
-            classifyRec = datas[x].classify;
-            distanceCur = datas[x].curStore.distance;
-            classifyCur = datas[x].curStore.classify;
-            break;
-        }
+    var swiper = document.querySelector('#swiper-rl')
+    var rl_template = document.querySelector('#relst-template');
+    var begin = 0
+    function loadrlStore() {
+        fetch(`/load-relative-store/{{store_id}}?begin=${begin}`).then((response) => {
+            // Convert the response data to JSON
+            response.json().then((res) => {
+                
+                // If empty JSON, exit the function
+                if (!res.datas.length) {
+                    return;
+                }
+                // Iterate over the items in the response
+                for (let i = 0; i < res.datas.length; i++) {
+                    // Clone the HTML template
+                    let template_rel_clone = rl_template.content.cloneNode(true);
+                    // // Query & update the template content
+                    template_rel_clone.querySelector("#title-rl").innerHTML = res.datas[i].store.name;
+                    
+                    template_rel_clone.querySelector("#price-rl").innerHTML = res.datas[i].store.min_price + "đ - " +res.datas[i].store.max_price + "đ" ;
+                    template_rel_clone.querySelector("#image-rl").setAttribute('src', res.datas[i].store.link_image[0]) 
+                    template_rel_clone.querySelector("#recStore").setAttribute('value', res.datas[i].store._id.$oid)
+                    // Append template to dom
+                    swiper.appendChild(template_rel_clone);
+                    console.log(res.end)
+                    // Increment the counter
+                    begin += res.end;
+                    
+                }
+            })
+        })
+        // document.getElementById("show-store").innerHTML = recStore;
+
     }
-    document.getElementById("show-starRec").innerHTML = starRec;
-    document.getElementById("show-reviewRec").innerHTML = reviewRec;
-    document.getElementById("show-storeRec").innerHTML = storeRec;
-    document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
-    document.getElementById("show-classifyRec").innerHTML = classifyRec;
-    document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
-    document.getElementById("show-classifyCur").innerHTML = classifyCur;
+    loadrlStore()
+    function getCompare(elem) {
+        fetch(`/load-compare/{{store.id}}/${elem.value}`).then((response) => {
+            // Convert the response data to JSON)
+            response.json().then((res) => {
+                recStore = elem.value; //someId
+                var classifyRec = res.class_tar;
+                var distanceRec = res.dis_tar;
+                var starRec = res.star_tar;
+                var reviewRec= res.review_tar;
+                var storeRec = res.name_tar;
+                var classifyCur = res.class_cur;
+                var distanceCur = res.dis_cur;
+
+                starRec += " " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
+                distanceCur = res.dis_cur;
+                classifyCur = res.class_cur;
+ 
+
+                document.getElementById("show-starRec").innerHTML = starRec;
+                document.getElementById("show-reviewRec").innerHTML = reviewRec;
+                document.getElementById("show-storeRec").innerHTML = storeRec;
+                document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
+                document.getElementById("show-classifyRec").innerHTML = classifyRec;
+                document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
+                document.getElementById("show-classifyCur").innerHTML = classifyCur;
+            }
+            )
+        })
+
     }
+    
 </script>
 {% endblock %}
