@@ -18,7 +18,7 @@ class Errors(enum.Flag):
     ERROR_EXIST = "Error: this fields is exist"
 
 
-SERVER_NAME = "http://127.0.0.1:5000"
+SERVER_NAME = "http://localhost:5000"
 LINK_IMG = SERVER_NAME + "/static/images/"
 LINK_IMG_AVATAR_DEF = os.path.join(LINK_IMG, 'avatar_an_danh.jpg')
 ADMIN_MAIL = "vuongsponges@gmail.com"
