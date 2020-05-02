@@ -12,6 +12,7 @@ from utils import Utils
 from constants import SERVER_NAME
 from flask.helpers import make_response
 from flask.json import jsonify
+from constants import API_KEY
 
 auth_blueprint = Blueprint(
     'auth', __name__, template_folder='templates')
@@ -148,7 +149,7 @@ def home(form=None):
     session["pos"] = None
     if form is None:
         form = SearchForm()
-    return render_template("index.html", user=session['cur_user'], form=form)
+    return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
 
 @auth_blueprint.route('/load_geo_places')
