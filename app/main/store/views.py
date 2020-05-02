@@ -19,6 +19,7 @@ from app.main.comment.models import CommentModel
 
 from flask.helpers import url_for
 from math import sqrt
+from constants import API_KEY
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -85,7 +86,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=current_user, entity_dict=entity_dict)
+                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY)
 
 
 @store_blueprint.route("/load-relative-store/<string:store_id>")
