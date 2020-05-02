@@ -22,7 +22,7 @@
         </div>
     </div>
     <template id="relst-template">
-        <div class="swiper-slide swiper-slide-active" style="width: 248px; height: auto;">
+        <div class="col-4" style="">
             <div class="content">              
                 <a href="" class="grid image-link" id="img-rl">
                     <img src="" id="image-rl" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
@@ -34,7 +34,7 @@
             </div>
             <div style="text-align:center;">
                 <!-- Button trigger modal -->
-            <button onclick="getCompare(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="" id = "recStore">
+            <button style="margin-bottom: 10px;" onclick="getCompare(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="" id = "recStore">
                 So sánh
             </button>
             </div>
@@ -389,14 +389,15 @@
                     </div>
                     
                     <div class="booking-checkbox_wrap mt-4">
-                        <div class="swiper-container">
-                            <div class="swiper-wrapper swiper2" id="swiper-rl">
+                        <div class="">
+                            <div class="row" id="swiper-rl">
                                 
                             </div>
+                            <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>See more</button>
                         </div>
                         <!-- Add Arrows -->
-                        <div class="swiper-button-next" onclick="loadrlStore()"></div>
-                        <div class="swiper-button-prev"></div>
+                        <!-- <div class="swiper-button-next" onclick="loadrlStore()"></div>
+                        <div class="swiper-button-prev"></div> -->
                     </div>
 
                     </div>
@@ -585,7 +586,9 @@ function loadItems() {
     var swiper = document.querySelector('#swiper-rl')
     var rl_template = document.querySelector('#relst-template');
     var begin = 0
+    
     function loadrlStore() {
+        document.getElementById('load-more-st').disabled = true;
         fetch(`/load-relative-store/{{store_id}}?begin=${begin}`).then((response) => {
             // Convert the response data to JSON
             response.json().then((res) => {
@@ -608,14 +611,16 @@ function loadItems() {
                     swiper.appendChild(template_rel_clone);
                     console.log(res.end)
                     // Increment the counter
-                    begin += res.end;
-                    
                 }
+                begin += res.end;
             })
+            document.getElementById('load-more-st').disabled = false;
         })
+        
         // document.getElementById("show-store").innerHTML = recStore;
 
     }
+
     loadrlStore()
     function getCompare(elem) {
         fetch(`/load-compare/{{store.id}}/${elem.value}`).then((response) => {
