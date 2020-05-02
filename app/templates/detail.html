@@ -349,7 +349,7 @@
                         </div> -->
                         <a href="#" class="btn btn-outline-danger btn-contact">CHỈ ĐƯỜNG</a>
                     </div>
-                    <div class="overflow-auto" id="please-scroll" style="height: 500px;">
+                    <div class="overflow-auto" id="please-scroll" style="height: 400px;">
                         {% for k,v in entity_dict %}
                             <button type="button" class="btn btn-warning col-12" style="margin-bottom: 5px; text-align: left;">
                                 <b style="color: red;">{{k}}</b> - Score: {{((v.sentiment/v.quantity+1)*5)|round(2)}} <span class="badge badge-light">{{v.quantity}}</span>
@@ -393,6 +393,7 @@
                             <div class="row" id="swiper-rl">
                                 
                             </div>
+                            <p class="col-12" id="loading-text"></p>
                             <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>See more</button>
                         </div>
                         <!-- Add Arrows -->
@@ -477,7 +478,7 @@
     * The callback parameter executes the initMap() function
     -->
     <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
+            src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap">
     </script>
     <script>
         var i = 0;
@@ -588,6 +589,7 @@ function loadItems() {
     var begin = 0
     
     function loadrlStore() {
+        document.getElementById('loading-text').innerHTML = "Loading...";
         document.getElementById('load-more-st').disabled = true;
         fetch(`/load-relative-store/{{store_id}}?begin=${begin}`).then((response) => {
             // Convert the response data to JSON
@@ -615,6 +617,7 @@ function loadItems() {
                 begin += res.end;
             })
             document.getElementById('load-more-st').disabled = false;
+            document.getElementById('loading-text').innerHTML = "";
         })
         
         // document.getElementById("show-store").innerHTML = recStore;
