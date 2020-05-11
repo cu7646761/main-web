@@ -34,9 +34,9 @@ $('#user_input').on('input', function (e) {
         $('#user_input').autocomplete(
             {
                 source: titles,
-                delay: 300,
+                delay: 50,
                 open: function () {
-                    $('.ui-autocomplete').width('50%');
+                    $('.ui-autocomplete').width('5%');
                     $('.ui-widget-content').css('background', '#fff');
                     $('.ui-menu-item a').css('color', '#000');
                     $('.ui-menu-item').css('margin-bottom', '1rem');
