@@ -26,6 +26,7 @@ store_blueprint = Blueprint(
 
 
 @store_blueprint.route("/stores/<string:store_id>", methods=["GET", "POST"])
+@login_required
 def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     if form is None:
         form = AddCommentForm()
@@ -50,6 +51,9 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     entity_dict = store[0].entity_score
     entity_dict = sorted(entity_dict.items(), key=lambda x: x[1]["quantity"], reverse=True)
 
+    type_filtered = {k: v for k, v in store[0].type_store.items() if v >= 0.1}
+    type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
+    print(type_sorted)
     # page = request.args.get('page', 1, type=int)
     # comments, pages = CommentModel().query_paginate_sort(page)
     # datas = []
@@ -72,7 +76,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             if error is None:
 
                 if current_user:
-                    new_comment, error = CommentModel.create(store_id, comment, star, current_user[0].id)
+                    new_comment, error = CommentModel.create(store_id, comment, star, current_user.id)
                     
                 else:
                     new_comment, error = CommentModel.create(store_id, comment, star, None)
@@ -86,7 +90,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY)
+                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict = type_sorted)
 
 
 @store_blueprint.route("/load-relative-store/<string:store_id>")
@@ -109,8 +113,8 @@ def load_relative_store(store_id):
         pass
 
     if request.args:
-        begin = int(request.args.get("begin"))
-        recStore, end = stores.find_optimize_by_categories(store[0].categories_id, begin)
+        page = int(request.args.get("page"))
+        recStore, pg = stores.find_optimize_by_categories(store[0].category_predict, store[0].categories_id, page)
         datas = []
         for rec in recStore:
             classify = Utils.get_classification_by_score(rec.classification)
@@ -146,7 +150,7 @@ def load_relative_store(store_id):
             }]
         rs = {
             "datas": datas,
-            "end": end
+            "end": pg
         }
         res = make_response(jsonify(rs), 200)
         print(res)
@@ -268,10 +272,12 @@ def stores():
     class_filter = request.args.get('classification', '', type=str)
     level_filter = request.args.get('level', '', type=str)
     categories_filter = request.args.get('categories', '', type=str)
+    cate_predict_filter = request.args.get('cate_predict', '', type=str)
     filter = {
         "classification": class_filter,
         "level": level_filter,
-        "categories": categories_filter
+        "categories": categories_filter,
+        "cate_predict": cate_predict_filter
     }
 
     # add param
