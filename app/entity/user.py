@@ -19,12 +19,14 @@ class User(mongoengine.Document, SearchableMixin):
     permission = mongoengine.IntField()
     favorite_categories = mongoengine.ListField()
     favorite_stores = mongoengine.ListField()
+    infor_rec = mongoengine.StringField(default="a ")
 
     # nam:0, nu:1, khac:2
     gender = mongoengine.IntField()
     comments_list = mongoengine.ListField()
     address_id = mongoengine.ObjectIdField()
     active = mongoengine.IntField(default=0)
+    address_id = mongoengine.ObjectIdField()
 
     # save avatar
     link_image = mongoengine.StringField(default=LINK_IMG_AVATAR_DEF)
