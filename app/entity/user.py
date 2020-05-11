@@ -19,6 +19,7 @@ class User(mongoengine.Document, SearchableMixin):
     permission = mongoengine.IntField()
     favorite_categories = mongoengine.ListField()
     favorite_stores = mongoengine.ListField()
+    infor_rec = mongoengine.StringField(default="a ")
 
     # nam:0, nu:1, khac:2
     gender = mongoengine.IntField()
