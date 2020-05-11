@@ -139,8 +139,9 @@ class StoreModel(StoreEntity):
     def delete(cls, store_id, deleted_at):
         try:
             store = StoreEntity.objects(id=store_id).get()
+            print(store.name)
             store.deleted_at = deleted_at
             store.save()
-            return True, None
+            return store, None
         except Exception as e:
             return False, e.__str__()

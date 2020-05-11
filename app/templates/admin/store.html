@@ -131,7 +131,7 @@
                             $('#body-store').empty();
 
                             for (var i = 0; i < data.data.length; i++) {
-                                console.log(data.data[i].store_id);
+                                console.log(data.data[i]);
                                 var addStore = `
                                 <tr>
                                     <td>` + data.data[i].name + `</td>
@@ -139,13 +139,13 @@
 {#                                    <td>` + data.data[i].cmt_count + `</td>#}
                                     <td>` + data.data[i].address + `</td>
                                     <td>` + data.data[i].price + `</td>
-                                    <td>` + data.data[i].create_at + `</td>
+                                    <td>` + data.data[i].created_at + `</td>
                                     <td>` + data.data[i].deleted_at + `</td>
                                     <td>
                                         <a type="button" class="btn btn-info mb-1" href=/admin/store/edit/` + data.data[i].store_id + `>
                                             Sửa
                                         </a>
-                                        <a type="button" class="btn btn-danger" href=/admin/store/delete/\` + data.data[i].store_id + \`>
+                                        <a type="button" class="btn btn-danger" href=/admin/store/delete/` + data.data[i].store_id + `>
                                             Xoá
                                         </a>
                                     </td>
