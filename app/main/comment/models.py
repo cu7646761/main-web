@@ -50,7 +50,8 @@ class CommentModel(CommentEntity):
                     "comments": comments
                 }]
         return db
-    
+       
+           
     @classmethod
     def create(cls, store_id, detail, star, user_id):
         try:

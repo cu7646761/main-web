@@ -21,6 +21,26 @@
             <div class="swiper-button-prev swiper-button-white"></div>
         </div>
     </div>
+    <template id="relst-template">
+        <div class="col-4" style="">
+            <div class="content">              
+                <a href="" class="grid image-link" id="link-rl">
+                    <img src="" id="image-rl" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
+                </a>   
+                <p class ="title" id="title-rl">
+                </p>    
+                <p class ="price" id="price-rl">
+                </p>
+            </div>
+            <div style="text-align:center;">
+                <!-- Button trigger modal -->
+            <button style="margin-bottom: 10px;" onclick="getCompare(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="" id = "recStore">
+                So sánh
+            </button>
+            </div>
+            
+        </div>
+    </template>
     <!--//END BOOKING -->
     <!--============================= RESERVE A SEAT =============================-->
     <section class="reserve-block">
@@ -120,7 +140,24 @@
                             <p> Description ở đây</p>
                             <hr>
                         </div>
-
+                        <span class="heading">Tự động phân loại</span>
+                        <hr style="border:3px solid #f1f1f1">
+                        <div class="row">
+                            {% for k,v in cate_dict.items() %}
+                                <div class="side">
+                                    <div>{{k.upper()}}</div>
+                                </div>
+                                <div class="middle">
+                                    <div class="bar-container">
+                                        <div class="bar-1" style="--bar1: {{ v*100 }}%;"></div>
+                                    </div>
+                                </div>
+                                <div class="side right">
+                                    <div>{{ (v*100)|round(2) }} %</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <hr>
                         <!-- SHOW USER RATING-->
                         <span class="heading">Đánh giá cửa hàng</span>
                         <!-- Show stars -->
@@ -329,7 +366,7 @@
                         </div> -->
                         <a href="#" class="btn btn-outline-danger btn-contact">CHỈ ĐƯỜNG</a>
                     </div>
-                    <div class="overflow-auto" id="please-scroll" style="height: 500px;">
+                    <div class="overflow-auto" id="please-scroll" style="height: 400px;">
                         {% for k,v in entity_dict %}
                             <button type="button" class="btn btn-warning col-12" style="margin-bottom: 5px; text-align: left;">
                                 <b style="color: red;">{{k}}</b> - Score: {{((v.sentiment/v.quantity+1)*5)|round(2)}} <span class="badge badge-light">{{v.quantity}}</span>
@@ -369,35 +406,16 @@
                     </div>
                     
                     <div class="booking-checkbox_wrap mt-4">
-                        <div class="swiper-container swiper2">
-                            <div class="swiper-wrapper">
-                                {% for st in recStore %}
-                                <div class="swiper-slide swiper-slide-active" style="width: 248px; height: auto;">
-                                    <div class="content">              
-                                        <a href="/stores/{{st.id }}" class="grid image-link">
-                                            <img src="{{ st.link_image[1] }}" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
-                                        </a>   
-                                        <p class ="title">
-                                            {{st.name}}
-                                        </p>    
-                                        <p class ="price">
-                                            {{st.min_price}}đ - {{st.max_price}}đ
-                                        </p>
-                                    </div>
-                                    <div style="text-align:center;">
-                                        <!-- Button trigger modal -->
-                                    <button onclick="getValue(this)" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" value ="{{st.id}}" id = "recStore">
-                                        So sánh
-                                    </button>
-                                    </div>
-                                    
-                                </div>
-                                {% endfor %}
+                        <div class="">
+                            <div class="row" id="swiper-rl">
+                                
                             </div>
+                            <p class="col-12" id="loading-text"></p>
+                            <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>See more</button>
                         </div>
                         <!-- Add Arrows -->
-                        <div class="swiper-button-next"></div>
-                        <div class="swiper-button-prev"></div>
+                        <!-- <div class="swiper-button-next" onclick="loadrlStore()"></div>
+                        <div class="swiper-button-prev"></div> -->
                     </div>
 
                     </div>
@@ -431,7 +449,7 @@
             loopFillGroupWithBlank: true,
             pagination: {
                 el: '.swiper-pagination',
-                clickable: false,
+                clickable: true,
             },
             navigation: {
                 nextEl: '.swiper-button-next',
@@ -477,7 +495,7 @@
     * The callback parameter executes the initMap() function
     -->
     <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
+            src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap">
     </script>
     <script>
         var i = 0;
@@ -581,41 +599,80 @@ function loadItems() {
     // Instruct the IntersectionObserver to watch the sentinel
     intersectionObserver.observe(sentinel);
 </script>
-</script>
+
 <script>
-    // document.getElementById("show-store").innerHTML = recStore;
-    function getValue(elem) {
-        recStore = elem.value; //someId
-    var i = 0;
-    var rec = JSON.parse('{{recStore|tojson}}');
-    var datas = JSON.parse('{{datas|tojson}}');
-    var classifyRec = "";
-    var distanceRec = "";
-    var starRec = "";
-    var reviewRec= "";
-    var storeRec = "";
-    var classifyCur = "";
-    var distanceCur = "";
-    for (x in "{{recStore}}"){
-        if (JSON.stringify(rec[x]._id).includes(JSON.stringify(recStore))){
-            console.log("lala")
-            starRec = datas[x].store.stars +" " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
-            reviewRec = datas[x].store.reviewer_quant;
-            storeRec = datas[x].store.name;
-            distanceRec = datas[x].distance;
-            classifyRec = datas[x].classify;
-            distanceCur = datas[x].curStore.distance;
-            classifyCur = datas[x].curStore.classify;
-            break;
-        }
+    var swiper = document.querySelector('#swiper-rl')
+    var rl_template = document.querySelector('#relst-template');
+    var page = 1
+    
+    function loadrlStore() {
+        document.getElementById('loading-text').innerHTML = "Loading...";
+        document.getElementById('load-more-st').disabled = true;
+        fetch(`/load-relative-store/{{store_id}}?page=${page}`).then((response) => {
+            // Convert the response data to JSON
+            response.json().then((res) => {
+                
+                // If empty JSON, exit the function
+                if (!res.datas.length) {
+                    return;
+                }
+                // Iterate over the items in the response
+                for (let i = 0; i < res.datas.length; i++) {
+                    // Clone the HTML template
+                    let template_rel_clone = rl_template.content.cloneNode(true);
+                    // // Query & update the template content
+                    template_rel_clone.querySelector("#title-rl").innerHTML = res.datas[i].store.name;
+                    
+                    template_rel_clone.querySelector("#price-rl").innerHTML = res.datas[i].store.min_price + "đ - " +res.datas[i].store.max_price + "đ" ;
+                    template_rel_clone.querySelector("#image-rl").setAttribute('src', res.datas[i].store.link_image[0])
+                    template_rel_clone.querySelector("#link-rl").setAttribute('href', `/stores/${res.datas[i].store._id.$oid}`)  
+                    template_rel_clone.querySelector("#recStore").setAttribute('value', res.datas[i].store._id.$oid)
+                    // Append template to dom
+                    swiper.appendChild(template_rel_clone);
+                    console.log(res.end)
+                    // Increment the counter
+                }
+                page += 1;
+            })
+            document.getElementById('load-more-st').disabled = false;
+            document.getElementById('loading-text').innerHTML = "";
+        })
+        
+        // document.getElementById("show-store").innerHTML = recStore;
+
     }
-    document.getElementById("show-starRec").innerHTML = starRec;
-    document.getElementById("show-reviewRec").innerHTML = reviewRec;
-    document.getElementById("show-storeRec").innerHTML = storeRec;
-    document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
-    document.getElementById("show-classifyRec").innerHTML = classifyRec;
-    document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
-    document.getElementById("show-classifyCur").innerHTML = classifyCur;
+
+    loadrlStore()
+    function getCompare(elem) {
+        fetch(`/load-compare/{{store.id}}/${elem.value}`).then((response) => {
+            // Convert the response data to JSON)
+            response.json().then((res) => {
+                recStore = elem.value; //someId
+                var classifyRec = res.class_tar;
+                var distanceRec = res.dis_tar;
+                var starRec = res.star_tar;
+                var reviewRec= res.review_tar;
+                var storeRec = res.name_tar;
+                var classifyCur = res.class_cur;
+                var distanceCur = res.dis_cur;
+
+                starRec += " " +  `<span class="fa fa-star checked" style="font-size:16px"></span></td>`;
+                distanceCur = res.dis_cur;
+                classifyCur = res.class_cur;
+ 
+
+                document.getElementById("show-starRec").innerHTML = starRec;
+                document.getElementById("show-reviewRec").innerHTML = reviewRec;
+                document.getElementById("show-storeRec").innerHTML = storeRec;
+                document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
+                document.getElementById("show-classifyRec").innerHTML = classifyRec;
+                document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
+                document.getElementById("show-classifyCur").innerHTML = classifyCur;
+            }
+            )
+        })
+
     }
+    
 </script>
 {% endblock %}
