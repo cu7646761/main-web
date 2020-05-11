@@ -1,5 +1,5 @@
-from flask import render_template, Blueprint, session
-
+from flask import render_template, Blueprint, session, redirect
+from functools import wraps
 from app.main.auth.models import UserModel
 from app.main.auth.views import login_required
 from app.main.comment.models import CommentModel
@@ -9,9 +9,23 @@ from constants import LINK_IMG_AVATAR_DEF
 auth_admin_blueprint = Blueprint(
     'auth_admin', __name__, template_folder='templates')
 
+def login_required_admin(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        try:
+            if session['logged'] and session['cur_user'].active == 1:
+                return redirect("/")
+            # if user is not logged in, redirect to login page
+            if not session['logged'] or session['cur_user'].active != 2:
+                return redirect("/login")
+        except:
+            return redirect("/login")
+        return f(*args, **kwargs)
+
+    return wrap
 
 @auth_admin_blueprint.route('/', methods=['GET'])
-@login_required
+@login_required_admin
 def home(form=None):
     stores = StoreModel()
     users = UserModel()
