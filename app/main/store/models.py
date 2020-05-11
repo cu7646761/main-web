@@ -24,6 +24,7 @@ class StoreModel(StoreEntity):
         classify = None
         level = None
         categories = None
+        cates_predict = None
         for key, value in filter.items():
             if key == "classification" and value != "":
                 classify = PRED_LIST[value]
@@ -31,6 +32,8 @@ class StoreModel(StoreEntity):
                 level = PRED_LIST[value]
             elif key == "categories" and value != "":
                 categories = value.split(',')
+            elif key == "cate_predict" and value != "":
+                cates_predict = value.split(',')
 
         stores_sorted = self.objects.order_by("classification")
 
@@ -52,6 +55,10 @@ class StoreModel(StoreEntity):
             cates = [CategoryModel().objects(name_link__exact=cate)[0].id for cate in categories]
             stores_sorted = stores_sorted.filter(categories_id__in=cates)
 
+        if cates_predict:
+            print(cates_predict)
+            stores_sorted = stores_sorted.filter(category_predict__in=cates_predict)
+
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
@@ -67,20 +74,30 @@ class StoreModel(StoreEntity):
                 lst = lst + [x]
         return lst
 
-    def find_optimize_by_categories(self, categories_id, begin):
-        lst =[]
-        count = 0
-        end = 0
-        for x in self.objects[begin:]:
-            end += 1  
-            if categories_id == x.categories_id:
-                lst = lst + [x]
-                count += 1
-            if count == 6:
-                break
-        print(begin)
-        print(end)
-        return lst, end
+    def find_optimize_by_categories(self, category, categories_id, page):
+        # lst =[]
+        # count = 0
+        # end = 0
+        if category != 'other':
+            store_filtered = self.objects(category_predict__exact=category)
+        else:
+            cates = [CategoryModel().objects(id__exact=cate)[0].id for cate in categories_id]
+            store_filtered = self.objects.filter(categories_id__in=cates)
+        stores_sorted = store_filtered.order_by("classification")
+        stores = Pagination(stores_sorted, int(page), 6)
+        
+        
+        return stores.items, stores.pages
+        # for x in self.objects[begin:]:
+        #     end += 1  
+        #     if categories_id == x.categories_id:
+        #         lst = lst + [x]
+        #         count += 1
+        #     if count == 6:
+        #         break
+        # print(begin)
+        # print(end)
+        # return lst, end
 
     # def edit(self, _id, email):
     #     try:

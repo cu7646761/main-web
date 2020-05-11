@@ -1,0 +1,40 @@
+<!-- <button class="open-button" onclick="openForm()">Chat</button> -->
+
+<div class="chat-popup" id="formRecommend">
+    <form class="form-container">
+        <label for="msg"><b>Message</b></label>
+        <div class="alert alert-primary" id="recommend-text">Có phải bạn muốn tìm kiếm về  </div>
+        <a class="btn btn-success" href="/reset-rec?rp=y" id="btn-recommend">Yes</a>
+        <button type="button" class="btn cancel" onclick="closeForm()">No</button>
+    </form>
+</div>
+
+<script>
+    function openForm() {
+        document.getElementById("formRecommend").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("formRecommend").style.display = "none";
+        fetch(`/reset-rec?rp=n`).then((response) => {
+
+        })
+    }
+</script>
+<script>
+    function loadPredictCate(){
+        console.log("bame")
+        fetch(`/load-predict-cate`).then((response) => {
+            response.json().then(function(data) {
+                if (response.status == 201){
+                    openForm()
+                    key = Object.keys(data)[0]
+                    document.getElementById("recommend-text").innerHTML += key + " ?"
+                    document.getElementById("btn-recommend").setAttribute('href', `/reset-rec?rp=${key}`)
+                    console.log(Object.keys(data)[0])
+                }
+            })
+        })
+    }
+    loadPredictCate()
+</script>

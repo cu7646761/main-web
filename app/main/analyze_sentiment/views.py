@@ -322,6 +322,16 @@ def add_classify():
     return jsonify({})
 
 
+@analyze_blueprint.route("/add-classify-result17273747", methods=["GET", "POST"])
+def add_classify_result():
+    all_stores = StoreModel().query_all()
+    for store in all_stores:
+        type_store = store.type_store
+        type_store.pop('class', None)
+        store.update(set__type_store=type_store)
+        print(store.type_store)
+    return jsonify({})
+
 def sample_translate_text(text, target_language, project_id):
     """
     Translating Text
