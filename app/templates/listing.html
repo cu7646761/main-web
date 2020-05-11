@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+{% include "recommend.html"%}
     <!--============================= DETAIL =============================-->
     <section>
-        <div class="container-fluid">
+        <div class="container container-fluid">
             <div class="row">
-                <div class="col-md-7 responsive-wrap">
+                <div class="col-md-12 responsive-wrap">
                     <div class="row detail-filter-wrap">
                         <div class="col-md-4 featured-responsive">
                             <div class="detail-filter-text">
@@ -304,13 +305,6 @@
                     </div>
 
 
-                </div>
-                <div class="col-md-5 responsive-wrap map-wrap">
-                    <div class="map-fix">
-                        <!-- data-toggle="affix" -->
-                        <!-- Google map will appear here! Edit the Latitude, Longitude and Zoom Level below using data-attr-*  -->
-                        <div id="map" data-lat="40.674" data-lon="-73.945" data-zoom="14"></div>
-                    </div>
                 </div>
             </div>
         </div>
