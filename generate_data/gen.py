@@ -4,9 +4,11 @@ from pymongo import MongoClient
 import json
 from bson.json_util import dumps
 from bson.json_util import loads
+client = MongoClient('mongodb+srv://hoangan11:hoangan11123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority')
+db = client.foodblog1
 
-client = MongoClient(port=27017)
-db = client.main_1
+conn = MongoClient()
+db2 = conn['main_1']
 
 # --------- Create category ----------
 names = []
@@ -39,10 +41,12 @@ print('finished create category')
 
 # --------- Create store ----------
 data = []
+data_2 = db2.store.find()
+
 with open(os.path.abspath(os.path.dirname(__file__)) + '/store_json.json', encoding="utf8") as f:
     for line in f:
         data.append(json.loads(line))
-
+dem = 0
 for each in data:
     if each['price'] == "Đang cập nhật":
         min_price = max_price = "Đang cập nhật"
@@ -123,9 +127,23 @@ for each in data:
         }
         res_cmt = db.comment.insert_one(comment_1)
         comment_list_id.append(res_cmt.inserted_id)
-    update_store = db.store.update_one({"comment_list": None, "_id": store_new_id}, {"$set": {"comment_list": comment_list_id, "_id": store_new_id}})
+    if store['name'] == data_2[dem]['name']:
+        classification = data_2[dem]['classification']
+        entity_dict = data_2[dem]['entity_score']
+    else:
+        break
+    update_store = db.store.update_one({"comment_list": None, "_id": store_new_id}, 
+            {"$set": 
+                {
+                    "comment_list": comment_list_id, 
+                    "_id": store_new_id, 
+                    "classification": classification,
+                    "entity_score": entity_dict
+                }
+            })
 
     print('Created {0}'.format(each['name']))
+    dem += 1
 
 # --------- Add link foody to store ----------
 data_link = []
