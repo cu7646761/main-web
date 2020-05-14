@@ -36,8 +36,8 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    MONGODB_DB = 'main_1'
-    MONGODB_HOST = 'mongodb://localhost:27017/main_1'
+    MONGODB_DB = 'foodblog1'
+    MONGODB_HOST = 'mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority'
 
     @classmethod
     def init_app(cls, app):
@@ -46,8 +46,8 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    MONGODB_DB = 'main_2'
-    MONGODB_HOST = 'mongodb://localhost:27017/main_2'
+    MONGODB_DB = 'main_3'
+    MONGODB_HOST = 'mongodb://localhost:27017/main_3'
 
     @classmethod
     def init_app(cls, app):

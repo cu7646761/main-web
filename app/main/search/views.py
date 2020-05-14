@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, redirect, request, jsonify, sessio
 from app.main.search.forms import SearchForm
 from app.main.search.models import FullTextSearch, SuggestionSearch
 from app.main.store.models import StoreModel
+from utils import Utils
 
 search_blueprint = Blueprint('search', __name__, template_folder='templates')
 
@@ -21,6 +22,8 @@ def full_text():
         if not isinstance(total, int):
             search_obj.extend(total)
 
+    if session['logged'] == True:
+        session['search'] += form.q.data + " , "
     print(search_obj)
     return render_template('index.html', search_obj=search_obj, form=form, user=session['cur_user'])
 
@@ -45,7 +48,7 @@ def full_text():
 def suggestion():
     search_term = request.data.decode("utf-8").split("=")[1]
     cls_model = [StoreModel]
-    # reindex_all = [model.reindex() for model in cls_model]
+    #reindex_all = [model.reindex() for model in cls_model]
     kind_search = SuggestionSearch()
     search_model = [model.search(search_term, 1, 10, kind_search) for model in cls_model]
     search_obj = []

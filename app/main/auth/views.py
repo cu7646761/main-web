@@ -3,11 +3,17 @@ from flask import redirect, render_template, Blueprint, session, request, Reques
 
 from app.main.auth.forms import LoginForm, SignupForm
 from app.main.auth.models import UserModel
+from app.main.store.models import StoreModel
+from app.main.address.models import AddressModel
 from app.main.search.forms import SearchForm
 
 from app.email import send_email
 from utils import Utils
 from constants import SERVER_NAME
+from flask.helpers import make_response
+from flask.json import jsonify
+from constants import API_KEY
+from utils import Utils
 
 auth_blueprint = Blueprint(
     'auth', __name__, template_folder='templates')
@@ -126,6 +132,9 @@ def post_login(error=None):
         if error is None:
             session['logged'] = True
             session['cur_user'] = user[0]
+            session['search'] = ""
+            session['search_tsl'] = ""
+            session['recommendation'] = ""
             if user[0].active == 2:
                 return redirect('/admin')
             return redirect('/')
@@ -141,6 +150,79 @@ def get_logout():
 @auth_blueprint.route('/', methods=['GET'])
 @login_required
 def home(form=None):
+    session["pos"] = None
     if form is None:
         form = SearchForm()
-    return render_template("index.html", user=session['cur_user'], form=form)
+
+    return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
+
+
+@auth_blueprint.route('/load-predict-cate', methods=['GET'])
+@login_required
+def load_predict_cate():
+    print(session["search_tsl"])
+    if session["search"]:
+        print(session['search'])
+        tsl = Utils.sample_translate_text(session["search"], "en-US", "britcat3")
+        session["search"] = ""
+        text = tsl.translations[0].translated_text.lower()
+        session["search_tsl"] += text + " "
+        print(session["search_tsl"])
+        rs = Utils.predict_food_cate(session["search_tsl"])
+        rs.pop('other', None)
+        session['recommendation'] = rs
+        print(rs)
+        # if rs:
+        #     res = make_response(jsonify(rs), 201)
+        #     return res
+    elif session["search_tsl"]:
+        if session['recommendation']:
+            res = make_response(jsonify(session['recommendation']), 201)
+            return res
+
+    res = make_response(jsonify({}), 200)
+    return res
+
+
+@auth_blueprint.route('/reset-rec')
+@login_required
+def reset_rec():
+    rp = request.args.get('rp', '', type=str)
+    if rp != 'n':
+        cur_user = UserModel().find_by_id(session['cur_user'].id)[0]
+        data_update = cur_user.infor_rec + " " + session['search_tsl']
+        cur_user.update(set__infor_rec=data_update)
+        session['search_tsl'] = ""
+        return redirect('/stores/?cate_predict='+rp)
+    elif rp == 'n':
+        session['search_tsl'] = ""
+        return make_response(jsonify({}), 200)
+
+@auth_blueprint.route('/load_geo_places')
+@login_required
+def load_geo_places():
+    stores = StoreModel().query_all()
+    datas = []
+    for store in stores:
+        # address = AddressModel().find_by_id(store.address_id)[0]
+        datas += [{
+            "lng": float(store.position["lng"]),
+            "lat": float(store.position["lat"]),
+            "id": str(store.id),
+            "name": store.name,
+            "link_img": store.link_image[0]
+        }]
+    res = make_response(jsonify(datas), 200)
+    return res
+
+
+@auth_blueprint.route("/load_geolocation")
+def load_geolocation():
+    if request.args:
+        pos = {
+            "lat": request.args.get("lat"),
+            "lng": request.args.get("lng")
+        }
+        session["pos"] = pos 
+    res = make_response(jsonify({"message": "OK"}), 200)
+    return res

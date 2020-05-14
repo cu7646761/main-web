@@ -6,7 +6,12 @@ from app.main.search.models import SearchableMixin
 class Store(mongoengine.Document, SearchableMixin):
     __tablename__ = 'store_mongo'
     __searchable__ = ['name']
-
+    meta = {        
+        'indexes': [
+            {
+                'fields': ['+classification']	               
+            }]
+    }
     name = mongoengine.StringField(max_length=255, required=True)
     address_id = mongoengine.ObjectIdField()
     categories_id = mongoengine.ListField()
@@ -36,6 +41,7 @@ class Store(mongoengine.Document, SearchableMixin):
     comments_i = mongoengine.IntField()
     comments_s = mongoengine.IntField()
     comment_list = mongoengine.ListField()
+    type_store =mongoengine.DictField()
 
     classification = mongoengine.FloatField()
     reviewer_quant = mongoengine.IntField()
@@ -44,6 +50,10 @@ class Store(mongoengine.Document, SearchableMixin):
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
     deleted_at = mongoengine.DateTimeField(default=None)
 
+    entity_score = mongoengine.DictField()
+    entity_sentiment = mongoengine.DictField()
+    position = mongoengine.DictField()
+    category_predict = mongoengine.StringField()
     meta = {'allow_inheritance': True}
 
     

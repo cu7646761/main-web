@@ -12,7 +12,12 @@ How to run server
      . venv/bin/activate <br>
      pip install -r requirements.txt
 4. Start mongo db
-5. Run server
+5. Config .env file, run command in terminal project directory
+    > cp .env.example .env <br>
+    Then change the value of API_KEY
+6. Create Index, go to mongo command
+    > db.store.createIndex({ classification: 1 })
+7. Run server
     > python flasky.py <br>
 
 How to run tdd test
