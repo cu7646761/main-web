@@ -31,6 +31,80 @@
     <!-- Magnific Popup CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <style>
+        body
+        * {box-sizing: border-box;}
+        
+        /* Button used to open the chat form - fixed at the bottom of the page */
+        .open-button {
+          background-color: #555;
+          color: white;
+          padding: 16px 20px;
+          border: none;
+          cursor: pointer;
+          opacity: 0.8;
+          position: fixed;
+          bottom: 23px;
+          right: 28px;
+          width: 280px;
+        }
+        
+        /* The popup chat - hidden by default */
+        .chat-popup {
+          display: none;
+          position: fixed;
+          bottom: 0;
+          right: 15px;
+          border: 3px solid #f1f1f1;
+          z-index: 9;
+        }
+        
+        /* Add styles to the form container */
+        .form-container {
+          max-width: 300px;
+          padding: 10px;
+          background-color: white;
+        }
+        
+        /* Full-width textarea */
+        .form-container textarea {
+          width: 100%;
+          padding: 15px;
+          margin: 5px 0 22px 0;
+          border: none;
+          background: #f1f1f1;
+          resize: none;
+          min-height: 200px;
+        }
+        
+        /* When the textarea gets focus, do something */
+        .form-container textarea:focus {
+          background-color: #ddd;
+          outline: none;
+        }
+        
+        /* Set a style for the submit/send button */
+        .form-container .btn {
+          background-color: #4CAF50;
+          color: white;
+          padding: 16px 20px;
+          border: none;
+          cursor: pointer;
+          width: 100%;
+          margin-bottom:10px;
+          opacity: 0.8;
+        }
+        
+        /* Add a red background color to the cancel button */
+        .form-container .cancel {
+          background-color: red;
+        }
+        
+        /* Add some hover effects to buttons */
+        .form-container .btn:hover, .open-button:hover {
+          opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -108,7 +182,14 @@
     </div>
 </div>
 <!--//END HEADER -->
-
+<!-- <div class="chat-popup" id="formRecommend">
+    <form class="form-container">
+        <label for="msg"><b>Message</b></label>
+        <div class="alert alert-primary" id="recommend-text">Có phải bạn muốn tìm kiếm về  </div>
+        <a class="btn btn-success" href="/reset-rec?rp=y" id="btn-recommend">Yes</a>
+        <button type="button" class="btn cancel" onclick="closeForm()">No</button>
+    </form>
+</div> -->
 
 <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
@@ -120,7 +201,7 @@
 {#<footer class="main-block dark-bg">#}
 {#    <div class="container">#}
 {#        <div class="row">#}
-{#            <div class="col-md-12">#}
+{#            <div class="col-md-12 ">#}
 {#                <div class="copyright">#}
 {#                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->#}
 {#                    <p>Copyright &copy; 2018 Listing. All rights reserved | This template is made with <i#}
@@ -140,7 +221,37 @@
 {#<!--//END FOOTER -->#}
 
 
+    <!-- <button class="open-button" onclick="openForm()">Chat</button> -->
+    
+    <script>
+        // function openForm() {
+        //     document.getElementById("formRecommend").style.display = "block";
+        // }
 
+        // function closeForm() {
+        //     document.getElementById("formRecommend").style.display = "none";
+        //     fetch(`/reset-rec?rp=n`).then((response) => {
+
+        //     })
+        // }
+    </script>
+    <script>
+        // function loadPredictCate(){
+        //     console.log("bame")
+        //     fetch(`/load-predict-cate`).then((response) => {
+        //         response.json().then(function(data) {
+        //             if (response.status == 201){
+        //                 openForm()
+        //                 key = Object.keys(data)[0]
+        //                 document.getElementById("recommend-text").innerHTML += key + " ?"
+        //                 document.getElementById("btn-recommend").setAttribute('href', `/reset-rec?rp=${key}`)
+        //                 console.log(Object.keys(data)[0])
+        //             }
+        //         })
+        //     })
+        // }
+        // loadPredictCate()
+    </script>
 
 <script>
     $(window).scroll(function () {

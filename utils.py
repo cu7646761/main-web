@@ -1,8 +1,9 @@
 import os
-
+import requests
 from flask import json
 from app import bcrypt
 from google.cloud import language_v1
+from google.cloud import translate
 from google.cloud.language_v1 import enums
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
 
@@ -54,6 +55,25 @@ class Utils:
             return 'F'
 
     @staticmethod
+    def predict_food_cate(text):
+        data = {
+            "instances": [{
+                "text": text
+            }]
+        }
+        response = requests.post('http://localhost:8080/predict', json=data)
+        result = json.loads(response.content)
+        rsfm = result['predictions'][0]
+        type_store = {}
+        print(rsfm)
+        for i in range(len(rsfm["classes"])):
+            type_store[rsfm["classes"][i]] = rsfm["scores"][i]
+        type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
+        type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
+        return type_sorted
+        
+
+    @staticmethod
     def analyze_entity_sentiment(text_content):
         """
         Analyzing Entity Sentiment in a String
@@ -80,34 +100,34 @@ class Utils:
 
         response = client.analyze_entity_sentiment(document, encoding_type=encoding_type)
         return response
-        # Loop through entitites returned from the API
-        # for entity in response.entities:
-        #     print(u"Representative name for the entity: {}".format(entity.name))
-        #     # Get entity type, e.g. PERSON, LOCATION, ADDRESS, NUMBER, et al
-        #     print(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
-        #     # Get the salience score associated with the entity in the [0, 1.0] range
-        #     print(u"Salience score: {}".format(entity.salience))
-        #     # Get the aggregate sentiment expressed for this entity in the provided document.
-        #     sentiment = entity.sentiment
-        #     print(u"Entity sentiment score: {}".format(sentiment.score))
-        #     print(u"Entity sentiment magnitude: {}".format(sentiment.magnitude))
-        #     # Loop over the metadata associated with entity. For many known entities,
-        #     # the metadata is a Wikipedia URL (wikipedia_url) and Knowledge Graph MID (mid).
-        #     # Some entity types may have additional metadata, e.g. ADDRESS entities
-        #     # may have metadata for the address street_name, postal_code, et al.
-        #     for metadata_name, metadata_value in entity.metadata.items():
-        #         print(u"{} = {}".format(metadata_name, metadata_value))
 
-        #     # Loop over the mentions of this entity in the input document.
-        #     # The API currently supports proper noun mentions.
-        #     for mention in entity.mentions:
-        #         print(u"Mention text: {}".format(mention.text.content))
-        #         # Get the mention type, e.g. PROPER for proper noun
-        #         print(
-        #             u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
-        #         )
+    @staticmethod
+    def sample_translate_text(text, target_language, project_id):
+        """
+        Translating Text
 
-        # # Get the language of the text, which will be the same as
-        # # the language specified in the request or, if not specified,
-        # # the automatically-detected language.
-        # print(u"Language of the text: {}".format(response.language))
+        Args:
+        text The content to translate in string format
+        target_language Required. The BCP-47 language code to use for translation.
+        """
+
+        client = translate.TranslationServiceClient()
+
+        # TODO(developer): Uncomment and set the following variables
+        # text = 'Text you wish to translate'
+        # target_language = 'fr'
+        # project_id = '[Google Cloud Project ID]'
+        contents = [text]
+        parent = client.location_path(project_id, "global")
+
+        response = client.translate_text(
+            parent=parent,
+            contents=contents,
+            mime_type='text/plain',  # mime types: text/plain, text/html
+            source_language_code='vi',
+            target_language_code=target_language)
+        # Display the translation for each input text provided
+        for translation in response.translations:
+            print(u"Translated text: {}".format(translation.translated_text))
+
+        return response

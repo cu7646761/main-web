@@ -53,6 +53,7 @@ class Store(mongoengine.Document, SearchableMixin):
     entity_score = mongoengine.DictField()
     entity_sentiment = mongoengine.DictField()
     position = mongoengine.DictField()
+    category_predict = mongoengine.StringField()
     meta = {'allow_inheritance': True}
 
     
