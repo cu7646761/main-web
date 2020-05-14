@@ -4,11 +4,19 @@
     <script src="{{ url_for('static', filename='admin/jquery.twbsPagination.js') }}" type="text/javascript"></script>
 {% endblock %}
 {% block content %}
-    <main class="main-content col-lg-10 col-md-9 col-sm-12 p-0 offset-lg-2 offset-md-3 px-4">
+    <main class="main-content col-lg-10 col-md-9 col-sm-12 p-0 offset-lg-2 offset-md-3">
         <div class="main-navbar sticky-top bg-white">
             <!-- Main Navbar -->
             <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
-                <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex"></form>
+                <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
+                    <div class="input-group input-group-seamless ml-3">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        </div>
+                        <input class="navbar-search form-control" type="text" placeholder="Search for something..." aria-label="Search"> </div>
+                </form>
                 <ul class="navbar-nav border-left flex-row ">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#"
@@ -35,23 +43,33 @@
         </div>
 
 
-        <div class="main-content-container container-fluid px-0">
+        <div class="main-content-container container-fluid px-4">
             <!-- Page Header -->
-            <div class="page-header row no-gutters mt-2">
+            <!-- <div class="page-header row no-gutters mt-2">
                 <div class="col-8 col-sm-8 text-center text-sm-left mb-0">
-                    <span class="text-uppercase page-subtitle">Tổng quan</span>
-                    <h3 class="page-title">Các cửa hàng</h3>
+                    
                 </div>
                 <div class="col-4 col-sm-4 text-right justify-content-end">
                     <a href="/admin/store/add/" class="btn btn-lg btn-accent ml-auto">
                         <i class="material-icons">add</i>Thêm mới cửa hàng
                     </a>
                 </div>
-            </div>
+            </div> -->
             <!-- End Page Header -->
             <!-- Default Light Table -->
             <br><br>
             <div class="container">
+                <div class="row">
+                    <div class="col-8 col-sm-8 text-center text-sm-left mb-0">
+                    
+                    </div>
+                    <div class="col-4 col-sm-4 text-right justify-content-end pr-0">
+                        <a href="/admin/store/add/" class="btn btn-lg btn-accent ml-auto">
+                            <i class="material-icons">add</i>Thêm mới cửa hàng
+                        </a>
+                    </div>
+                </div>
+                <br>
                 <div class="row">
                     <div class="col pl-0 pr-0">
                         <div class="card card-small mb-4">
@@ -111,10 +129,8 @@
     <script type="text/javascript">
         $('#pagination').twbsPagination({
             totalPages: parseInt($("#totalPages").attr('value')),
-            {#visiblePages: {{ visible_page }},#}
             visiblePages: 4,
             onPageClick: function (event, page) {
-                {#waiting for load page#}
                 $('#body-store').empty();
                 $('#body-store').append(`
                                    <tr>
@@ -134,18 +150,18 @@
                                 console.log(data.data[i].store_id);
                                 var addStore = `
                                 <tr>
-                                    <td>` + data.data[i].name + `</td>
+                                    <td style ="width:200px">` + data.data[i].name + `</td>
                                     <td>` + data.data[i].stars + `</td>
 {#                                    <td>` + data.data[i].cmt_count + `</td>#}
-                                    <td>` + data.data[i].address + `</td>
+                                    <td style ="width:200px">` + data.data[i].address + `</td>
                                     <td>` + data.data[i].price + `</td>
-                                    <td>` + data.data[i].create_at + `</td>
-                                    <td>` + data.data[i].deleted_at + `</td>
+                                    <td style ="width:150px">` + data.data[i].create_at + `</td>
+                                    <td style ="width:150px">` + data.data[i].deleted_at + `</td>
                                     <td>
-                                        <a type="button" class="btn btn-info mb-1" href=/admin/store/edit/` + data.data[i].store_id + `>
+                                        <a type="button" class="btn btn-info" href=/admin/store/edit/` + data.data[i].store_id + `>
                                             Sửa
-                                        </a>
-                                        <a type="button" class="btn btn-danger" href=/admin/store/delete/\` + data.data[i].store_id + \`>
+                                        </a>&nbsp
+                                        <a type="button" class="btn btn-danger" href=/admin/store/delete/` + data.data[i].store_id + `>
                                             Xoá
                                         </a>
                                     </td>
