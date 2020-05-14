@@ -15,8 +15,9 @@ from app.main.comment.models import CommentModel
 from app.main.store.models import StoreModel
 from constants import UPLOAD_FOLDER, LINK_IMG
 from app.image.image_preprocessing import resize
+from constants import API_KEY
 
-gmaps = googlemaps.Client(key='AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q')
+gmaps = googlemaps.Client(key=API_KEY)
 
 store_admin_blueprint = Blueprint(
     'store_admin', __name__, template_folder='templates')

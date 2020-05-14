@@ -8,8 +8,8 @@ class Address(mongoengine.Document, SearchableMixin):
     __searchable__ = ['detail']
     detail = mongoengine.StringField(max_length=255, required=True)
     district = mongoengine.StringField()
-    latitude = mongoengine.FloatField()
-    longtitude = mongoengine.FloatField()
+    latitude = mongoengine.StringField()
+    longtitude = mongoengine.StringField()
     
     meta = {'allow_inheritance': True}
     def __repr__(self):

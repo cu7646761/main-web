@@ -1,5 +1,12 @@
 import enum
 import os
+from dotenv import load_dotenv
+
+
+_DOT_ENV_PATH = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(_DOT_ENV_PATH)
+
+API_KEY = os.getenv('API_KEY', "AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q")
 
 class Pages(enum.IntEnum):
     NUMBER_PER_PAGE = 10
@@ -11,7 +18,7 @@ class Errors(enum.Flag):
     ERROR_EXIST = "Error: this fields is exist"
 
 
-SERVER_NAME = "http://127.0.0.1:5000"
+SERVER_NAME = "http://localhost:5000"
 LINK_IMG = SERVER_NAME + "/static/images/"
 LINK_IMG_AVATAR_DEF = os.path.join(LINK_IMG, 'avatar_an_danh.jpg')
 ADMIN_MAIL = "vuongsponges@gmail.com"
