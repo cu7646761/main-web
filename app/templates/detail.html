@@ -24,7 +24,7 @@
     <template id="relst-template">
         <div class="col-4" style="">
             <div class="content">              
-                <a href="" class="grid image-link" id="img-rl">
+                <a href="" class="grid image-link" id="link-rl">
                     <img src="" id="image-rl" style = "height:200px; width: 200px; min-height: 200px;" class="img-fluid" alt="#">
                 </a>   
                 <p class ="title" id="title-rl">
@@ -140,7 +140,24 @@
                             <p> Description ở đây</p>
                             <hr>
                         </div>
-
+                        <span class="heading">Tự động phân loại</span>
+                        <hr style="border:3px solid #f1f1f1">
+                        <div class="row">
+                            {% for k,v in cate_dict.items() %}
+                                <div class="side">
+                                    <div>{{k.upper()}}</div>
+                                </div>
+                                <div class="middle">
+                                    <div class="bar-container">
+                                        <div class="bar-1" style="--bar1: {{ v*100 }}%;"></div>
+                                    </div>
+                                </div>
+                                <div class="side right">
+                                    <div>{{ (v*100)|round(2) }} %</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <hr>
                         <!-- SHOW USER RATING-->
                         <span class="heading">Đánh giá cửa hàng</span>
                         <!-- Show stars -->
@@ -586,12 +603,12 @@ function loadItems() {
 <script>
     var swiper = document.querySelector('#swiper-rl')
     var rl_template = document.querySelector('#relst-template');
-    var begin = 0
+    var page = 1
     
     function loadrlStore() {
         document.getElementById('loading-text').innerHTML = "Loading...";
         document.getElementById('load-more-st').disabled = true;
-        fetch(`/load-relative-store/{{store_id}}?begin=${begin}`).then((response) => {
+        fetch(`/load-relative-store/{{store_id}}?page=${page}`).then((response) => {
             // Convert the response data to JSON
             response.json().then((res) => {
                 
@@ -607,14 +624,15 @@ function loadItems() {
                     template_rel_clone.querySelector("#title-rl").innerHTML = res.datas[i].store.name;
                     
                     template_rel_clone.querySelector("#price-rl").innerHTML = res.datas[i].store.min_price + "đ - " +res.datas[i].store.max_price + "đ" ;
-                    template_rel_clone.querySelector("#image-rl").setAttribute('src', res.datas[i].store.link_image[0]) 
+                    template_rel_clone.querySelector("#image-rl").setAttribute('src', res.datas[i].store.link_image[0])
+                    template_rel_clone.querySelector("#link-rl").setAttribute('href', `/stores/${res.datas[i].store._id.$oid}`)  
                     template_rel_clone.querySelector("#recStore").setAttribute('value', res.datas[i].store._id.$oid)
                     // Append template to dom
                     swiper.appendChild(template_rel_clone);
                     console.log(res.end)
                     // Increment the counter
                 }
-                begin += res.end;
+                page += 1;
             })
             document.getElementById('load-more-st').disabled = false;
             document.getElementById('loading-text').innerHTML = "";
