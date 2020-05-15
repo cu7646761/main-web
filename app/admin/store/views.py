@@ -82,8 +82,9 @@ def list_store_api():
 def store(form=None):
     store = StoreModel()
     stores, total_pages = store.query_paginate(1)
-    return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
-                           total_pages=total_pages - 2)
+    count = store.count()
+    return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active", 
+                        count =count, total_pages=total_pages - 2)
 
 
 @store_admin_blueprint.route('/add/', methods=['GET', 'POST'])

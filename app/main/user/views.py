@@ -183,4 +183,4 @@ def update_basic(error=None, form=None):
     cur_user = user.find_by_id(session['cur_user'].id)[0]
     session['cur_user'] = cur_user
 
-    return profile(success="Your basic information is updated successfully")
+    return profile(success="Cập nhật thông tin thành công.")
