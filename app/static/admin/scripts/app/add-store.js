@@ -241,6 +241,7 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
     http.setRequestHeader('Content-type', 'application/json');
 
     http.onreadystatechange = function () {
+        console.log(http.status)
         if (http.readyState == 4 && http.status == 200) {
             console.log("Send ok")
             location.replace("http://127.0.0.1:5000/admin/store/");

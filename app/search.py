@@ -5,7 +5,10 @@ def add_to_index(index, model):
     if not current_app.elasticsearch:
         return
     payload = {}
+
     for field in model.__searchable__:
+        print(field)
+        print(getattr(model, field))
         payload[field] = getattr(model, field)
     current_app.elasticsearch.index(index=index, id=model.id, body=payload, doc_type={})
 
@@ -23,7 +26,10 @@ def query_full_text(index, query, page, per_page):
         index=index,
         body={'query': {'multi_match': {'query': query, 'fields': ['*']}},
               'from': (page - 1) * per_page, 'size': per_page})
+    print(search)
+
     ids = [hit['_id'] for hit in search['hits']['hits']]
+    print(ids)
     return ids, search['hits']['hits']
 
 
@@ -42,7 +48,7 @@ def query_suggestion(index, query):
     if not current_app.elasticsearch:
         return [], 0
 
-    field_all = ["name"]
+    field_all = ["name", "email"]
 
     ids_all = []
     search_obj_all = []
