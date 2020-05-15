@@ -46,6 +46,10 @@ class AddressModel(AddressEntity):
     @classmethod
     def create_store(cls, detail, district, latitude, longtitude):
         try:
+            print(detail)
+            print(district)
+            print(latitude)
+            print(longtitude)
             address = AddressEntity(detail=detail, district=district, latitude=latitude, longtitude=longtitude)
             address.save()
             # UserEntity.reindex()

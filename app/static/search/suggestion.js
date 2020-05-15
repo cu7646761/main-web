@@ -115,30 +115,89 @@ $('#user_input_store_admin').on('input', function (e) {
                 source: titles,
                 delay: 50,
                 open: function () {
-                    // $('.ui-autocomplete').css('width', '50rem'); // HERE
-                    // $('.ui-widget-content').css('background', '#fff');
-                    // $('.ui-menu-item a').css('color', '#000');
-                    // $('.ui-menu-item').css('margin-bottom', '1rem');
-                    // $('.ui-menu-item a:hover').css('color', 'red !important');
-                    // $('.ui-menu').css('border-bottom-left-radius', '30px');
-                    // $('.ui-menu').css('border-bottom-right-radius', '30px');
-                    // $('.ui-menu').css('box-shadow', '0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08)');
-                    // $('.ui-menu').css('list-style', 'none');
-                    // $('.ui-menu-item a').removeClass('ui-corner-all');
+                    $('.ui-autocomplete').css('width', '50rem'); // HERE
+                    $('.ui-widget-content').css('background', '#fff');
+                    $('.ui-menu-item a').css('color', '#000');
+                    $('.ui-menu-item').css('margin-bottom', '1rem');
+                    $('.ui-menu-item a:hover').css('color', 'red !important');
+                    $('.ui-menu').css('border-bottom-left-radius', '30px');
+                    $('.ui-menu').css('border-bottom-right-radius', '30px');
+                    $('.ui-menu').css('box-shadow', '0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08)');
+                    $('.ui-menu').css('list-style', 'none');
+                    $('.ui-menu-item a').removeClass('ui-corner-all');
+                },
+                select: function (event, ui) {}
+            }
+        ).data("ui-autocomplete")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append("<a>" + item.label + "</a>")
+                .appendTo(ul);
+        };
+
+    });
+});
+
+$('#user_input_user_admin').on('input', function (e) {
+
+    var user_input = $('#user_input_user_admin').val();
+
+    console.log(user_input);
+
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "/search/suggestion-user",
+        "method": "POST",
+        "headers": {
+            "cache-control": "no-cache",
+            "Content-Type": "application/json"
+        },
+        "processData": false,
+        data: "q=" + user_input
+    }
+
+
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+        var data = response.data;
+
+        titles = [];
+        for (var i = 0; i < data.length; i++) {
+            field_name = data[i]["_source"]["name"] || data[i]["_source"]["email"];
+            titles.push(field_name);
+        }
+        console.log(titles);
+
+
+        $('#user_input_user_admin').autocomplete(
+            {
+                source: titles,
+                delay: 50,
+                open: function () {
+                    $('.ui-autocomplete').css('width', '50rem'); // HERE
+                    $('.ui-widget-content').css('background', '#fff');
+                    $('.ui-menu-item a').css('color', '#000');
+                    $('.ui-menu-item').css('margin-bottom', '1rem');
+                    $('.ui-menu-item a:hover').css('color', 'red !important');
+                    $('.ui-menu').css('border-bottom-left-radius', '30px');
+                    $('.ui-menu').css('border-bottom-right-radius', '30px');
+                    $('.ui-menu').css('box-shadow', '0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08)');
+                    $('.ui-menu').css('list-style', 'none');
+                    $('.ui-menu-item a').removeClass('ui-corner-all');
                 },
                 select: function (event, ui) {
                     if (ui.item) {
                         var settings_get_store = {
                             "async": true,
                             "crossDomain": true,
-                            "url": "/admin/store/suggestion",
+                            "url": "/admin/user/suggestion",
                             "method": "POST",
                             "headers": {
                                 "cache-control": "no-cache",
                                 "Content-Type": "application/json"
                             },
                             "processData": false,
-                            data: "name=" + ui.item.value
+                            data: "email=" + ui.item.value
                         }
                         $.ajax(settings_get_store).done(function (data) {
                             window.location.href = "/stores/" + data.id;
