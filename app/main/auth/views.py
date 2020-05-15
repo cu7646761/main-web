@@ -136,7 +136,7 @@ def post_login(error=None):
             session['search_tsl'] = ""
             session['recommendation'] = ""
             if user[0].active == 2:
-                return redirect('/admin')
+                return redirect('/admin/')
             return redirect('/')
     return render_template("login.html", error=error, form=form)
 

@@ -12,6 +12,7 @@ from app.main.address.models import AddressModel
 from app.main.auth.views import login_required
 from app.main.category.models import CategoryModel
 from app.main.comment.models import CommentModel
+from app.main.search.forms import SearchForm
 from app.main.store.models import StoreModel
 from constants import UPLOAD_FOLDER, LINK_IMG
 from app.image.image_preprocessing import resize
@@ -31,7 +32,7 @@ def resize_image():
 
     # file = resize(image_file)
 
-    file.filename = datetime.now().strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
+    file.filename = datetime.datetime.now().strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
     filename = secure_filename(file.filename)
     file.save(os.path.join(UPLOAD_FOLDER, filename))
 
@@ -84,6 +85,18 @@ def list_store_api():
 @login_required_admin
 def home_store(form=None):
     store = StoreModel()
+    if form is None:
+        form = SearchForm()
+    stores, total_pages = store.query_paginate(1)
+    return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
+                           total_pages=total_pages - 2)
+
+@store_admin_blueprint.route('/suggestion', methods=['GET'])
+@login_required_admin
+def home_store_suggestion(form=None):
+    store = StoreModel()
+    if form is None:
+        form = SearchForm()
     stores, total_pages = store.query_paginate(1)
     return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
                            total_pages=total_pages - 2)

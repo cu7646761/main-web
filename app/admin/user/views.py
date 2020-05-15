@@ -17,23 +17,28 @@ from app.image.image_preprocessing import resize
 user_admin_blueprint = Blueprint(
     'user_admin', __name__, template_folder='templates')
 
-@user_admin_blueprint.route('/', methods=['GET','POST'])
+
+@user_admin_blueprint.route('/', methods=['GET', 'POST'])
 @login_required
 def user(form=None):
     user = UserModel()
     count = user.count()
     users, total_pages = user.query_paginate(1)
     return render_template("admin/user-management.html", user=session['cur_user'], form=form,
-                        total_pages=total_pages, count = count)
-@user_admin_blueprint.route('/set-status/<string:user_id>/<int:status>', methods=['GET'])                           
+                           total_pages=total_pages, count=count, user_active="active")
+
+
+@user_admin_blueprint.route('/set-status/<string:user_id>/<int:status>', methods=['GET'])
 @login_required
-def getStatus(form=None,user_id=None, status=None):
+def getStatus(form=None, user_id=None, status=None):
     user = UserModel()
     print("kaka")
     print(status)
     print(user_id)
-    user.changeStatus(user_id,status)
+    user.changeStatus(user_id, status)
     return redirect("/admin/user-management")
+
+
 @user_admin_blueprint.route('/api/list', methods=['GET'])
 @login_required
 def list_user_api():
@@ -65,6 +70,8 @@ def list_user_api():
         "data": data
     }
     return make_response(jsonify(res), 200)
+
+
 @user_admin_blueprint.route('/delete/<string:user_id>', methods=['GET'])
 @login_required
 def delete_user(form=None, user_id=None):

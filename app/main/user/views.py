@@ -21,7 +21,6 @@ user_blueprint = Blueprint(
 
 gmaps = googlemaps.Client(key=API_KEY)
 
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
