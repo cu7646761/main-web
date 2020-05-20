@@ -44,8 +44,8 @@ def full_text():
 #     return render_template('CRUD/search/fuzzy.html', search_obj=search_obj, form=form)
 
 
-@search_blueprint.route('/suggestion', methods=['POST'])
-def suggestion():
+@search_blueprint.route('/suggestion-store', methods=['POST'])
+def suggestion_store():
     search_term = request.data.decode("utf-8").split("=")[1]
     cls_model = [StoreModel]
     #reindex_all = [model.reindex() for model in cls_model]

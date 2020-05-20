@@ -44,35 +44,37 @@
                         <div class="mb-3 mx-auto">
                             <img class="rounded-circle"
                                  src="{{ user.link_image }}"
-                                 alt="User Avatar" width="140" height="140">
+                                 alt="User Avatar" width="300" height="300">
                         </div>
                         <h4 class="mb-0">{{ user.email[:user.email.find('@')] }}</h4>
                         <span class="text-muted d-block mb-2">User</span>
 
-
-                        <div class="row">
-                            <form action="{{ url_for('user.upload') }}" method="POST" enctype=multipart/form-data
-                                  class="form-inline">
-                                <div class="form-group col-md-6">
-                                    <input type="file" name="file" style="display: inline-block;">
-                                </div>
+                        <form action="{{ url_for('user.upload') }}" method="POST" enctype=multipart/form-data
+                        >
+                            <div class="row">
+                                
+                                    <div class="form-group col-md-12">
+                                        <input type="file" name="file" style="display: inline-block;">
+                                    </div>
+                                
+                            </div>
+                            <div class="row">
+                                
                                 <div class="form-group col-md-6">
                                     <button type="submit" class="mb-2 btn btn-sm btn-pill btn-primary w-100">
                                         Cập nhật ảnh
                                     </button>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-md-12">
-                                <a type="button" href='/profile/delete-img'
-                                   class="mb-2 btn btn-sm btn-pill btn-danger w-100">
-                                    Xoá ảnh
-                                </a>
+                                <div class="form-group col-md-6">
+                                    <a type="button" href='/profile/delete-img'
+                                    class="mb-2 btn btn-sm btn-pill btn-danger w-100">
+                                        Xoá ảnh
+                                    </a>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                    <ul class="list-group list-group-flush">
+                    <!-- <ul class="list-group list-group-flush">
                         <li class="list-group-item px-4">
                             <div class="progress-wrapper">
                                 <strong class="text-muted d-block mb-2">Mức độ hoàn thành</strong>
@@ -84,7 +86,7 @@
                                 </div>
                             </div>
                         </li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
             <div class="col-lg-8">
@@ -122,19 +124,20 @@
                                             </div>
                                         </div>
                                         <div class="form-row">
-                                            <div class="form-group col-md-6">
+                                            <div class="form-group col-md-12">
                                                 <label for="love_cate">Danh mục yêu thích</label>
-                                                <select multiple id="love_ca" name="love_ca" class="form-control"
-                                                        required>
+                                                <br>
+                                                <div class="row checklist">
                                                     {% for cate in cate_list %}
-                                                        <option value="{{ cate.name }}"
-                                                                name="{{ cate.name }}"
-                                                                {% if cate.name in lst_cate_choose %}
-                                                                selected {% endif %}>{{ cate.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                                <input type="text" class="form-control" id="love_cate" name="love_cate"
-                                                       style="display: none;">
+                                                    <div class="checkbox col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                                                        
+                                                        <label style="white-space: nowrap;"> 
+                                                            <input type="checkbox" id ="love_cate" name="love_cate" value="{{ cate.name }}" {% if  cate.name in lst_cate_choose %} checked {% endif %}> {{ cate.name }}
+                                                        </label>
+                                                       
+                                                    </div>
+                                                    {%endfor %}
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-row">
@@ -318,10 +321,6 @@
             $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
             $("#result-address").val($("#address").val() + ", " + district + ", " + city);
         });
-
-        $("#love_ca").on('change', function() {
-            $("#love_cate").val($("#love_ca").val());
-        })
 
 
 

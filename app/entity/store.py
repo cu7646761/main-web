@@ -12,7 +12,7 @@ class Store(mongoengine.Document, SearchableMixin):
                 'fields': ['+classification']	               
             }]
     }
-    name = mongoengine.StringField(max_length=255, required=True)
+    name = mongoengine.StringField(max_length=255, required=True, unique=True)
     address_id = mongoengine.ObjectIdField()
     categories_id = mongoengine.ListField()
     min_price = mongoengine.StringField()
