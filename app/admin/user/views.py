@@ -11,6 +11,7 @@ from app.main.auth.views import login_required
 from app.main.category.models import CategoryModel
 from app.main.comment.models import CommentModel
 from app.main.auth.models import UserModel
+from app.main.search.forms import SearchForm
 from constants import UPLOAD_FOLDER, LINK_IMG
 from app.image.image_preprocessing import resize
 from constants import API_KEY
@@ -36,9 +37,11 @@ user_admin_blueprint = Blueprint(
 def user(form=None):
     user = UserModel()
     count = user.count()
+    if form is None:
+        form = SearchForm()
     users, total_pages = user.query_paginate(1)
     return render_template("admin/user-management.html", user=session['cur_user'], form=form,
-                           total_pages=total_pages, count=count, user_active="active")
+                           total_pages=total_pages, count=count, user_active="active", search_obj=[])
 
 
 @user_admin_blueprint.route('/set-status/<string:user_id>/<int:status>', methods=['GET'])

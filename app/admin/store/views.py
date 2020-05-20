@@ -89,19 +89,8 @@ def home_store(form=None):
     if form is None:
         form = SearchForm()
     stores, total_pages = store.query_paginate(1)
-    return render_template("admin/store.html", user=session['cur_user'],count= count, form=form, store_active="active",
-                           total_pages=total_pages - 2)
-
-@store_admin_blueprint.route('/suggestion', methods=['GET'])
-@login_required_admin
-def home_store_suggestion(form=None):
-    store = StoreModel()
-    if form is None:
-        form = SearchForm()
-    stores, total_pages = store.query_paginate(1)
-    count = store.count()
-    return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active", 
-                        count =count, total_pages=total_pages - 2)
+    return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
+                           total_pages=total_pages - 2, search_obj=[])
 
 
 @store_admin_blueprint.route('/add/', methods=['GET', 'POST'])
@@ -117,6 +106,7 @@ def _store(form=None):
     address = AddressModel()
 
     if request.method == 'POST':
+        print("in here")
         post_data = request.get_json()
 
         name = post_data.get("name", "")
@@ -126,6 +116,11 @@ def _store(form=None):
         address_detail = post_data.get("address_detail", "")
         address_district = post_data.get("address_district", "")
         image_list = post_data.get("image_list", "")
+
+        print(name)
+        print(description)
+        print(categories)
+        print(image)
 
         list_obj_cate = []
         for cate in categories:
@@ -137,10 +132,20 @@ def _store(form=None):
 
         address_id, err = address.create_store(address_detail, address_district, str(latitude), str(longtitude))
         if err:
+            print(err)
+            print("chang le vo day")
             return redirect('/admin/store/add/')
 
-        image_list.append(image)
+        print("ko bietv lun a")
+        print(address_id)
 
+        image_list.append(image)
+        print(image_list)
+
+        print(name)
+        print(description)
+        print(list_obj_cate)
+        print(address_id)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id)
 
         if err:
