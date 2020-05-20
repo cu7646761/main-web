@@ -9,9 +9,9 @@
         <div class="main-navbar sticky-top bg-white">
             <!-- Main Navbar -->
             <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
-                <form action="{{ url_for('search.full_text') }}" method="GET"
+                <form action="{{ url_for('search.full_text_admin_store') }}" method="GET"
                       class="main-navbar__search w-100 d-none d-md-flex d-lg-flex" id="search_form">
-                    {{ form.q(placeholder="Địa điểm,...", class="form-control", id="user_input_store_admin") }}
+                    {{ form.q(placeholder="Nhập địa điểm ăn uống ...", class="form-control", id="user_input_store_admin", style="margin-left: 1.1rem;") }}
                     <button type="submit" class="btn-outline-primary">
                             <span class="icon-magnifier search-icon">
                             </span>Tìm kiếm
@@ -19,40 +19,6 @@
                         </i>
                     </button>
                 </form>
-                {% if search_obj == [] %}
-                    <div class="page-header row no-gutters mb-3">
-                        <div class="card form-control" style="border:0;">
-                            <h3 class="card-body">
-                                Không có kết quả tìm kiếm
-                            </h3>
-                        </div>
-                    </div>
-                {% endif %}
-                {% for obj in search_obj %}
-                    <div class="page-header row no-gutters mb-3 border-bottom"
-                         style="background-color: #f2f2f2;">
-                        <form method="POST" action="/store" class="form-control"
-                              style="border:0;padding:0;">
-                            <div class="card" style="border:0;">
-                                <button type="submit" class="card-body">
-                                    {{ obj["_source"]["name"] }}
-                                </button>
-                                <input name="name" value="{{ obj["_source"]["name"] }}"
-                                       style="display:none;">
-                            </div>
-                        </form>
-                    </div>
-                {% endfor %}
-                {#                <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">#}
-                {#                    <div class="input-group input-group-seamless ml-3">#}
-                {#                        <div class="input-group-prepend">#}
-                {#                            <div class="input-group-text">#}
-                {#                                <i class="fas fa-search"></i>#}
-                {#                            </div>#}
-                {#                        </div>#}
-                {#                        <input class="navbar-search form-control" type="text" placeholder="Search for something..."#}
-                {#                               aria-label="Search"></div>#}
-                {#                </form>#}
                 <ul class="navbar-nav border-left flex-row ">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#"
@@ -80,19 +46,6 @@
 
 
         <div class="main-content-container container-fluid px-4">
-            <!-- Page Header -->
-            <!-- <div class="page-header row no-gutters mt-2">
-                <div class="col-8 col-sm-8 text-center text-sm-left mb-0">
-                    
-                </div>
-                <div class="col-4 col-sm-4 text-right justify-content-end">
-                    <a href="/admin/store/add/" class="btn btn-lg btn-accent ml-auto">
-                        <i class="material-icons">add</i>Thêm mới cửa hàng
-                    </a>
-                </div>
-            </div> -->
-            <!-- End Page Header -->
-            <!-- Default Light Table -->
             <br><br>
             <div class="container">
                 <div class="row">
@@ -125,12 +78,34 @@
                                     </tr>
                                     </thead>
                                     <tbody id="body-store">
-                                    <tr>
-                                        <td>Đang tải ...</td>
-                                    </tr>
 
-                                    <input style="display: none;" name="totalPages" id="totalPages"
-                                           value="{{ total_pages }}"/>
+                                    {% if search_obj != [] %}
+                                        {% for obj in search_obj %}
+                                            <tr>
+                                                <td style="width:200px">{{ obj["name"] }}</td>
+                                                <td>{{ obj["stars"] }}</td>
+                                                <td style="width:200px">{{ obj["address"] }}</td>
+                                                <td>{{ obj["price"] }}</td>
+                                                <td style="width:150px">{{ obj["created_at"] }}</td>
+                                                <td style="width:150px">{{ obj["deleted_at"] }}</td>
+                                                <td>
+                                                    <a type="button" class="btn btn-info" href=/admin/store/edit/{{ obj["_id"] }}>
+                                                        Sửa
+                                                    </a>&nbsp
+                                                    <a type="button" class="btn btn-danger" href=/admin/store/delete/{{ obj["_id"] }}>
+                                                        Xoá
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if search_obj == [] %}
+                                        <tr>
+                                            <td>Đang tải ...</td>
+                                        </tr>
+                                        <input style="display: none;" name="totalPages" id="totalPages"
+                                               value="{{ total_pages }}"/>
+                                    {% endif %}
                                     </tbody>
                                 </table>
                             </div>
@@ -176,7 +151,6 @@
                                 <tr>
                                     <td style ="width:200px">` + data.data[i].name + `</td>
                                     <td>` + data.data[i].stars + `</td>
-{#                                    <td>` + data.data[i].cmt_count + `</td>#}
                                     <td style ="width:200px">` + data.data[i].address + `</td>
                                     <td>` + data.data[i].price + `</td>
                                     <td style ="width:150px">` + data.data[i].create_at + `</td>
