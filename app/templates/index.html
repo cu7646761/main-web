@@ -273,7 +273,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-4">
                     <div class="featured-btn-wrap">
-                        <a href="#" class="btn btn-danger">VIEW ALL</a>
+                        <a href="/stores" class="btn btn-danger">XEM TẤT CẢ</a>
                     </div>
                 </div>
             </div>
@@ -552,16 +552,6 @@
     <!--//END ADD LISTING -->
 
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="{{ url_for('static', filename='search/suggestion.js') }}"></script>
-    <script>
-        $('.input').keypress(function (e) {
-            if (e.which == 13) {
-                $('form#search_form').submit();
-                return false;
-            }
-        });
-    </script>
     <script>
         // Note: This example requires that you consent to location sharing when
         // prompted by your browser. If you see the error "The Geolocation service
@@ -668,9 +658,19 @@
         
     </script>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='search/suggestion.js') }}"></script>
+    <script>
+        $('.input').keypress(function (e) {
+            if (e.which == 13) {
+                $('form#search_form').submit();
+                return false;
+            }
+        });
+    </script>
 {% endblock %}

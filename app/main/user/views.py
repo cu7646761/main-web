@@ -21,7 +21,6 @@ user_blueprint = Blueprint(
 
 gmaps = googlemaps.Client(key=API_KEY)
 
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -135,7 +134,7 @@ def update_basic(error=None, form=None):
     birthday = request.form.get("birthday")
     gender = request.form.get("gender")
     res_address = request.form.get("result-address")
-    love_cate = request.form.get("love_cate", "")
+    love_cate = request.form.getlist("love_cate")
     district = res_address.split(',')[1]
     geocode_result = gmaps.geocode(res_address)
     latitude = str(geocode_result[0].get('geometry').get('location').get('lat'))
@@ -159,7 +158,6 @@ def update_basic(error=None, form=None):
     if love_cate == "":
         list_obj_cate = session['cur_user'].favorite_categories
     else:
-        love_cate = love_cate.split(',')
         category = CategoryModel()
         if isinstance(love_cate, str):
             list_obj_cate.append(category.find_by_name(love_cate)[0].id)

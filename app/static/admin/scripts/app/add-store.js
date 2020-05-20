@@ -212,7 +212,15 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
     let content = $('.ql-editor').html()
     let thumbnail = $('.file-upload-image').attr('src')
 
-    let categories = $('#love_ca').val()
+    let categories = []
+    console.log(categories)
+    $('input[type=checkbox]').each(function () {
+        if (this.checked){
+            categories.push($(this).val()) ;
+            console.log("hehe")
+            console.log(categories)
+        }
+    });
     let address_detail = $('#result-address').val()
 
     if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0)) {
