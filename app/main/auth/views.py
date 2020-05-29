@@ -153,7 +153,7 @@ def home(form=None):
     session["pos"] = None
     if form is None:
         form = SearchForm()
-
+    store = StoreModel().find_by_id
     return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
 

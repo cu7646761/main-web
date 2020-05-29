@@ -1104,3 +1104,6 @@ table#alter th {
     -moz-column-count: 6; /* Firefox */
     column-count: 6;
 }
+.img-fluid{
+  height:250px;
+}
