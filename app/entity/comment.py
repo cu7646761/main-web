@@ -14,7 +14,6 @@ class Comment(mongoengine.Document, SearchableMixin):
     comment_type = mongoengine.StringField(max_length=10)
     star_num = mongoengine.IntField()
     cus_name = mongoengine.StringField(max_length=255)
-
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
 
