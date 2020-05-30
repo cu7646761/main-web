@@ -45,5 +45,7 @@ def create_app(config_name):
 
     from app.admin.store.views import store_admin_blueprint
     app.register_blueprint(store_admin_blueprint, url_prefix='/admin/store')
+    from app.admin.user.views import user_admin_blueprint
+    app.register_blueprint(user_admin_blueprint, url_prefix='/admin/user-management')
 
     return app

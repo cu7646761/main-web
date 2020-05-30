@@ -37,19 +37,19 @@ class Utils:
 
     @staticmethod
     def get_classification_by_score(score):
-        if score <= 2.5:
+        if score < 2.5:
             return 'SS'
-        elif score > 2.5 and score <= 4.5:
+        elif score > 2.5 and score < 4.5:
             return 'S'
-        elif score > 4.5 and score <= 8.5:
+        elif score > 4.5 and score < 8.5:
             return 'A'
-        elif score > 8.5 and score <= 12.5:
+        elif score > 8.5 and score < 12.5:
             return 'B'
-        elif score > 12.5 and score <= 16.5:
+        elif score > 12.5 and score < 16.5:
             return 'C'
-        elif score > 16.5 and score <= 20.5:
+        elif score > 16.5 and score < 20.5:
             return 'D'
-        elif score > 20.5 and score <= 24.5:
+        elif score > 20.5 and score < 24.5:
             return 'E'
         elif score > 24.5:
             return 'F'

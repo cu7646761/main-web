@@ -212,7 +212,15 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
     let content = $('.ql-editor').html()
     let thumbnail = $('.file-upload-image').attr('src')
 
-    let categories = $('#love_ca').val()
+    let categories = []
+    console.log(categories)
+    $('input[type=checkbox]').each(function () {
+        if (this.checked){
+            categories.push($(this).val()) ;
+            console.log("hehe")
+            console.log(categories)
+        }
+    });
     let address_detail = $('#result-address').val()
 
     if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0)) {
@@ -241,6 +249,7 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
     http.setRequestHeader('Content-type', 'application/json');
 
     http.onreadystatechange = function () {
+        console.log(http.status)
         if (http.readyState == 4 && http.status == 200) {
             console.log("Send ok")
             location.replace("http://127.0.0.1:5000/admin/store/");

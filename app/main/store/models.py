@@ -59,10 +59,10 @@ class StoreModel(StoreEntity):
                 print(PRED_LIST2[level][1])
                 stores_sorted = stores_sorted.filter(reviewer_quant__gt=PRED_LIST2[level][1])
             else:
-                stores_sorted = stores_sorted.filter(Q(reviewer_quant__lte=PRED_LIST2[level][0]) & Q(reviewer_quant__gt=PRED_LIST2[level][1]))
+                stores_sorted = stores_sorted.filter(Q(reviewer_quant__lte=PRED_LIST2[level][0]) & Q(reviewer_quant__gte=PRED_LIST2[level][1]))
             # elif level in (8, 12, 16, 20, 24):
             #     stores_sorted = stores_sorted.filter(
-            #         Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
+            #         Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))   
             # elif level == 28:
             #     stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
 

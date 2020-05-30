@@ -1099,3 +1099,11 @@ table#alter th {
   color: white;  
   background-color: gray;  
 }  
+.checkbox {
+    -webkit-column-count: 6; /* Chrome, Safari, Opera */
+    -moz-column-count: 6; /* Firefox */
+    column-count: 6;
+}
+.img-fluid{
+  height:250px;
+}

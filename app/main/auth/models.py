@@ -74,6 +74,20 @@ class UserModel(UserEntity):
 
     def count(self):
         return self.objects.count()
-
+    
     def query_recent(self):
         return self.objects.order_by("created_at")
+    def changeStatus(self,id,active):
+        try:
+            self.objects(id__exact=id).update(set__active=active)
+            return True, None
+        except Exception as e:
+            return False, e.__str__()
+    def delete(self, user_id):
+        try:
+            user = UserEntity.objects(id=user_id).get()
+            user.delete()
+            user.save()
+            return 
+        except Exception as e:
+            return False, e.__str__()

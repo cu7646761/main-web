@@ -37,7 +37,7 @@ for x in range(0, 999):
     }
     print("create " + str(x))
     try:
-        result = db.user.insert_one(user_1)
+        result = db2.user.insert_one(user_1)
     except:
         continue
 

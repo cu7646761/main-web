@@ -134,7 +134,7 @@ def update_basic(error=None, form=None):
     birthday = request.form.get("birthday")
     gender = request.form.get("gender")
     res_address = request.form.get("result-address")
-    love_cate = request.form.get("love_cate", "")
+    love_cate = request.form.getlist("love_cate")
     district = res_address.split(',')[1]
     geocode_result = gmaps.geocode(res_address)
     latitude = str(geocode_result[0].get('geometry').get('location').get('lat'))
@@ -158,7 +158,6 @@ def update_basic(error=None, form=None):
     if love_cate == "":
         list_obj_cate = session['cur_user'].favorite_categories
     else:
-        love_cate = love_cate.split(',')
         category = CategoryModel()
         if isinstance(love_cate, str):
             list_obj_cate.append(category.find_by_name(love_cate)[0].id)
@@ -182,4 +181,4 @@ def update_basic(error=None, form=None):
     cur_user = user.find_by_id(session['cur_user'].id)[0]
     session['cur_user'] = cur_user
 
-    return profile(success="Your basic information is updated successfully")
+    return profile(success="Cập nhật thông tin thành công.")

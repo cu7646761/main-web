@@ -12,6 +12,7 @@ from app.main.address.models import AddressModel
 from app.main.auth.views import login_required
 from app.main.category.models import CategoryModel
 from app.main.comment.models import CommentModel
+from app.main.search.forms import SearchForm
 from app.main.store.models import StoreModel
 from constants import UPLOAD_FOLDER, LINK_IMG
 from app.image.image_preprocessing import resize
@@ -31,7 +32,7 @@ def resize_image():
 
     # file = resize(image_file)
 
-    file.filename = datetime.now().strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
+    file.filename = datetime.datetime.now().strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
     filename = secure_filename(file.filename)
     file.save(os.path.join(UPLOAD_FOLDER, filename))
 
@@ -84,9 +85,12 @@ def list_store_api():
 @login_required_admin
 def home_store(form=None):
     store = StoreModel()
+    count = store.count()
+    if form is None:
+        form = SearchForm()
     stores, total_pages = store.query_paginate(1)
     return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
-                           total_pages=total_pages - 2)
+                           total_pages=total_pages - 2, search_obj=[])
 
 
 @store_admin_blueprint.route('/add/', methods=['GET', 'POST'])
@@ -102,6 +106,7 @@ def _store(form=None):
     address = AddressModel()
 
     if request.method == 'POST':
+        print("in here")
         post_data = request.get_json()
 
         name = post_data.get("name", "")
@@ -112,6 +117,11 @@ def _store(form=None):
         address_district = post_data.get("address_district", "")
         image_list = post_data.get("image_list", "")
 
+        print(name)
+        print(description)
+        print(categories)
+        print(image)
+
         list_obj_cate = []
         for cate in categories:
             list_obj_cate.append(category.find_by_name(cate)[0].id)
@@ -120,12 +130,22 @@ def _store(form=None):
         latitude = geocode_result[0].get('geometry').get('location').get('lat')
         longtitude = geocode_result[0].get('geometry').get('location').get('lng')
 
-        address_id, err = address.create_store(address_detail, address_district, latitude, longtitude)
+        address_id, err = address.create_store(address_detail, address_district, str(latitude), str(longtitude))
         if err:
+            print(err)
+            print("chang le vo day")
             return redirect('/admin/store/add/')
 
-        image_list.append(image)
+        print("ko bietv lun a")
+        print(address_id)
 
+        image_list.append(image)
+        print(image_list)
+
+        print(name)
+        print(description)
+        print(list_obj_cate)
+        print(address_id)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id)
 
         if err:
@@ -170,8 +190,8 @@ def edit__store(form=None, store_id=None):
         latitude = geocode_result[0].get('geometry').get('location').get('lat')
         longtitude = geocode_result[0].get('geometry').get('location').get('lng')
 
-        res_address, err = AddressModel.update(store_detail.address_id, address_detail, address_district, latitude,
-                                               longtitude)
+        res_address, err = AddressModel.update(store_detail.address_id, address_detail, address_district, 
+                                                str(latitude),str(longtitude))
 
         if err:
             return redirect('/admin/store/edit/' + store_id)
