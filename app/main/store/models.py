@@ -2,7 +2,7 @@ from flask_mongoengine import Pagination
 from app.entity.store import Store as StoreEntity
 from constants import Pages
 from bson import ObjectId
-from constants import PRED_LIST, CLASS_LIST
+from constants import PRED_LIST, CLASS_LIST, PRED_LIST2
 from mongoengine.queryset.visitor import Q
 from app.main.category.models import CategoryModel
 
@@ -28,25 +28,43 @@ class StoreModel(StoreEntity):
         for key, value in filter.items():
             if key == "classification" and value != "":
                 classify = PRED_LIST[value]
-            elif key == "level" and value != "":
-                level = PRED_LIST[value]
+            elif key == "level":
+                if value=="":
+                    level = "top"
+                else:
+                    level = value
             elif key == "categories" and value != "":
                 categories = value.split(',')
             elif key == "cate_predict" and value != "":
                 cates_predict = value.split(',')
+        
+        stores_sorted = self.objects
 
-        stores_sorted = self.objects.order_by("classification")
-
+        # if level:
+        #     if level == 2:
+        #         stores_sorted = stores_sorted.filter(classification__lte=2.5)
+        #     elif level == 4:
+        #         stores_sorted = stores_sorted.filter(Q(classification__lte=4.5) & Q(classification__gt=2.5))
+        #     elif level in (8, 12, 16, 20, 24):
+        #         stores_sorted = stores_sorted.filter(
+        #             Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
+        #     elif level == 28:
+        #         stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
+        
         if level:
-            if level == 2:
-                stores_sorted = stores_sorted.filter(classification__lte=2.5)
-            elif level == 4:
-                stores_sorted = stores_sorted.filter(Q(classification__lte=4.5) & Q(classification__gt=2.5))
-            elif level in (8, 12, 16, 20, 24):
-                stores_sorted = stores_sorted.filter(
-                    Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
-            elif level == 28:
-                stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
+            print(level)
+            if level == "top":
+                stores_sorted = stores_sorted.filter(reviewer_quant__gt=200)
+            elif level == "SS":
+                print(PRED_LIST2[level][1])
+                stores_sorted = stores_sorted.filter(reviewer_quant__gt=PRED_LIST2[level][1])
+            else:
+                stores_sorted = stores_sorted.filter(Q(reviewer_quant__lte=PRED_LIST2[level][0]) & Q(reviewer_quant__gt=PRED_LIST2[level][1]))
+            # elif level in (8, 12, 16, 20, 24):
+            #     stores_sorted = stores_sorted.filter(
+            #         Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
+            # elif level == 28:
+            #     stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
 
         elif classify:
             stores_sorted = stores_sorted.filter(classifications=classify)
@@ -59,6 +77,7 @@ class StoreModel(StoreEntity):
             print(cates_predict)
             stores_sorted = stores_sorted.filter(category_predict__in=cates_predict)
 
+        stores_sorted = stores_sorted.order_by("-score_sentiment")
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages
 
@@ -74,7 +93,7 @@ class StoreModel(StoreEntity):
                 lst = lst + [x]
         return lst
 
-    def find_optimize_by_categories(self, category, categories_id, page):
+    def find_optimize_by_categories(self, category, categories_id, page, store_id):
         # lst =[]
         # count = 0
         # end = 0
@@ -83,7 +102,9 @@ class StoreModel(StoreEntity):
         else:
             cates = [CategoryModel().objects(id__exact=cate)[0].id for cate in categories_id]
             store_filtered = self.objects.filter(categories_id__in=cates)
-        stores_sorted = store_filtered.order_by("classification")
+        store_filtered = store_filtered.filter(reviewer_quant__gt=200)
+        store_filtered = store_filtered.filter(id__ne=store_id)
+        stores_sorted = store_filtered.order_by("score_sentiment")
         stores = Pagination(stores_sorted, int(page), 6)
         
         

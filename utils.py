@@ -71,6 +71,25 @@ class Utils:
         type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
         type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
         return type_sorted
+    
+
+    @staticmethod
+    def predict_sentiment_score(text):
+        data = {
+            "instances": [{
+                "text": text
+            }]
+        }
+        response = requests.post('http://localhost:8080/predict', json=data)
+        result = json.loads(response.content)
+        rsfm = result['predictions'][0]
+        type_store = {}
+        print(rsfm)
+        for i in range(len(rsfm["classes"])):
+            type_store[rsfm["classes"][i]] = rsfm["scores"][i]
+        type_sorted = {k: v for k, v in sorted(type_store.items(), key=lambda item: item[1], reverse=True)}
+        sc = -type_store["0"] + type_store["2"]
+        return sc
         
 
     @staticmethod

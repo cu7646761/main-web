@@ -13,6 +13,7 @@ class Store(mongoengine.Document, SearchableMixin):
             }]
     }
     name = mongoengine.StringField(max_length=255, required=True)
+    name_translate = mongoengine.StringField(max_length=255)
     address_id = mongoengine.ObjectIdField()
     categories_id = mongoengine.ListField()
     min_price = mongoengine.StringField()
@@ -44,7 +45,9 @@ class Store(mongoengine.Document, SearchableMixin):
     type_store =mongoengine.DictField()
 
     classification = mongoengine.FloatField()
+    score_sentiment = mongoengine.FloatField()
     reviewer_quant = mongoengine.IntField()
+    fixed = mongoengine.BooleanField()
 
     created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
     updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
