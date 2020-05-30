@@ -4,7 +4,9 @@ from google.cloud import language_v1
 from google.cloud.language_v1 import enums
 from google.cloud import translate
 from app.main.comment.models import CommentModel
-
+import nltk,re
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 from app import create_app
 import os
@@ -58,55 +60,85 @@ def remove_inv_char():
 # do not run manual
 @analyze_blueprint.route("/analyze17273747", methods=["GET","POST"])
 def analyze():
-    all_stores = StoreModel().query_all()
+    # all_stores = StoreModel().query_all()
+    c =0
+    stores = StoreModel().find_by_categories('5e95c640d971b716129d2ff4')
     for store in all_stores:
-        cmts = CommentModel().findAllById(store.comment_list)
+    # sid = '5e95d6a8d971b716129e158f'
+    
+    # store = StoreModel().find_by_id(sid)[0]
+    
+        cmts = CommentModel().find_by_store_id(store.id)
+        print(len(cmts))
+        # if store.entity_score:
+        #     continue
 
-        if store.entity_score:
-            continue
-
-        entity_dict = {}
-        entire_text_1 = ""
-        entire_text_2 = ""
-        entire_text_3 = ""
+        # entity_dict = {}
+        entire_text = ""
+        # entire_text_2 = ""
+        # entire_text_3 = ""
         loops_no = 0
         for cmt in cmts:
-            if cmt[0].detail is None:
+            if cmt.detail is None or cmt.detail=="":
                 continue
-            text = cmt[0].detail
+            text = cmt.detail
             if text.startswith('(Translated by Google)'):
                 print(text)
                 text = text.split('(Translated by Google)')[-1][1:]
                 text = text.split('(Original)')[0]
-            if loops_no <= 400:
-                entire_text_1 += text
-            elif loops_no <= 800:
-                entire_text_2 += text
-            else:
-                entire_text_3 += text
+            # if loops_no <= 400:
+            entire_text += text
+            # elif loops_no <= 800:
+            #     entire_text_2 += text
+            # else:
+            #     entire_text_3 += text
             loops_no += 1
         
-        for sub_entire in (entire_text_1, entire_text_2, entire_text_3):
-            if sub_entire == "":
-                continue
-            # response = Utils.analyze_entity_sentiment(sub_entire)
+        # for sub_entire in (entire_text_1, entire_text_2, entire_text_3):
+        #     if sub_entire == "":
+        #         continue
+        
+        cleaned = re.sub(r"[^(a-zA-Z')\s]",'', entire_text)
+        tokenized = word_tokenize(cleaned)
+        stop_words = list(set(stopwords.words('english')))
+        stopped = [w for w in tokenized if not w in stop_words]
+        # print(tokenized)
+        pos = nltk.pos_tag(stopped)
+        all_words = ""
+        allowed_word_types = ['J','N']
+        for w in pos:
+            if w[1][0] in allowed_word_types:
+                if w[0].lower() not in("food", 'service', 'staff', 'place', 'space', 'restaurant', 'good', 'delicious', 'great'):
+                    all_words += w[0].lower() + " "
+        all_words += store.name_translate + " " +store.name_translate +" " + store.name_translate
+        rs = Utils.predict_food_cate(all_words)
+        print(all_words)
+        print(rs)
+        print(store.name)
+        c+=1
+        category_predict = max(rs, key=rs.get)
+        store.update(set__type_store=rs, set__category_predict=category_predict)
+    # if c==1:
+    #     break
+    return jsonify({})
+
                 
-            for entity in response.entities:
-                name = entity.name.upper()
-                name = name.replace("$","")
-                if not entity_dict.get(name, False):
-                    entity_dict[name] = {
-                        "quantity": 1,
-                        "sentiment": entity.sentiment.score
-                    }
-                else:
-                    entity_dict[name] = {
-                        "quantity": entity_dict[name]["quantity"]+1,
-                        "sentiment": entity_dict[name]["sentiment"]+entity.sentiment.score                   
-                    }
-                print((name, entity.sentiment.score))
+        # for entity in response.entities:
+        #     name = entity.name.upper()
+        #     name = name.replace("$","")
+        #     if not entity_dict.get(name, False):
+        #         entity_dict[name] = {
+        #             "quantity": 1,
+        #             "sentiment": entity.sentiment.score
+        #         }
+        #     else:
+        #         entity_dict[name] = {
+        #             "quantity": entity_dict[name]["quantity"]+1,
+        #             "sentiment": entity_dict[name]["sentiment"]+entity.sentiment.score                   
+        #         }
+        #     print((name, entity.sentiment.score))
         # store.update(set__entity_score=entity_dict)
-        print(store.entity_score)
+        # print(store.entity_score)
                     
         
 
@@ -176,16 +208,16 @@ def gen_entity():
         'tiramisu':1, 'sushi':3, 'tempura':1, 'sashimi':1, 'kaiseki':1, 'ryori':1,    
         'yakitori':1, 'mochi':1, 'tonkatsu':1, 'shabu':1, 'shabu-shabu':1, 'soba':1, 
         'ramen':1, 'donburi':1, 'onigiri':1, 'japan':4, 'japanese':4, 'dorayaki':1,
-        'somen':1, 'miso':1, 'bento':1, 'salmon':1, 'wasabi':2, 'tokyo':3, 'miya':1 
+        'somen':1, 'miso':1, 'bento':1, 'salmon':1, 'wasabi':2, 'tokyo':3, 'miya':1
     }
     food_cate['korean'] = {
         'kimchi':2, 'tteokbokki':1, 'spicy':1, 'korea':3 , 'korean':4, 'bulgogi':1,
         'tobboki':1, 'bibimbap':1, 'kimbap':1, 'tok':1, 'udon':1, 'tokbokki':1, 'jjajangmyeon':1,
-        'blackbean':1
+        'blackbean':1, 'koreans':3
     }
     food_cate['seafood'] = {
-        'shrimp':1, 'crab':1, 'fish':2, 'oysters':1, 'scallops':1, 'clam':1, 'seafood':3,
-        'crabs':1, 'shrimps':1, 'fishes':1, 'oyster':1, 'scallop':1, 'crustacean':1, 'crustaceans':1,
+        'shrimp':3, 'crab':3, 'fish':2, 'oysters':3, 'scallops':1, 'clam':1, 'seafood':3,
+        'crabs':3, 'shrimps':3, 'fishes':1, 'oyster':3, 'scallop':1, 'crustacean':1, 'crustaceans':1,
         'lobster':1, 'sea':1, 'seafoods':1, 'snail':1, 'squid':1, 'squids':1, 'octopus':1
     }
     food_cate['fastfood'] = {
@@ -193,22 +225,23 @@ def gen_entity():
         'spaghetti':1, 'spaghetties':1, 'snack':1, 'snacks':1
     }
     food_cate['vegetarian'] = {
-        'vegetarian':1, 'veggie':1, 'mushroom':2, 'mushrooms':2, 'vegies':1, 'buddha':1, 'chay':1,
-        'bean':2, 'tofu':2, 'soy':2, 'vegetarians':1, 'tofus':1, 'soys':1, 'beans':1, 'veterinarian':1,
-        'veterinarians':1, 'seitan':1, 'seitans':1, 'vegan':1, 'vegans':1, 'monk':1, 'monks':1
+        'vegetarian':3, 'veggie':3, 'mushroom':2, 'mushrooms':2, 'veggies':3, 'buddha':1, 'chay':3,
+        'bean':2, 'tofu':3, 'soy':2, 'vegetarians':3, 'tofus':3, 'soys':1, 'beans':1, 'veterinarian':1,
+        'veterinarians':1, 'seitan':1, 'seitans':1, 'vegan':3, 'vegans':3, 'monk':1, 'monks':1, 'vegie':2,
+        'vegies':2
     }
     food_cate['cafe'] = {
         'drink':1, 'drinks':1, 'drinking':1, 'drinkings':1, 'cafe':1, 'coffee':1, 'matcha':1,
         'ice':1, 'cream':1, 'parfait':1, 'tea':1, 'milks':1, 'milk':1, 'water':1, 'waters':1,
         'topping':1, 'toppings':1, 'peach':1, 'music':1, 'espresso':1, 'machiato':1,
-        'capuchino':1, 'bubble':1, 'latte':1
+        'capuchino':1, 'bubble':1, 'latte':1, ' cocktail':1
     }
     food_cate['smoothie'] = {
         'fruit':1, 'fruits':1, 'smoothie':1, 'juice':1, 'juices':1, 'milk':1, 'beams':1, 'beam':1,
         'avocado':1, 'avocados':1, 'durian':1, 'durians':1, 'yogurt':1, 'yogurts':1, 'melon':1,
         'yoghurt':1, 'yoghurts':1, 'icecream':1, 'butter':1, 'peach':1
     }
-    food_cate['cate'] = {
+    food_cate['cake'] = {
         'cake':2, 'cakes':2, 'chocolate':1, 'chocolates':1, 'dessert':1, 'desserts':1, 'tiramisu':1,
         'cookie':1, 'cookies':1, 'pastry':1, 'muffin':1, 'bakery':1, 'bread':1, 'breads':1
     }
@@ -227,7 +260,7 @@ def gen_entity():
         'chicken':1, 'chickens':1, 'kfc':1, 'texas':1, 'french':1, 'lotteria':1
     }
     food_cate['water-dish'] = {
-        'soup':3, 'soups':3, 'vermicelli':1, 'vermicellies':1, 'noodles':1, 'noodle':1,
+        'soup':2, 'soups':2, 'vermicelli':1, 'vermicellies':2, 'noodles':1, 'noodle':1,
         'bun':1, 'pho':1, 'powder':1, 'broth':1, 'broths':1, 'porridge':1, 'porridges':1,
         'bowl':1, 'bowls':1
     }
@@ -263,7 +296,7 @@ def gen_entity():
                     choice.append(text)
                 f_writer.writerow([text, k])
 
-            for i in range(len(v.items())*150):
+            for i in range(len(v.items())*250):
                 sentence1 = random.randint(2, 100)
                 sentence2 = random.randint(101, 500)
                 sentence3 = random.randint(500, 1000)
@@ -297,14 +330,18 @@ def gen_entity():
 @analyze_blueprint.route("/add-classify-cate17273747", methods=["GET", "POST"])
 def add_classify():
     all_stores = StoreModel().query_all()
+    j=0
     for store in all_stores:
+        j+=1
+        print(j)
+        if store.category_predict !="":
+            continue
         dict_entity = store.entity_score
         text = ""
         for entity in dict_entity.keys():
             for i in range(dict_entity[entity]["quantity"]):
                 text += entity.lower() + " "
-        tsl = sample_translate_text(store.name, "en-US", "britcat3")
-        text += " " + tsl.translations[0].translated_text.lower()
+        text += " " + store.name_translate
         data = {
             "instances": [{
                 "text": text
@@ -317,20 +354,174 @@ def add_classify():
         type_store = {}
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
-
-        store.update(set__type_store=type_store)
+        category_predict = max(type_store, key=type_store.get)
+        store.update(set__type_store=type_store, set__category_predict=category_predict)
     return jsonify({})
 
 
-@analyze_blueprint.route("/add-classify-result17273747", methods=["GET", "POST"])
+@analyze_blueprint.route("/add-name-translate17273747", methods=["GET", "POST"])
 def add_classify_result():
     all_stores = StoreModel().query_all()
+    i=0
     for store in all_stores:
-        type_store = store.type_store
-        type_store.pop('class', None)
-        store.update(set__type_store=type_store)
-        print(store.type_store)
+        i+=1
+        print(i)
+        if store.name_translate:
+            print(store.name_translate)
+            continue
+        tsl = sample_translate_text(store.name, "en-US", "britcat3")
+        text = tsl.translations[0].translated_text.lower()
+        store.update(set__name_translate=text)
+        print(store.name_translate)
     return jsonify({})
+
+
+@analyze_blueprint.route("/reset-type-store17273747", methods=["GET", "POST"])
+def reset_type_store():
+    all_stores = StoreModel().query_all()
+    i=0
+    for store in all_stores:
+        i+=1
+        print(i)
+        if store.category_predict != "":
+            store.update(set__category_predict="")
+    return jsonify({})
+
+
+@analyze_blueprint.route("/gen-sentiment-dictionary", methods=["GET", "POST"])
+def gen_sentiment_dictionary():
+    
+    pos_dict = {
+        'good':1, 'best':1, 'yami':1, 'yumi':1, 'clean':1, 'nice':1, 'beautiful':1, 'ok':1, 'oke':1, 'love':1, 'like':1,
+        'polite':1, 'awesome':1, 'happy':1, 'great':1, 'perfect':1, 'delicious':1, 'well':1, 'cool':1, 'appreciate':1,
+        'cozy':1, 'lovely':1, ' reasonably':1, 'cheap':1, 'fast':1 ,'tasty':1, 'affordable':1, 'attractive':1, 'cute':1
+    }
+    neg_dict = {
+        'bad':1, 'worst':1, 'disgusting':1, 'dirty':1, 'ugly':1, 'hate':1, 'impolite':1, 'sad':1, 'disappointed':1, 'dislike':1,
+        'poor':1, 'noisy':1, 'expensive':1
+        
+    }
+    return jsonify({})
+
+@analyze_blueprint.route("/update-sentiment-comment17273747", methods=["GET", "POST"])
+def update_sentiment_comment():
+    all_stores = StoreModel().query_all()
+    all_comments = CommentModel().query_all()
+    i=0
+    for store in all_stores:
+        cmts = CommentModel().find_by_store_id(store.id)
+        for comment in cmts:
+            
+            i+=1
+            print(i)
+            cmt = comment
+            if cmt.sentiment_dict or not cmt.detail:
+                continue
+            else:
+                raw_text = cmt.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                data = {
+                    "instances": [{
+                        "text": text
+                    }]
+                }
+                response = requests.post('http://localhost:8080/predict', json=data)
+                result = json.loads(response.content)
+                print(text)
+                rsfm = result['predictions'][0]
+                cmt.update(set__sentiment_dict=rsfm)
+        
+    return jsonify({})
+    
+
+@analyze_blueprint.route("/update-sentiment-store17273747", methods=["GET", "POST"])
+def update_sentiment_store():
+    all_stores = StoreModel().query_all()
+    all_comments = CommentModel().query_all()
+    count = 0
+    for store in all_stores:
+        count+=1
+        print(count)
+        print(store.name)
+        if store.score_sentiment:
+            continue
+        cmts = CommentModel().find_by_store_id(store.id)
+        all_sentiment = 0
+        j=0
+        for comment in cmts:
+            cmt = comment
+            if not cmt.detail:
+                continue
+            j+=1
+            print(j)
+
+            raw_text = cmt.detail
+            if raw_text.startswith('(Translated by Google)'):
+                raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                raw_text = raw_text.split('(Original)')[0]
+            text = raw_text.lower()
+            data = {
+                "instances": [{
+                    "text": text
+                }]
+            }
+            response = requests.post('http://localhost:8080/predict', json=data)
+            result = json.loads(response.content)
+            print(text)
+            rsfm = result['predictions'][0] 
+            cmt.update(set__sentiment_dict=rsfm)
+            sentiment_cmt = {}
+            for i in range(len(rsfm["classes"])):
+                sentiment_cmt[rsfm["classes"][i]] = rsfm["scores"][i]
+            sentiment = sentiment_cmt["0"]*(-1) + sentiment_cmt["2"]
+            print(sentiment)
+            all_sentiment += sentiment
+        if j != 0:
+            score_stm = all_sentiment/j
+        else:
+            score_stm = all_sentiment
+        print(score_stm)
+        store.update(set__score_sentiment=score_stm)
+        print(store.name)
+
+    return jsonify({})
+
+@analyze_blueprint.route("/update-reviewer-quant17273747", methods=["GET", "POST"])
+def update_reviewer_quant():
+    all_stores = StoreModel().query_all()
+    all_comments = CommentModel().query_all()
+    count = 0
+    for store in all_stores:
+        count+=1
+        print(count)
+        print(store.fixed)
+        if store.fixed:
+            continue
+        print(store.name)
+        cmts = CommentModel().find_by_store_id(store.id)
+        quant = len(cmts)
+        store.update(set__reviewer_quant=quant, set__fixed=True)
+        # if store.name =="Quán Hải Hiền - Quán Nhậu Bình Dân":
+        #     break
+        print(store.name)
+
+    return jsonify({})
+
+
+# @analyze_blueprint.route("/reset-sentiment-store17273747", methods=["GET", "POST"])
+# def reset_sentiment_store():
+#     all_stores = StoreModel().query_all()
+#     # all_comments = CommentModel().query_all()
+    
+#     for store in all_stores:
+#         # if store.score_sentiment:
+#         #     continue
+#         # cmts = CommentModel().find_by_store_id(store.id)
+#         store.update(set__score_sentiment=None)
+#     return jsonify({})
 
 def sample_translate_text(text, target_language, project_id):
     """

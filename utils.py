@@ -37,19 +37,19 @@ class Utils:
 
     @staticmethod
     def get_classification_by_score(score):
-        if score <= 2.5:
+        if score < 2.5:
             return 'SS'
-        elif score > 2.5 and score <= 4.5:
+        elif score > 2.5 and score < 4.5:
             return 'S'
-        elif score > 4.5 and score <= 8.5:
+        elif score > 4.5 and score < 8.5:
             return 'A'
-        elif score > 8.5 and score <= 12.5:
+        elif score > 8.5 and score < 12.5:
             return 'B'
-        elif score > 12.5 and score <= 16.5:
+        elif score > 12.5 and score < 16.5:
             return 'C'
-        elif score > 16.5 and score <= 20.5:
+        elif score > 16.5 and score < 20.5:
             return 'D'
-        elif score > 20.5 and score <= 24.5:
+        elif score > 20.5 and score < 24.5:
             return 'E'
         elif score > 24.5:
             return 'F'
@@ -71,6 +71,25 @@ class Utils:
         type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
         type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
         return type_sorted
+    
+
+    @staticmethod
+    def predict_sentiment_score(text):
+        data = {
+            "instances": [{
+                "text": text
+            }]
+        }
+        response = requests.post('http://localhost:8080/predict', json=data)
+        result = json.loads(response.content)
+        rsfm = result['predictions'][0]
+        type_store = {}
+        print(rsfm)
+        for i in range(len(rsfm["classes"])):
+            type_store[rsfm["classes"][i]] = rsfm["scores"][i]
+        type_sorted = {k: v for k, v in sorted(type_store.items(), key=lambda item: item[1], reverse=True)}
+        sc = -type_store["0"] + type_store["2"]
+        return sc
         
 
     @staticmethod

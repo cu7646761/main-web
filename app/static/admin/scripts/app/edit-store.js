@@ -215,12 +215,19 @@ document.getElementById("update-post-btn").addEventListener("click", () => {
     let title = $('#post-title').val()
     let content = $('.ql-editor').html()
     let thumbnail = $('.file-upload-image').attr('src')
-
-    let categories = $('#love_ca').val()
+    // let categories = [$('#love_cate').val()]
     let address_detail = $('#result-address').val()
-
+    let categories = []
+    console.log(categories)
+    $('input[type=checkbox]').each(function () {
+        if (this.checked){
+            categories.push($(this).val()) ;
+            console.log("hehe")
+            console.log(categories)
+        }
+    });
     let delete_img = $('#delete_img').val();
-
+    
     if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0)) {
         alert("Bạn nên điền đầy đủ các thông tin về cửa hàng");
         return;
@@ -251,7 +258,7 @@ document.getElementById("update-post-btn").addEventListener("click", () => {
     http.onreadystatechange = function () {
         if (http.readyState == 4 && http.status == 200) {
             console.log("Send ok")
-            location.replace("http://127.0.0.1:5000/admin/store/");
+            location.replace("http://127.0.0.1:5000/admin/store/edit/" + store_id);
         }
     }
     http.send(JSON.stringify(params));
