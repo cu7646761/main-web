@@ -136,7 +136,7 @@ def post_login(error=None):
             session['search_tsl'] = ""
             session['recommendation'] = ""
             if user[0].active == 2:
-                return redirect('/admin')
+                return redirect('/admin/')
             return redirect('/')
     return render_template("login.html", error=error, form=form)
 
@@ -153,7 +153,7 @@ def home(form=None):
     session["pos"] = None
     if form is None:
         form = SearchForm()
-
+    store = StoreModel().find_by_id
     return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
 

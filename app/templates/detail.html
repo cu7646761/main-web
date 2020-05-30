@@ -57,7 +57,7 @@
                     </p>
                     <!-- <br><br> -->
                     <div class="res-common-minmaxprice">
-                        <span class="fa fa-tag minmaxpriceicon"></span>
+                        <span class="fa fa-tag minmaxpriceicon" style="font-size:16px"></span>
                         <span itemprop="priceRange">
                                 <span> Mức giá: {{ store.min_price }}đ - <span>{{ store.max_price }}</span>đ
                             </span>
@@ -68,7 +68,7 @@
                 <div class="col-md-6">
                     <div class="reserve-seat-block">
                         <div class="reserve-rating">
-                            <span>{{classify}}</span>
+                            <span>{{store.score_sentiment|round(2)}}</span>
                         </div>
                         <div class="review-btn">
                             <a href="#comment" class="btn btn-outline-danger">NHẬN XÉT</a>
@@ -543,21 +543,21 @@ function loadItems() {
                 // // Query & update the template content
                 let j = 0;
                 var userStar = "";
-                var showUser = "<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">Ẩn danh</p>";
-                if (data[i].users[0]){
-                    if (data[i].users[0].link_image){
-                        showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
-                    }
-                    else{
-                        showUser = `<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
-                    }
-                }
-                for (; j < data[i].comments[0].star_num; j++) {
+                var showUser = `<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].cus_name}</p>`;
+                // if (data[i].users[0]){
+                //     if (data[i].users[0].link_image){
+                //         showUser = `<img src=\"${data[i].users[0].link_image}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                //     }
+                //     else{
+                //         showUser = `<img src=\"{{url_for('static',filename='images/noname.png')}}\" class=\"img-fluid\"  alt=\"#\"><p id=\"username\">${data[i].users[0].email.replace("@gmail.com","")}</p>`;
+                //     }
+                // }
+                for (; j < data[i].star_num; j++) {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";
                 }
-                template_clone.querySelector("#detail").innerHTML = data[i].comments[0].detail;
-                template_clone.querySelector("#star-num").innerHTML = data[i].comments[0].star_num;
-                template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].comments[0].star_num} sao.`;
+                template_clone.querySelector("#detail").innerHTML = data[i].detail;
+                template_clone.querySelector("#star-num").innerHTML = data[i].star_num;
+                template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].star_num} sao.`;
                 template_clone.querySelector("#show-star-user").innerHTML = userStar;
                 template_clone.querySelector("#show-comment-user").innerHTML = showUser;
 

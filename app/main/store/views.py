@@ -3,6 +3,8 @@ import time
 import math
 import requests
 import math
+import nltk,re
+from nltk.tokenize import word_tokenize
 from constants import Pages, CLASS_LIST
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
@@ -20,6 +22,7 @@ from app.main.comment.models import CommentModel
 from flask.helpers import url_for
 from math import sqrt
 from constants import API_KEY
+from mongoengine.queryset.visitor import Q
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -34,11 +37,13 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
+    session['search'] = store[0].name_translate
     category = categories.findAllById(store[0].categories_id)
     address = AddressModel().find_by_id(store[0].address_id)
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     current_user = None
     userAddress = None
+    error = None
     try:
         if session['logged'] == True:
             current_user = session['cur_user']
@@ -71,8 +76,13 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             name = request.form.get("name", "")
             comment = request.form.get("comment", "")
             star = request.form.get("star", "")
-            if not comment:
+            if not star:
                 error = "Star is required"
+                return render_template('detail.html', store=store[0], category=category, address=address[0],
+                                           star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
+                                           star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
+                                           current_user=current_user, form=form, error=error, user=current_user,
+                                           entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
             if error is None:
 
                 if current_user:
@@ -84,13 +94,56 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     return render_template('detail.html', store=store[0], category=category, address=address[0],
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
-                                           current_user=current_user, form=form, error=error, user=current_user)
+                                           current_user=current_user, form=form, error=error, user=current_user,
+                                           entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
+                if comment !="":
+                    text_tsl = Utils.sample_translate_text(comment, "en-US", "britcat3")
+                    text = text_tsl.translations[0].translated_text.lower()
+                    sentences = text.split(".")
+                    score_list = []
+                    et_dict = dict(store[0].entity_score)
+                    for sentence in sentences:
+                        if sentence == "":
+                            continue
+                        sc = Utils.predict_sentiment_score(sentence)
+                        cleaned = re.sub(r"[^(a-zA-Z')\s]",'', sentence)
+                        tokenize = word_tokenize(cleaned)
+                        pos = nltk.pos_tag(tokenize)
+                        allow_type = ["N"]
+                        all_words = []
+                        for w in pos:
+                            if w[1][0] in allow_type:
+                                all_words.append(w[0])
+                        
+                        for word in all_words:
+                            if word == "i":
+                                continue
+                            uword = word.upper()
+
+                            if not et_dict.get(uword, False):
+                                et_dict[uword] = {
+                                    "quantity": 1,
+                                    "sentiment": sc
+                                }
+                            else:
+                                et_dict[uword] = {
+                                    "quantity": et_dict[uword]["quantity"]+1,
+                                    "sentiment": et_dict[uword]["sentiment"]+sc               
+                                }
+                        score_list.append(sc)
+                    score = sum(score_list)/len(score_list)
+                    review_list = CommentModel().find_by_store_id(store_id)
+                    quant_comment = review_list.filter(Q(detail__ne=None)&Q(detail__ne=""))
+                    score_sentiment = (store[0].score_sentiment + score)/len(quant_comment)
+                    store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
+                    # score = Utils.predict_sentiment_score(text)
+                    # print(aka)
                 return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
-                           avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form
-                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict = type_sorted)
+                           avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form, error=error
+                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
 
 
 @store_blueprint.route("/load-relative-store/<string:store_id>")
@@ -114,7 +167,7 @@ def load_relative_store(store_id):
 
     if request.args:
         page = int(request.args.get("page"))
-        recStore, pg = stores.find_optimize_by_categories(store[0].category_predict, store[0].categories_id, page)
+        recStore, pg = stores.find_optimize_by_categories(store[0].category_predict, store[0].categories_id, page, store[0].id)
         datas = []
         for rec in recStore:
             classify = Utils.get_classification_by_score(rec.classification)
@@ -218,24 +271,27 @@ def load(store_id):
     time.sleep(0.5)  # Used to simulate delay
     if request.args:
         counter = int(request.args.get("c"))  # The 'counter' value sent in the QS
+        comment_list = CommentModel().find_by_store_id(store[0].id)
         if counter == 0:
-            cmt_list = store[0].comment_list[0: int(Pages['NUMBER_PER_PAGE'])]
-            db = CommentModel().findAllById(cmt_list)
+            cmt_list = comment_list[0: int(Pages['NUMBER_PER_PAGE'])]
+            # db = CommentModel().findAllById(cmt_list)
             print(f"Returning posts 0 to {int(Pages['NUMBER_PER_PAGE'])}")
             # Slice 0 -> quantity from the db
-            res = make_response(jsonify(db), 200)
+            # res = make_response(jsonify(db), 200)
 
-        elif counter == len(store[0].comment_list):
+        elif counter == len(comment_list):
             print("No more posts")
-            res = make_response(jsonify({}), 200)
+            cmt_list = {}
+            # res = make_response(jsonify({}), 200)
 
         else:
-            cmt_list = store[0].comment_list[counter : counter + int(Pages['NUMBER_PER_PAGE'])]
-            db = CommentModel().findAllById(cmt_list)
+            cmt_list = comment_list[counter : counter + int(Pages['NUMBER_PER_PAGE'])]
+            # db = CommentModel().findAllById(cmt_list)
             print(f"Returning posts {counter} to {counter + int(Pages['NUMBER_PER_PAGE'])}")
             # Slice counter -> quantity from the db
-            res = make_response(jsonify(db), 200)
+            # res = make_response(jsonify(db), 200)
 
+        res = make_response(jsonify(cmt_list), 200)
     return res
 
 
@@ -252,7 +308,7 @@ def countStar(store):
 
         return star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt
     else:
-        return 0, 0, 0, 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, 0
 
 def getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2):
     R = 6371
@@ -296,12 +352,13 @@ def stores():
         address = AddressModel().find_by_id(store.address_id)
         cates = categories.findAllById(store.categories_id)
         # classify = CLASS_LIST[store.classification]
-        classify = Utils.get_classification_by_score(store.classification)
+        # classify = Utils.get_classification_by_score(store.classification)
         datas += [{
             "store": store,
             "cates": cates,
             "address": address,
-            "classify": classify
+            # "classify": classify,
+            "score": store.score_sentiment
         }]
 
     all_cates = categories.query_all()

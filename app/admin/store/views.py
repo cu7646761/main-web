@@ -1,15 +1,18 @@
 import json
 import os
-from datetime import datetime
+import datetime
 
 import googlemaps
 from flask import render_template, Blueprint, session, request, make_response, jsonify, Response
 from vietnam_provinces.enums.districts import ProvinceEnum
 from werkzeug.utils import secure_filename, redirect
+
+from app.admin.auth.views import login_required_admin
 from app.main.address.models import AddressModel
 from app.main.auth.views import login_required
 from app.main.category.models import CategoryModel
 from app.main.comment.models import CommentModel
+from app.main.search.forms import SearchForm
 from app.main.store.models import StoreModel
 from constants import UPLOAD_FOLDER, LINK_IMG
 from app.image.image_preprocessing import resize
@@ -22,13 +25,14 @@ store_admin_blueprint = Blueprint(
 
 
 @store_admin_blueprint.route("/images/", methods=["POST"])
+@login_required_admin
 def resize_image():
     # base64_image = request.form.get("image_text", "")
     file = request.files.get("image", "")
 
     # file = resize(image_file)
 
-    file.filename = datetime.now().strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
+    file.filename = datetime.datetime.now().strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
     filename = secure_filename(file.filename)
     file.save(os.path.join(UPLOAD_FOLDER, filename))
 
@@ -41,7 +45,7 @@ def resize_image():
 
 
 @store_admin_blueprint.route('/api/list', methods=['GET'])
-@login_required
+@login_required_admin
 def list_store_api():
     page = request.args.get('page', 1, type=int)
     store = StoreModel()
@@ -78,16 +82,19 @@ def list_store_api():
 
 
 @store_admin_blueprint.route('/', methods=['GET'])
-@login_required
-def store(form=None):
+@login_required_admin
+def home_store(form=None):
     store = StoreModel()
+    count = store.count()
+    if form is None:
+        form = SearchForm()
     stores, total_pages = store.query_paginate(1)
     return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
-                           total_pages=total_pages - 2)
+                           total_pages=total_pages - 2, search_obj=[])
 
 
 @store_admin_blueprint.route('/add/', methods=['GET', 'POST'])
-@login_required
+@login_required_admin
 def _store(form=None):
     store = StoreModel()
 
@@ -99,6 +106,7 @@ def _store(form=None):
     address = AddressModel()
 
     if request.method == 'POST':
+        print("in here")
         post_data = request.get_json()
 
         name = post_data.get("name", "")
@@ -109,6 +117,11 @@ def _store(form=None):
         address_district = post_data.get("address_district", "")
         image_list = post_data.get("image_list", "")
 
+        print(name)
+        print(description)
+        print(categories)
+        print(image)
+
         list_obj_cate = []
         for cate in categories:
             list_obj_cate.append(category.find_by_name(cate)[0].id)
@@ -117,12 +130,22 @@ def _store(form=None):
         latitude = geocode_result[0].get('geometry').get('location').get('lat')
         longtitude = geocode_result[0].get('geometry').get('location').get('lng')
 
-        address_id, err = address.create_store(address_detail, address_district, latitude, longtitude)
+        address_id, err = address.create_store(address_detail, address_district, str(latitude), str(longtitude))
         if err:
+            print(err)
+            print("chang le vo day")
             return redirect('/admin/store/add/')
 
-        image_list.append(image)
+        print("ko bietv lun a")
+        print(address_id)
 
+        image_list.append(image)
+        print(image_list)
+
+        print(name)
+        print(description)
+        print(list_obj_cate)
+        print(address_id)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id)
 
         if err:
@@ -134,7 +157,7 @@ def _store(form=None):
 
 
 @store_admin_blueprint.route('/edit/<string:store_id>', methods=['GET', 'POST'])
-@login_required
+@login_required_admin
 def edit__store(form=None, store_id=None):
     store = StoreModel()
     store_detail = store.find_by_id(store_id)[0]
@@ -167,8 +190,8 @@ def edit__store(form=None, store_id=None):
         latitude = geocode_result[0].get('geometry').get('location').get('lat')
         longtitude = geocode_result[0].get('geometry').get('location').get('lng')
 
-        res_address, err = AddressModel.update(store_detail.address_id, address_detail, address_district, latitude,
-                                               longtitude)
+        res_address, err = AddressModel.update(store_detail.address_id, address_detail, address_district, 
+                                                str(latitude),str(longtitude))
 
         if err:
             return redirect('/admin/store/edit/' + store_id)
@@ -195,10 +218,10 @@ def edit__store(form=None, store_id=None):
 
 
 @store_admin_blueprint.route('/delete/<string:store_id>', methods=['GET'])
-@login_required
+@login_required_admin
 def delete_store(form=None, store_id=None):
     store = StoreModel()
     if store_id is not None:
-        deleted_at = datetime.now
+        deleted_at = datetime.datetime.now
         res, err = StoreModel.delete(store_id, deleted_at)
-    return redirect('/admin/store')
+    return redirect('/admin/store/')

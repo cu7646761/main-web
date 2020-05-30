@@ -55,13 +55,16 @@ class CommentModel(CommentEntity):
     @classmethod
     def create(cls, store_id, detail, star, user_id):
         try:
-            comment = CommentEntity(store_id=store_id, detail=detail, star_num=star, user_id=user_id)
-            comment.save()
             user = UserEntity.objects(id=user_id).get()
+            name = user.email.split('@')[0]
+            comment = CommentEntity(store_id=store_id, detail=detail, star_num=star, user_id=user_id, cus_name=name)
+            print(user)
+            comment.save()
+            
             user.comments_list.append(comment.id)
             user.save()
             store = StoreEntity.objects(id=store_id).get()
-            store.comment_list.append(comment.id)
+            # store.comment_list.append(comment.id)
             store.reviewer_quant = store.reviewer_quant + 1
             if (int(star) == 1):
                 store.star_s1 = store.star_s1 + 1
