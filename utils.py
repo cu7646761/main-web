@@ -68,9 +68,9 @@ class Utils:
         print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
-        # type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
-        # type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
-        return type_store
+        type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
+        type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
+        return type_sorted
     
 
     @staticmethod
