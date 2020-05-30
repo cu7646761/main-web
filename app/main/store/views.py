@@ -308,7 +308,7 @@ def countStar(store):
 
         return star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt
     else:
-        return 0, 0, 0, 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, 0
 
 def getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2):
     R = 6371
@@ -352,12 +352,12 @@ def stores():
         address = AddressModel().find_by_id(store.address_id)
         cates = categories.findAllById(store.categories_id)
         # classify = CLASS_LIST[store.classification]
-        classify = Utils.get_classification_by_score(store.classification)
+        # classify = Utils.get_classification_by_score(store.classification)
         datas += [{
             "store": store,
             "cates": cates,
             "address": address,
-            "classify": classify,
+            # "classify": classify,
             "score": store.score_sentiment
         }]
 

@@ -9,6 +9,7 @@ from constants import LINK_IMG_AVATAR_DEF
 auth_admin_blueprint = Blueprint(
     'auth_admin', __name__, template_folder='templates')
 
+
 def login_required_admin(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -23,6 +24,7 @@ def login_required_admin(f):
         return f(*args, **kwargs)
 
     return wrap
+
 
 @auth_admin_blueprint.route('/', methods=['GET'])
 @login_required_admin
@@ -64,4 +66,5 @@ def home(form=None):
         )
 
     return render_template("admin/index.html", user=session['cur_user'], form=form, count_stores=stores.count(),
-                           count_users=users.count(), count_cmts=cmts.count(), recent_cmts_detail=recent_cmts_detail,recent_store_detail=recent_store_detail, home_active="active")
+                           count_users=users.count(), count_cmts=cmts.count(), recent_cmts_detail=recent_cmts_detail,
+                           recent_store_detail=recent_store_detail, home_active="active")
