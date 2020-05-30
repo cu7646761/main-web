@@ -193,7 +193,7 @@
                                                 <img height="200px" src="{{ data['store'].link_image[0] }}"  alt="#">
                                             </div>
                                             
-                                            <span class="featured-rating-orange">{{data['classify']}}</span>
+                                            <span class="featured-rating-orange">{{data['score']|round(2)}}</span>
                                             <div class="featured-title-box col-lg-8 col-sm-8 col-xs-12">
                                                 <h6>{{ data['store'].name }}</h6>
                                                 {% for cate in data['cates'] %}
