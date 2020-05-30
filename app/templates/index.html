@@ -559,64 +559,64 @@
         // locate you.
         var map, infoWindow, pos;
         function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-            center: {lat: 10.7822782, lng: 106.7046318},
-            zoom: 8
-        });
-        infoWindow = new google.maps.InfoWindow;
-        var curLat, curLng;
-          // Try HTML5 geolocation.
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-            pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            curLat = position.coords.latitude;
-            curLng = position.coords.longitude;
-            // infoWindow.setPosition(pos);
-            // infoWindow.setContent('Location found.');
-            // infoWindow.open(map);
-            
-            fetch(`/load_geo_places`)
-            .then(function(response) {
-                if (response.status !==200) {
-                    console.log(`Looks like there was a problem load place. Status code: ${response.status}`);
-                    return;
-                }
-                response.json().then(function(data) {
-                    locations = data
-                    var markers = locations.map(function(location) {
-                        return new google.maps.Marker({
-                            position: location,
-                            id: location.id,
-                            name: location.name,
-                            image: location.link_img
-                        });
-                    });
-                    var markerCluster = new MarkerClusterer(map, markers,
-                    {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-                    markers.map(function(marker){
-                        marker.addListener('click', function() {
-                            console.log(marker.getPosition().toString())
-                            console.log(marker.id)
-                            var infowindow = new google.maps.InfoWindow({
-                                content: `<a href="/stores/${marker.id}">
-                                            <div class="row">
-                                                <p class="col-12"><b>${marker.name}</b></p><br>
-                                            </div>
-                                            <div class="row">
-                                                <img class="col-12" src="${marker.image}" height="160px">
-                                            </div>
-                                          </a>`
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: {lat: 10.7822782, lng: 106.7046318},
+                zoom: 8
+            });
+            infoWindow = new google.maps.InfoWindow;
+            var curLat, curLng;
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                curLat = position.coords.latitude;
+                curLng = position.coords.longitude;
+                // infoWindow.setPosition(pos);
+                // infoWindow.setContent('Location found.');
+                // infoWindow.open(map);
+                
+                fetch(`/load_geo_places`)
+                .then(function(response) {
+                    if (response.status !==200) {
+                        console.log(`Looks like there was a problem load place. Status code: ${response.status}`);
+                        return;
+                    }
+                    response.json().then(function(data) {
+                        locations = data
+                        var markers = locations.map(function(location) {
+                            return new google.maps.Marker({
+                                position: location,
+                                id: location.id,
+                                name: location.name,
+                                image: location.link_img
                             });
-
-                            infowindow.open(map, marker);
-
                         });
-                    })
-                    
-                });
+                        var markerCluster = new MarkerClusterer(map, markers,
+                        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+                        markers.map(function(marker){
+                            marker.addListener('click', function() {
+                                console.log(marker.getPosition().toString())
+                                console.log(marker.id)
+                                var infowindow = new google.maps.InfoWindow({
+                                    content: `<a href="/stores/${marker.id}">
+                                                <div class="row">
+                                                    <p class="col-12"><b>${marker.name}</b></p><br>
+                                                </div>
+                                                <div class="row">
+                                                    <img class="col-12" src="${marker.image}" height="160px">
+                                                </div>
+                                            </a>`
+                                });
+
+                                infowindow.open(map, marker);
+
+                            });
+                        })
+                        
+                    });
 
             })
             .catch(function(error) {
@@ -632,6 +632,7 @@
                 }
                 response.json().then(function(data) {
                     console.log(data);
+                    console.log(curLat, curLng);
                 });
             })
             .catch(function(error) {

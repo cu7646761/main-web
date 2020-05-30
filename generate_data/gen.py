@@ -43,7 +43,9 @@ print('finished create category')
 data = []
 data_2 = db2.store.find()
 
-with open(os.path.abspath(os.path.dirname(__file__)) + '/store_json.json', encoding="utf8") as f:
+with open(
+    
+) + '/store_json.json', encoding="utf8") as f:
     for line in f:
         data.append(json.loads(line))
 dem = 0
