@@ -1,22 +1,28 @@
-import mongoengine
+from mongoengine.document import Document
+from mongoengine.fields import *
 import datetime
+
+from app.entity.store import Store
+from app.entity.user import User
 from app.main.search.models import SearchableMixin
 
 
-class Comment(mongoengine.Document, SearchableMixin):
+class Comment(Document, SearchableMixin):
     __tablename__ = 'comment_mongo'
     __searchable__ = ['detail']
-    detail = mongoengine.StringField(max_length=1000)
-    user_id = mongoengine.ObjectIdField(default=None)
 
-    store_id = mongoengine.ObjectIdField()
-    # comment_type: s,a,b,c,d,e,f,g,h,i
-    comment_type = mongoengine.StringField(max_length=10)
-    star_num = mongoengine.IntField()
-    cus_name = mongoengine.StringField(max_length=255)
-    sentiment_dict = mongoengine.DictField()
-    created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
-    updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
+    detail = StringField(max_length=1000)
+
+    user_id = ReferenceField(User, require=False)
+    store_id = ReferenceField(Store)
+
+    comment_type = StringField(max_length=10)
+    star_num = IntField()
+    cus_name = StringField(max_length=255)
+    sentiment_dict = DictField()
+
+    created_at = DateTimeField(default=datetime.datetime.now)
+    updated_on = DateTimeField(default=datetime.datetime.now)
 
     meta = {'allow_inheritance': True,
             'ordering': ['-updated_on']}
