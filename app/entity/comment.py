@@ -13,19 +13,25 @@ class Comment(Document, SearchableMixin):
 
     detail = StringField(max_length=1000)
 
-    user_id = ReferenceField(User, require=False)
-    store_id = ReferenceField(Store)
+    user_id = ReferenceField(User)
+    store_id = ReferenceField(Store, required=True)
 
     comment_type = StringField(max_length=10)
     star_num = IntField()
     cus_name = StringField(max_length=255)
     sentiment_dict = DictField()
 
-    created_at = DateTimeField(default=datetime.datetime.now)
-    updated_on = DateTimeField(default=datetime.datetime.now)
+    created_at = DateTimeField(default=datetime.datetime.now())
+    updated_on = DateTimeField(default=None)
 
     meta = {'allow_inheritance': True,
             'ordering': ['-updated_on']}
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = datetime.datetime.now()
+        self.updated_on = datetime.datetime.now()
+        return super(Comment, self).save(*args, **kwargs)
 
     def __repr__(self):
         return '<Comment %r>' % (self.detail)
