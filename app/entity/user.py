@@ -5,12 +5,12 @@ import datetime
 from app.entity.address import Address
 from app.entity.category import Category
 from app.entity.store import Store
-from app.main.search.models import SearchableMixin
+from app.main.search.search import SearchableMixin
 from constants import SERVER_NAME, LINK_IMG, LINK_IMG_AVATAR_DEF
 
 
 class User(Document, SearchableMixin):
-    __tablename__ = 'user_mongo'
+    __tablename__ = 'user'
     __searchable__ = ['email']
 
     email = StringField(max_length=255, required=True, unique=True)

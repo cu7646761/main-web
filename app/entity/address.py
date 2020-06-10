@@ -1,11 +1,11 @@
 from mongoengine.document import Document
 from mongoengine.fields import *
 
-from app.main.search.models import SearchableMixin
+from app.main.search.search import SearchableMixin
 
 
 class Address(Document, SearchableMixin):
-    __tablename__ = 'address_mongo'
+    __tablename__ = 'address'
     __searchable__ = ['detail']
 
     detail = StringField(max_length=255, required=True)

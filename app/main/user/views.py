@@ -3,16 +3,16 @@ import googlemaps
 from datetime import datetime
 from flask import redirect, render_template, Blueprint, session, request, jsonify
 
-from app.main.address.models import AddressModel
-from app.main.auth.models import UserModel
+from app.model.address import AddressModel
+from app.model.auth import UserModel
 from app.main.auth.views import login_required
 from werkzeug.utils import secure_filename
 
-from app.main.category.models import CategoryModel
+from app.model.category import CategoryModel
 from app.main.user.forms import UpdatePswForm
-from constants import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, LINK_IMG, LINK_IMG_AVATAR_DEF, SERVER_NAME, GENDER
+from constants import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, LINK_IMG, LINK_IMG_AVATAR_DEF, SERVER_NAME
 from utils import Utils
-from vietnam_provinces.enums.districts import ProvinceEnum, ProvinceDEnum, DistrictEnum, DistrictDEnum
+from vietnam_provinces.enums.districts import ProvinceEnum, DistrictEnum
 from constants import API_KEY
 
 

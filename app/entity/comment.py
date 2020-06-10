@@ -4,11 +4,11 @@ import datetime
 
 from app.entity.store import Store
 from app.entity.user import User
-from app.main.search.models import SearchableMixin
+from app.main.search.search import SearchableMixin
 
 
 class Comment(Document, SearchableMixin):
-    __tablename__ = 'comment_mongo'
+    __tablename__ = 'comment'
     __searchable__ = ['detail']
 
     detail = StringField(max_length=1000)

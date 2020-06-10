@@ -212,29 +212,29 @@ comment_old_lst = data_comment[0]
     # created_at = DateTimeField(default=datetime.datetime.now())
     # updated_on = DateTimeField(default=None)
 
-# for user_old in user_old_lst:
-#     # for store in store_old_lst:
-#     if 'andang12111998@gmail.com' in user_old['email']:
-#         print(user_old['comments_list'])
-#         for cmt_old_id in user_old['comments_list']:
-#             for cmt_old in comment_old_lst:
-#                 try:
-#                     if cmt_old['_id']['$oid'] == cmt_old_id['$oid']:
-#                         for store in store_old_lst:
-#                             if cmt_old['store_id'] == store['_id']:
-#                                 if store['name'] != 'huhu':
-#                                     print(user_old)
-#                                     print(store)
-#                                     user_new = User.objects(email__exact=user_old['email'])[0]
-#                                     store_new = Store.objects(name__exact=store['name'])[0]
-#
-#                                     cmt_new = Comment(detail=cmt_old['detail'],
-#                                                       user_id=user_new,
-#                                                       store_id=store_new,
-#                                                       star_num=cmt_old['star_num'],
-#                                                       cus_name="andang12111998").save()
-#                 except:
-#                     continue
+for user_old in user_old_lst:
+    # for store in store_old_lst:
+    if 'andang12111998@gmail.com' in user_old['email']:
+        print(user_old['comments_list'])
+        for cmt_old_id in user_old['comments_list']:
+            for cmt_old in comment_old_lst:
+                try:
+                    if cmt_old['_id']['$oid'] == cmt_old_id['$oid']:
+                        for store in store_old_lst:
+                            if cmt_old['store_id'] == store['_id']:
+                                if store['name'] != 'huhu':
+                                    print(user_old)
+                                    print(store)
+                                    user_new = User.objects(email__exact=user_old['email'])[0]
+                                    store_new = Store.objects(name__exact=store['name'])[0]
+
+                                    cmt_new = Comment(detail=cmt_old['detail'],
+                                                      user_id=user_new,
+                                                      store_id=store_new,
+                                                      star_num=cmt_old['star_num'],
+                                                      cus_name="andang12111998").save()
+                except:
+                    continue
 
 
 # for store in store_old_lst:
@@ -268,34 +268,60 @@ comment_old_lst = data_comment[0]
 #                                           sentiment_dict=cmt_old['sentiment_dict']).save()
 #                         print('ok2')
 
-for cmt_old in comment_old_lst:
-    for store in store_old_lst:
-        if store['name'] != 'huhu' and cmt_old['store_id'] == store['_id']:
-            print(store['name'])
-            store_new = Store.objects(name__exact=store['name'])[0]
-            flat = 0
-            try:
-                sentiment_dict = cmt_old['sentiment_dict']
-            except:
-                flat = 1
-                cmt_new = Comment(detail=cmt_old['detail'],
-                                  user_id=None,
-                                  store_id=store_new,
-                                  star_num=cmt_old['star_num'],
-                                  cus_name=cmt_old['cus_name'],
-                                  sentiment_dict={}).save()
-                print('ok1')
-            if flat != 1:
-                try:
-                    user_id = cmt_old['user_id']
-                except:
-                    cmt_new = Comment(detail=cmt_old['detail'],
-                                      user_id=None,
-                                      store_id=store_new,
-                                      star_num=cmt_old['star_num'],
-                                      cus_name=cmt_old['cus_name'],
-                                      sentiment_dict=cmt_old['sentiment_dict']).save()
-                    print('ok2')
-            break
+# for i in range(len(comment_old_lst)):
+#     if i > 615540:
+#         print(i)
+#         # print(comment_old_lst[i])
+#         # print(comment_old_lst[i]['detail'])
+#         # print(comment_old_lst[i]['cus_name'])
+#         # # print(comment_old_lst[i]['user_id'])
+#         # print(comment_old_lst[i]['star_num'])
+#         # # print(comment_old_lst[i]['sentiment_dict'])
+#         # cmt = Comment.objects(cus_name__exact=comment_old_lst[i]['cus_name'], star_num__exact=comment_old_lst[i]['star_num'])[0]
+#         # print('-----------')
+#         # print(cmt['detail'])
+#         # print(cmt['cus_name'])
+#         # print(cmt['star_num'])
+#         # print(cmt['sentiment_dict'])
+#         for store in store_old_lst:
+#             if store['name'] != 'huhu' and comment_old_lst[i]['store_id'] == store['_id']:
+#                 print(store['name'])
+#                 store_new = Store.objects(name__exact=store['name'])[0]
+#                 flat = 0
+#                 try:
+#                     cus_name = comment_old_lst[i]['cus_name']
+#                 except:
+#                     flat = 1
+#                     cmt_new = Comment(detail=comment_old_lst[i]['detail'],
+#                                       user_id=None,
+#                                       store_id=store_new,
+#                                       star_num=comment_old_lst[i]['star_num'],
+#                                       cus_name=None,
+#                                       sentiment_dict=comment_old_lst[i]['sentiment_dict']).save()
+#                     print('ok0')
+#                 if flat != 1:
+#                     try:
+#                         sentiment_dict = comment_old_lst[i]['sentiment_dict']
+#                     except:
+#                         flat = 1
+#                         cmt_new = Comment(detail=comment_old_lst[i]['detail'],
+#                                           user_id=None,
+#                                           store_id=store_new,
+#                                           star_num=comment_old_lst[i]['star_num'],
+#                                           cus_name=comment_old_lst[i]['cus_name'],
+#                                           sentiment_dict={}).save()
+#                         print('ok1')
+#                 if flat != 1:
+#                     try:
+#                         user_id = comment_old_lst[i]['user_id']
+#                     except:
+#                         cmt_new = Comment(detail=comment_old_lst[i]['detail'],
+#                                           user_id=None,
+#                                           store_id=store_new,
+#                                           star_num=comment_old_lst[i]['star_num'],
+#                                           cus_name=comment_old_lst[i]['cus_name'],
+#                                           sentiment_dict=comment_old_lst[i]['sentiment_dict']).save()
+#                         print('ok2')
+#                 break
 # {"user_id": ObjectId('5ebd08774828cb2789c1bfad')}
 

@@ -3,8 +3,7 @@ from app.entity.comment import Comment as CommentEntity
 from app.entity.user import User as UserEntity
 from app.entity.store import Store as StoreEntity
 from constants import Pages
-from bson import ObjectId
-from app.main.auth.models import UserModel
+from app.model.auth import UserModel
 
 
 class CommentModel(CommentEntity):

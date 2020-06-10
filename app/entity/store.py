@@ -4,11 +4,11 @@ from mongoengine.fields import *
 
 from app.entity.address import Address
 from app.entity.category import Category
-from app.main.search.models import SearchableMixin
+from app.main.search.search import SearchableMixin
 
 
 class Store(Document, SearchableMixin):
-    __tablename__ = 'store_mongo'
+    __tablename__ = 'store'
     __searchable__ = ['name']
 
     name = StringField(max_length=255, required=True)

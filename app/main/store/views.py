@@ -1,26 +1,19 @@
-from functools import wraps
 import time
-import math
-import requests
 import math
 import nltk,re
 from nltk.tokenize import word_tokenize
-from constants import Pages, CLASS_LIST
-from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
+from constants import Pages
+from flask import redirect, render_template, Blueprint, session, request, jsonify, make_response
 
-from app.main.store.forms import StoreForm
-from app.main.store.models import StoreModel
+from app.model.store import StoreModel
 from app.main.comment.forms import AddCommentForm
-from app.main.category.models import CategoryModel
-from app.main.address.models import AddressModel
+from app.model.category import CategoryModel
+from app.model.address import AddressModel
 from app.main.auth.views import login_required
 
 from utils import Utils
-from constants import CLASS_LIST
-from app.main.comment.models import CommentModel
+from app.model.comment import CommentModel
 
-from flask.helpers import url_for
-from math import sqrt
 from constants import API_KEY
 from mongoengine.queryset.visitor import Q
 

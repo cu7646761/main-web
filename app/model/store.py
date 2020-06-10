@@ -1,10 +1,9 @@
 from flask_mongoengine import Pagination
 from app.entity.store import Store as StoreEntity
 from constants import Pages
-from bson import ObjectId
-from constants import PRED_LIST, CLASS_LIST, PRED_LIST2
+from constants import PRED_LIST, PRED_LIST2
 from mongoengine.queryset.visitor import Q
-from app.main.category.models import CategoryModel
+from app.model.category import CategoryModel
 
 
 class StoreModel(StoreEntity):

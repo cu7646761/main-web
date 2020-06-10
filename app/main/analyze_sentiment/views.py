@@ -1,37 +1,22 @@
 # from google.cloud import automl_v1beta1 as automl
-from pymongo import MongoClient
-from google.cloud import language_v1
-from google.cloud.language_v1 import enums
 from google.cloud import translate
-from app.main.comment.models import CommentModel
 import nltk,re
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-from app import create_app
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
 import csv, random, json
 
-from functools import wraps
-import time
-import math
 import requests
-from constants import Pages
-from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
+from flask import Blueprint, jsonify
 
-
-from app.main.store.models import StoreModel
-from app.main.comment.models import CommentModel
-from app.main.category.models import CategoryModel
-from app.main.address.models import AddressModel
+from app.model.store import StoreModel
+from app.model.address import AddressModel
 
 
 from utils import Utils
-from constants import CLASS_LIST
-from app.main.comment.models import CommentModel
-
-from flask.helpers import url_for
+from app.model.comment import CommentModel
 
 analyze_blueprint = Blueprint(
     'analyze', __name__, template_folder='templates')

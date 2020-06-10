@@ -1,11 +1,11 @@
 from mongoengine.document import Document
 from mongoengine.fields import *
 import datetime
-from app.main.search.models import SearchableMixin
+from app.main.search.search import SearchableMixin
 
 
 class GeoPlace(Document, SearchableMixin):
-    __tablename__ = 'geo_place_mongo'
+    __tablename__ = 'geo_place'
     __searchable__ = ['name']
 
     name = StringField(max_length=255, required=True)
