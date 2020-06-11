@@ -5,10 +5,15 @@ from app import bcrypt
 from google.cloud import language_v1
 from google.cloud import translate
 from google.cloud.language_v1 import enums
+from google.cloud import automl_v1beta1 as automl
+
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
 
 PROJECT_ID = "Britcat3" #@param {type:"string"}
 COMPUTE_REGION = "us-central1" # Currently only supported region.
+
+# automl_client = automl.AutoMlClient()
+tables_client = automl.TablesClient(project=PROJECT_ID, region=COMPUTE_REGION)
 
 
 class Utils:
@@ -54,6 +59,22 @@ class Utils:
         elif score > 24.5:
             return 'F'
 
+
+    @staticmethod
+    def predict_food_cate_online(text):
+        # list_models = tables_client.list_models()
+        model_display_name = "food_cate_v3_20200515114552"
+        input = {
+            "text":text
+        }
+        rs = tables_client.predict(
+            model_display_name=model_display_name, inputs=input, feature_importance=True
+        )
+        # pr = tables_client.predict(model=my_model, inputs=text)
+        rs = pr.payload[0].tables.value.number_value
+        return rs
+
+
     @staticmethod
     def predict_food_cate(text):
         data = {
@@ -71,6 +92,17 @@ class Utils:
         type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
         type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
         return type_sorted
+
+    
+    @staticmethod
+    def predict_sentiment_online(text):
+        model_display_name = "predict_sentiment_20200522110634"
+        rs = tables_client.predict(
+            model_display_name=model_display_name, inputs=text
+        )
+        # pr = tables_client.predict(model=my_model, inputs=text)
+        rs = pr.payload[0].tables.value.number_value
+        return rs
     
 
     @staticmethod

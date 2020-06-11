@@ -36,7 +36,6 @@ from flask.helpers import url_for
 analyze_blueprint = Blueprint(
     'analyze', __name__, template_folder='templates')
 
-
 # do not run manual
 @analyze_blueprint.route("/remove_character17273747", methods=["GET","POST"])
 def remove_inv_char():
@@ -55,6 +54,14 @@ def remove_inv_char():
             print("----->", newkey)
         if len(invalid_key) > 0:
             store.update(set__entity_score=entity)
+
+
+# do not run manual
+@analyze_blueprint.route("/test_predict_online17273747", methods=["GET","POST"])
+def test_predict_online():
+    rs = Utils.predict_food_cate_online("pizza")
+    print(rs)
+    return jsonify({})
             
 
 # do not run manual
@@ -440,52 +447,53 @@ def update_sentiment_comment():
 @analyze_blueprint.route("/update-sentiment-store17273747", methods=["GET", "POST"])
 def update_sentiment_store():
     all_stores = StoreModel().query_all()
-    all_comments = CommentModel().query_all()
     count = 0
-    for store in all_stores:
-        count+=1
-        print(count)
-        print(store.name)
-        if store.score_sentiment:
+    id = "5e9605d9d971b71612a0b9e1"
+    store = StoreModel().find_by_id(id)[0]
+    # for store in all_stores:
+    count+=1
+    print(count)
+    print(store.name)
+    # if store.score_sentiment:
+    #     continue
+    cmts = CommentModel().find_by_store_id(store.id)
+    all_sentiment = 0
+    j=0
+    for comment in cmts:
+        cmt = comment
+        if not cmt.detail:
             continue
-        cmts = CommentModel().find_by_store_id(store.id)
-        all_sentiment = 0
-        j=0
-        for comment in cmts:
-            cmt = comment
-            if not cmt.detail:
-                continue
-            j+=1
-            print(j)
+        j+=1
+        print(j)
 
-            raw_text = cmt.detail
-            if raw_text.startswith('(Translated by Google)'):
-                raw_text = raw_text.split('(Translated by Google)')[-1][1:]
-                raw_text = raw_text.split('(Original)')[0]
-            text = raw_text.lower()
-            data = {
-                "instances": [{
-                    "text": text
-                }]
-            }
-            response = requests.post('http://localhost:8080/predict', json=data)
-            result = json.loads(response.content)
-            print(text)
-            rsfm = result['predictions'][0] 
-            cmt.update(set__sentiment_dict=rsfm)
-            sentiment_cmt = {}
-            for i in range(len(rsfm["classes"])):
-                sentiment_cmt[rsfm["classes"][i]] = rsfm["scores"][i]
-            sentiment = sentiment_cmt["0"]*(-1) + sentiment_cmt["2"]
-            print(sentiment)
-            all_sentiment += sentiment
-        if j != 0:
-            score_stm = all_sentiment/j
-        else:
-            score_stm = all_sentiment
-        print(score_stm)
-        store.update(set__score_sentiment=score_stm)
-        print(store.name)
+        raw_text = cmt.detail
+        if raw_text.startswith('(Translated by Google)'):
+            raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+            raw_text = raw_text.split('(Original)')[0]
+        text = raw_text.lower()
+        data = {
+            "instances": [{
+                "text": text
+            }]
+        }
+        response = requests.post('http://localhost:8080/predict', json=data)
+        result = json.loads(response.content)
+        print(text)
+        rsfm = result['predictions'][0] 
+        cmt.update(set__sentiment_dict=rsfm)
+        sentiment_cmt = {}
+        for i in range(len(rsfm["classes"])):
+            sentiment_cmt[rsfm["classes"][i]] = rsfm["scores"][i]
+        sentiment = sentiment_cmt["0"]*(-1) + sentiment_cmt["2"]
+        print(sentiment)
+        all_sentiment += sentiment
+    if j != 0:
+        score_stm = all_sentiment/j
+    else:
+        score_stm = all_sentiment
+    print(score_stm)
+    store.update(set__score_sentiment=score_stm)
+    print(store.name)
 
     return jsonify({})
 

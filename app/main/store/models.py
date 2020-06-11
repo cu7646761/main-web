@@ -25,6 +25,8 @@ class StoreModel(StoreEntity):
         level = None
         categories = None
         cates_predict = None
+        star = None
+        dis = None
         for key, value in filter.items():
             if key == "classification" and value != "":
                 classify = PRED_LIST[value]
@@ -37,6 +39,8 @@ class StoreModel(StoreEntity):
                 categories = value.split(',')
             elif key == "cate_predict" and value != "":
                 cates_predict = value.split(',')
+            elif key == "star" and value != "" and value != 'None':
+                star = float(value)
         
         stores_sorted = self.objects
 
@@ -51,10 +55,31 @@ class StoreModel(StoreEntity):
         #     elif level == 28:
         #         stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
         
+
+
+        if classify:
+            stores_sorted = stores_sorted.filter(classifications=classify)
+
+        if categories:
+            cates = [CategoryModel().objects(name_link__exact=cate)[0].id for cate in categories]
+            stores_sorted = stores_sorted.filter(categories_id__in=cates)
+
+        elif cates_predict:
+            print(cates_predict)
+            stores_sorted = stores_sorted.filter(category_predict__in=cates_predict)
+        
+        if star:
+            stores_sorted = stores_sorted.filter(Q(stars__gt=star-1)&Q(stars__lt=star+0.0001))
+        
         if level:
             print(level)
             if level == "top":
-                stores_sorted = stores_sorted.filter(reviewer_quant__gt=200)
+                stores_sorted = stores_sorted.filter(reviewer_quant__gt=100)
+                # print(len(stores_sorted_t))
+                # if len(stores_sorted_t) < 10:
+                #     stores_sorted = stores_sorted
+                # else:
+                #     stores_sorted = stores_sorted_t
             elif level == "SS":
                 print(PRED_LIST2[level][1])
                 stores_sorted = stores_sorted.filter(reviewer_quant__gt=PRED_LIST2[level][1])
@@ -66,20 +91,11 @@ class StoreModel(StoreEntity):
             # elif level == 28:
             #     stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
 
-        elif classify:
-            stores_sorted = stores_sorted.filter(classifications=classify)
-
-        if categories:
-            cates = [CategoryModel().objects(name_link__exact=cate)[0].id for cate in categories]
-            stores_sorted = stores_sorted.filter(categories_id__in=cates)
-
-        if cates_predict:
-            print(cates_predict)
-            stores_sorted = stores_sorted.filter(category_predict__in=cates_predict)
-
         stores_sorted = stores_sorted.order_by("-score_sentiment")
+        # num = len(stores_sorted)
+        num=0
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
-        return stores.items, stores.pages
+        return stores.items, stores.pages, num
 
     def find_by_id(self, store_id):
         return self.objects(id__exact=store_id)
