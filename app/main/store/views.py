@@ -30,6 +30,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
+    print(store)
     session['search'] = store[0].name_translate
     category = store[0].categories_id
     address = store[0].address_id
