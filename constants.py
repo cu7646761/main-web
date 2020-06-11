@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 _DOT_ENV_PATH = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(_DOT_ENV_PATH)
 
-API_KEY = os.getenv('API_KEY', "AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q")
+API_KEY = os.getenv('API_KEY', "")
 
 class Pages(enum.IntEnum):
     NUMBER_PER_PAGE = 10
