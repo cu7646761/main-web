@@ -156,7 +156,8 @@ def edit__store(form=None, store_id=None):
             return redirect('/admin/store/edit/' + store_id)
         return Response(json.dumps({"success": "yes"}), 200)
     return render_template("admin/edit-store.html", user=session['cur_user'], store_detail=store_detail,
-                           address=store_detail.address_id.detail, lst_cate_choose=[x.name for x in store_detail.categories_id], form=form,
+                           address=store_detail.address_id.detail,
+                           lst_cate_choose=[x.name for x in store_detail.categories_id], form=form,
                            store_active="active",
                            total_pages=total_pages, province_list=province_list, cate_list=category.query_all())
 
