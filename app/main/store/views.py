@@ -134,11 +134,11 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     score = sum(score_list)/len(score_list)
                     review_list = CommentModel().find_by_store_id(store_id)
                     quant_comment = review_list.filter(Q(detail__ne=None)&Q(detail__ne=""))
-                    score_sentiment = (store[0].score_sentiment + score)/len(quant_comment)
+                    score_sentiment = (store[0].score_sentiment*(quant_comment.count()-1) + score)/quant_comment.count()
                     store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
                     # score = Utils.predict_sentiment_score(text)
                     # print(aka)
-                return redirect(request.url)
+                # return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address[0],
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
@@ -170,8 +170,8 @@ def load_relative_store(store_id):
         recStore, pg = stores.find_optimize_by_categories(store[0].category_predict, store[0].categories_id, page, store[0].id)
         datas = []
         for rec in recStore:
-            classify = Utils.get_classification_by_score(rec.classification)
-            classCur =  Utils.get_classification_by_score(store[0].classification)
+            # classify = Utils.get_classification_by_score(rec.classification)
+            # classCur =  Utils.get_classification_by_score(store[0].classification)
             distance = "Không xác định"
             disCur = "Không xác định"
             x1 = float(rec.position.get("lat"))
@@ -192,12 +192,12 @@ def load_relative_store(store_id):
                         distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
                         disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
             curStore ={
-                "classify":classCur,
+                # "classify":classCur,
                 "distance":disCur,
             }
             datas += [{
                 "store": rec,
-                "classify": classify,
+                # "classify": classify,
                 "distance": distance,
                 "curStore" :curStore,
             }]
@@ -225,8 +225,10 @@ def load_compare(store_id_cur, store_id_target):
     store_model = StoreModel()
     store_cur = store_model.find_by_id(store_id_cur)[0]
     store_target = store_model.find_by_id(store_id_target)[0]
-    classCur =  Utils.get_classification_by_score(store_cur.classification)
-    classify_tar = Utils.get_classification_by_score(store_target.classification)
+    # classCur =  Utils.get_classification_by_score(store_cur.classification)
+    class_cur = store_cur.score_sentiment
+    # classify_tar = Utils.get_classification_by_score(store_target.classification)
+    classify_tar = store_target.score_sentiment
     distance = "Không xác định"
     disCur = "Không xác định"
     x1 = float(store_target.position.get("lat"))
@@ -247,12 +249,12 @@ def load_compare(store_id_cur, store_id_target):
                 distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
                 disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
     data = {
-        "class_cur":classCur,
+        "class_cur":round(class_cur,2),
         "dis_cur":disCur,
         "star_cur":store_cur.stars,
         "review_cur":store_cur.reviewer_quant,
         "name_cur": store_cur.name,
-        "class_tar":classify_tar,
+        "class_tar":round(classify_tar,2),
         "dis_tar":distance,
         "star_tar":store_target.stars,
         "review_tar":store_target.reviewer_quant,
@@ -321,7 +323,7 @@ def getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2):
 def deg2rad(deg):
     return deg*(math.pi/180)
 
-@store_blueprint.route('/stores/', methods=['GET'])
+@store_blueprint.route('/stores/', methods=['GET', 'POST'])
 @login_required
 def stores():
     page = request.args.get('page', 1, type=int)
@@ -329,11 +331,23 @@ def stores():
     level_filter = request.args.get('level', '', type=str)
     categories_filter = request.args.get('categories', '', type=str)
     cate_predict_filter = request.args.get('cate_predict', '', type=str)
+    star_filter = request.args.get('star', '', type=str)
+
+    if request.method == 'POST':
+        categories_filter = ""
+        cate_param = request.form.getlist("cate")
+        for c in cate_param:
+            categories_filter +=c+","
+        categories_filter = categories_filter[:-1]
+        star = request.form.get("star")
+        star_filter = star
+
     filter = {
         "classification": class_filter,
         "level": level_filter,
         "categories": categories_filter,
-        "cate_predict": cate_predict_filter
+        "cate_predict": cate_predict_filter,
+        "star": star_filter,
     }
 
     # add param
@@ -346,7 +360,7 @@ def stores():
     comment_model = CommentModel()
     adr_model = AddressModel()
 
-    stores, pages = store_model.query_paginate_sort(page, filter)
+    stores, pages, num = store_model.query_paginate_sort(page, filter)
     datas = []
     for store in stores:
         address = AddressModel().find_by_id(store.address_id)
@@ -366,14 +380,15 @@ def stores():
     selected_dics = {
         "cates": {},
         "level": level_filter,
-        "address": {}
+        "address": {},
+        "star": star_filter,
     }
     for cate in all_cates:
         selected_dics["cates"][cate.name_link] = False
         if cate.name_link in selected_cates:
             selected_dics["cates"][cate.name_link] = True
     # address = 
-    return render_template("listing.html", datas=datas, pages=pages,
+    return render_template("listing.html", datas=datas, pages=pages, num=num,
                            current_page=page, additional_params=additional_params,
                            categories=all_cates, selected_dics=selected_dics, user=session['cur_user'])
 

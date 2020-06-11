@@ -103,10 +103,10 @@
                             <table id="alter" align="center">
                                 <tr>
                                     <th>Cửa hàng</th>
-                                    <th>Đánh giá</th>
+                                    <th>Số sao</th>
                                     <th>Số nhận xét</th>
                                     <th>Khoảng cách</th>
-                                    <th>Phân loại</th>
+                                    <th>Điểm đánh giá</th>
                                 </tr> 
                                 <tr>
                                     <td>{{store.name}}</td>
@@ -581,15 +581,15 @@ function loadItems() {
     // Uncomment below to see the entry.intersectionRatio when
     // the sentinel comes into view
 
-    entries.forEach(entry => {
-      console.log(entry.intersectionRatio);
-    })
+        entries.forEach(entry => {
+            console.log(entry.intersectionRatio);
+        })
 
-    // If intersectionRatio is 0, the sentinel is out of view
-    // and we don't need to do anything. Exit the function
-        // if (entries[0].intersectionRatio <= 0) {
-        //     return;
-        // }
+        // If intersectionRatio is 0, the sentinel is out of view
+        // and we don't need to do anything. Exit the function
+        if (entries[0].intersectionRatio <= 0) {
+            return;
+        }
 
         // Call the loadItems function
         loadItems();
@@ -604,7 +604,7 @@ function loadItems() {
     var swiper = document.querySelector('#swiper-rl')
     var rl_template = document.querySelector('#relst-template');
     var page = 1
-    
+
     function loadrlStore() {
         document.getElementById('loading-text').innerHTML = "Loading...";
         document.getElementById('load-more-st').disabled = true;
