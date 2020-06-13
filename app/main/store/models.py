@@ -27,6 +27,7 @@ class StoreModel(StoreEntity):
         cates_predict = None
         star = None
         dis = None
+        quality = 0
         for key, value in filter.items():
             if key == "classification" and value != "":
                 classify = PRED_LIST[value]
@@ -41,6 +42,8 @@ class StoreModel(StoreEntity):
                 cates_predict = value.split(',')
             elif key == "star" and value != "" and value != 'None':
                 star = float(value)
+            elif key == "quality" and value != "" and value != 'None':
+                quality = int(value)
         
         stores_sorted = self.objects
 
@@ -90,8 +93,10 @@ class StoreModel(StoreEntity):
             #         Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))   
             # elif level == 28:
             #     stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
-
-        stores_sorted = stores_sorted.order_by("-score_sentiment")
+        if quality == 1:
+            stores_sorted = stores_sorted.order_by("score_sentiment")
+        else:
+            stores_sorted = stores_sorted.order_by("-score_sentiment")
         # num = len(stores_sorted)
         num=0
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
@@ -145,9 +150,10 @@ class StoreModel(StoreEntity):
     #         return False, e.__str__()
 
     @classmethod
-    def create(cls, name, description, link_image, categories_id, address_id):
+    def create(cls, name, description, link_image, categories_id, address_id, position):
         try:
-            StoreEntity(name=name, description=description, link_image=link_image, categories_id=categories_id, address_id=address_id).save()
+            StoreEntity(name=name, description=description, link_image=link_image, 
+                        categories_id=categories_id, address_id=address_id, position=position).save()
             # StoreEntity.reindex()
             return True, None
         except Exception as e:

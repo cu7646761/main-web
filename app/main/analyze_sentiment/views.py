@@ -244,9 +244,9 @@ def gen_entity():
         'capuchino':1, 'bubble':1, 'latte':1, ' cocktail':1
     }
     food_cate['smoothie'] = {
-        'fruit':1, 'fruits':1, 'smoothie':1, 'juice':1, 'juices':1, 'milk':1, 'beams':1, 'beam':1,
-        'avocado':1, 'avocados':1, 'durian':1, 'durians':1, 'yogurt':1, 'yogurts':1, 'melon':1,
-        'yoghurt':1, 'yoghurts':1, 'icecream':1, 'butter':1, 'peach':1
+        'fruit':1, 'fruits':1, 'smoothie':1, 'juice':1, 'juices':1, 'beams':1, 'beam':1,
+        'avocado':1, 'avocados':1, 'durian':1, 'durians':1, 'yogurt':1, 'yogurts':1,
+        'yoghurt':1, 'yoghurts':1, 'butter':1, 'peach':1
     }
     food_cate['cake'] = {
         'cake':2, 'cakes':2, 'chocolate':1, 'chocolates':1, 'dessert':1, 'desserts':1, 'tiramisu':1,
@@ -448,7 +448,7 @@ def update_sentiment_comment():
 def update_sentiment_store():
     all_stores = StoreModel().query_all()
     count = 0
-    id = "5e9605d9d971b71612a0b9e1"
+    id = "5e963eb3d971b71612a3f5f5"
     store = StoreModel().find_by_id(id)[0]
     # for store in all_stores:
     count+=1

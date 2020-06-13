@@ -69,3 +69,19 @@ PRED_LIST2 = {
     'E': (10, 3),
     'F': (3, 0)
 }
+
+CATE_LIST = {
+    'japanese': 'Món Nhật',
+    'korean': 'Món Hàn',
+    'seafood': 'Hải sản',
+    'fastfood': 'Fastfood',
+    'vegetarian': 'Món chay',
+    'cafe': 'Quán cà phê, giải khát',
+    'smoothie': 'Sinh tố',
+    'cake': 'Các loại bánh',
+    'drinking': 'Quán nhậu',
+    'meat-beaf': 'Thịt heo, thịt bò',
+    'chicken': 'Gà',
+    'water-dish': 'Món nước, bún, phở',
+    'bar-club': 'Bar, club',
+}

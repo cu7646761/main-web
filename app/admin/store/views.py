@@ -146,7 +146,11 @@ def _store(form=None):
         print(description)
         print(list_obj_cate)
         print(address_id)
-        res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id)
+        position = {
+            "lat":latitude,
+            "lng":longtitude
+        }
+        res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position)
 
         if err:
             return redirect('/admin/store/add/')
