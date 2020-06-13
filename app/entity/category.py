@@ -1,14 +1,15 @@
-import mongoengine
+from mongoengine.document import Document
+from mongoengine.fields import *
 
-from app.main.search.models import SearchableMixin
+from app.main.search.search import SearchableMixin
 
 
-class Category(mongoengine.Document, SearchableMixin):
-    __tablename__ = 'category_mongo'
+class Category(Document, SearchableMixin):
+    __tablename__ = 'category'
     __searchable__ = ['name']
 
-    name = mongoengine.StringField()
-    name_link = mongoengine.StringField(unique=True)
+    name = StringField()
+    name_link = StringField(unique=True)
 
     meta = {'allow_inheritance': True}
 

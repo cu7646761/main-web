@@ -217,14 +217,14 @@
                                             <div class="featured-title-box col-lg-8 col-sm-8 col-xs-12">
                                                 <h6>{{ data['store'].name }}</h6>
                                                 {% for cate in data['cates'] %}
-                                                    <p>{{ cate[0].name }}</p> <span> • </span>
+                                                    <p>{{ cate.name }}</p> <span> • </span>
                                                 {% endfor %}
                                                 <br>
                                                 <p>{{ data['store'].reviewer_quant }} Đánh giá</p><br>
                                                 <p>{{ data['store'].stars }} Sao</p>
                                                 <ul>
                                                     <li><span class="icon-location-pin"></span>
-                                                        <p>{{ data['address'][0].detail }}</p>
+                                                        <p>{{ data['address'].detail }}</p>
                                                     </li>
                                                     <li><span class="icon-screen-smartphone"></span>
                                                         <p>+44 20 7336 8898</p>

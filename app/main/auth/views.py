@@ -1,14 +1,12 @@
 from functools import wraps
-from flask import redirect, render_template, Blueprint, session, request, Request
+from flask import redirect, render_template, Blueprint, session, request
 
 from app.main.auth.forms import LoginForm, SignupForm
-from app.main.auth.models import UserModel
-from app.main.store.models import StoreModel
-from app.main.address.models import AddressModel
+from app.model.auth import UserModel
+from app.model.store import StoreModel
 from app.main.search.forms import SearchForm
 
 from app.email import send_email
-from utils import Utils
 from constants import SERVER_NAME
 from flask.helpers import make_response
 from flask.json import jsonify
@@ -117,11 +115,16 @@ def get_confirm_email(error=None):
 def post_login(error=None):
     form = LoginForm()
     if form.validate_on_submit():
-        user = UserModel()
+        _user = UserModel()
         email = request.form.get("email", "")
         plain_text_password = request.form.get("password", "")
 
-        user = user.find_by_email(email)
+        print(email)
+        print(plain_text_password)
+
+        user = _user.find_by_email(email)
+
+        print(user)
 
         if len(user) == 0:
             error = "Incorrect email or password"

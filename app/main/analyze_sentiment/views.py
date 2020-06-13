@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from google.cloud import language_v1
 from google.cloud.language_v1 import enums
 from google.cloud import translate
-from app.main.comment.models import CommentModel
+from app.model.comment import CommentModel
 import nltk,re
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -21,15 +21,14 @@ from constants import Pages
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
 
-from app.main.store.models import StoreModel
-from app.main.comment.models import CommentModel
-from app.main.category.models import CategoryModel
-from app.main.address.models import AddressModel
+from app.model.store import StoreModel
+from app.model.comment import CommentModel
+from app.model.category import CategoryModel
+from app.model.address import AddressModel
 
 
 from utils import Utils
 from constants import CLASS_LIST
-from app.main.comment.models import CommentModel
 
 from flask.helpers import url_for
 

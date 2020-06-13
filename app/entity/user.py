@@ -1,40 +1,47 @@
-import os
-
-import mongoengine
+from mongoengine.document import Document
+from mongoengine.fields import *
 import datetime
-from app.main.search.models import SearchableMixin
+
+from app.entity.address import Address
+from app.entity.category import Category
+from app.entity.store import Store
+from app.main.search.search import SearchableMixin
 from constants import SERVER_NAME, LINK_IMG, LINK_IMG_AVATAR_DEF
 
 
-class User(mongoengine.Document, SearchableMixin):
-    __tablename__ = 'user_mongo'
+class User(Document, SearchableMixin):
+    __tablename__ = 'user'
     __searchable__ = ['email']
 
-    email = mongoengine.StringField(max_length=255, required=True, unique=True)
-    password = mongoengine.StringField(max_length=255)
-    email_fb = mongoengine.StringField(max_length=255)
-    id_fb = mongoengine.StringField(max_length=255)
-    name = mongoengine.StringField(max_length=255)
-    birthday = mongoengine.DateTimeField()
-    permission = mongoengine.IntField()
-    favorite_categories = mongoengine.ListField()
-    favorite_stores = mongoengine.ListField()
-    infor_rec = mongoengine.StringField(default=" ")
+    email = StringField(max_length=255, required=True, unique=True)
+    password = StringField(max_length=255)
+    email_fb = StringField(max_length=255, default="")
+    id_fb = StringField(max_length=255, default="")
+    name = StringField(max_length=255)
+    birthday = DateTimeField()
+    infor_rec = StringField(default=" ")
 
     # nam:0, nu:1, khac:2
-    gender = mongoengine.IntField()
-    comments_list = mongoengine.ListField()
-    address_id = mongoengine.ObjectIdField()
-    active = mongoengine.IntField(default=0)
-    address_id = mongoengine.ObjectIdField()
+    gender = IntField()
+    active = IntField(default=0)
 
-    # save avatar
-    link_image = mongoengine.StringField(default=LINK_IMG_AVATAR_DEF)
+    comments_list = ListField()
+    address_id = ReferenceField(Address)
+    favorite_categories = ListField(ReferenceField(Category))
+    favorite_stores = ListField(ReferenceField(Store))
 
-    created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
-    updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
+    link_image = StringField(default=LINK_IMG_AVATAR_DEF)
+
+    created_at = DateTimeField(default=datetime.datetime.now())
+    updated_on = DateTimeField(default=None)
 
     meta = {'allow_inheritance': True}
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = datetime.datetime.now()
+        self.updated_on = datetime.datetime.now()
+        return super(User, self).save(*args, **kwargs)
 
     def __repr__(self):
         return '<User %r>' % (self.email)
