@@ -1,65 +1,65 @@
-import mongoengine
 import datetime
-from app.main.search.models import SearchableMixin
+from mongoengine.document import Document
+from mongoengine.fields import *
+
+from app.entity.address import Address
+from app.entity.category import Category
+from app.main.search.search import SearchableMixin
 
 
-class Store(mongoengine.Document, SearchableMixin):
-    __tablename__ = 'store_mongo'
+class Store(Document, SearchableMixin):
+    __tablename__ = 'store'
     __searchable__ = ['name']
-    meta = {        
+
+    name = StringField(max_length=255, required=True)
+    name_translate = StringField(max_length=255)
+
+    address_id = ReferenceField(Address)
+    categories_id = ListField(ReferenceField(Category))
+
+    min_price = StringField(default="")
+    max_price = StringField(default="")
+    link_image = ListField(default=[])
+
+    stars = FloatField(default=0)
+    link_gg = StringField(default=None)
+    link_foody = StringField(default=None)
+
+    star_s1 = IntField(default=0)
+    star_s2 = IntField(default=0)
+    star_s3 = IntField(default=0)
+    star_s4 = IntField(default=0)
+    star_s5 = IntField(default=0)
+    description = StringField(max_length=500, default=None)
+    type_store = DictField(default={})
+
+    classification = FloatField(default=0)
+    score_sentiment = FloatField(default=0)
+    reviewer_quant = IntField(default=0)
+    fixed = BooleanField(default=False)
+
+    entity_score = DictField(default={})
+    # entity_sentiment = DictField()
+    position = DictField(default={})
+    category_predict = StringField(default="")
+
+    created_at = DateTimeField(default=datetime.datetime.now())
+    updated_on = DateTimeField(default=None)
+    deleted_at = DateTimeField(default=None)
+
+    meta = {
         'indexes': [
             {
-                'fields': ['+classification']	               
-            }]
+                'fields': ['+classification']
+            }],
+        'allow_inheritance': True
     }
-    name = mongoengine.StringField(max_length=255, required=True)
-    name_translate = mongoengine.StringField(max_length=255)
-    address_id = mongoengine.ObjectIdField(required=True)
-    categories_id = mongoengine.ListField(required=True)
-    min_price = mongoengine.StringField(default="")
-    max_price = mongoengine.StringField(default="")
-    link_image = mongoengine.ListField(default=[])
 
-    stars = mongoengine.FloatField(default=0)
-    link_gg = mongoengine.StringField(default=None)
-    link_foody = mongoengine.StringField(default=None)
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = datetime.datetime.now()
+        self.updated_on = datetime.datetime.now()
+        return super(Store, self).save(*args, **kwargs)
 
-    star_s1 = mongoengine.IntField(default=0)
-    star_s2 = mongoengine.IntField(default=0)
-    star_s3 = mongoengine.IntField(default=0)
-    star_s4 = mongoengine.IntField(default=0)
-    star_s5 = mongoengine.IntField(default=0)
-    description = mongoengine.StringField(max_length=500, default=None)
-
-    comments_a = mongoengine.IntField(default=None)
-    comments_b = mongoengine.IntField(default=None)
-    comments_c = mongoengine.IntField(default=None)
-    comments_d = mongoengine.IntField(default=None)
-    comments_e = mongoengine.IntField(default=None)
-    comments_f = mongoengine.IntField(default=None)
-    comments_g = mongoengine.IntField(default=None)
-    comments_h = mongoengine.IntField(default=None)
-    comments_i = mongoengine.IntField(default=None)
-    comments_s = mongoengine.IntField(default=None)
-    comment_list = mongoengine.ListField(default=[])
-    name_translate = mongoengine.StringField(default="")
-    type_store =mongoengine.DictField(default={})
-
-    classification = mongoengine.FloatField(default=None)
-    score_sentiment = mongoengine.FloatField(default=0)
-    reviewer_quant = mongoengine.IntField(default=0)
-    fixed = mongoengine.BooleanField(default=False)
-
-    created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
-    updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
-    deleted_at = mongoengine.DateTimeField(default=None)
-
-    entity_score = mongoengine.DictField(default={})
-    # entity_sentiment = mongoengine.DictField()
-    position = mongoengine.DictField(default={})
-    category_predict = mongoengine.StringField()
-    meta = {'allow_inheritance': True}
-
-    
-def __repr__(self):
+    def __repr__(self):
         return '<Store %r>' % (self.name)

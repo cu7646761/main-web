@@ -7,6 +7,10 @@ from bson.json_util import loads
 client = MongoClient('mongodb+srv://hoangan11:hoangan11123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority')
 db = client.foodblog1
 
+client = MongoClient(
+    'mongodb+srv://hoangan11:hoangan11123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority')
+db = client.foodblog1
+
 conn = MongoClient()
 db2 = conn['main_1']
 
@@ -43,9 +47,7 @@ print('finished create category')
 data = []
 data_2 = db2.store.find()
 
-with open(
-    
-) + '/store_json.json', encoding="utf8") as f:
+with open('/store_json.json', encoding="utf8") as f:
     for line in f:
         data.append(json.loads(line))
 dem = 0
@@ -134,15 +136,15 @@ for each in data:
         entity_dict = data_2[dem]['entity_score']
     else:
         break
-    update_store = db.store.update_one({"comment_list": None, "_id": store_new_id}, 
-            {"$set": 
-                {
-                    "comment_list": comment_list_id, 
-                    "_id": store_new_id, 
-                    "classification": classification,
-                    "entity_score": entity_dict
-                }
-            })
+    update_store = db.store.update_one({"comment_list": None, "_id": store_new_id},
+                                       {"$set":
+                                           {
+                                               "comment_list": comment_list_id,
+                                               "_id": store_new_id,
+                                               "classification": classification,
+                                               "entity_score": entity_dict
+                                           }
+                                       })
 
     print('Created {0}'.format(each['name']))
     dem += 1

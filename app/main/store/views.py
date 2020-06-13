@@ -1,4 +1,3 @@
-from functools import wraps
 import time
 import math
 import requests
@@ -9,15 +8,15 @@ from constants import Pages, CLASS_LIST
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
 from app.main.store.forms import StoreForm
-from app.main.store.models import StoreModel
+from app.model.store import StoreModel
 from app.main.comment.forms import AddCommentForm
-from app.main.category.models import CategoryModel
-from app.main.address.models import AddressModel
+from app.model.category import CategoryModel
+from app.model.address import AddressModel
 from app.main.auth.views import login_required
 
 from utils import Utils
 from constants import CLASS_LIST
-from app.main.comment.models import CommentModel
+from app.model.comment import CommentModel
 
 from flask.helpers import url_for
 from math import sqrt
@@ -37,9 +36,10 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
+    print(store)
     session['search'] = store[0].name_translate
-    category = categories.findAllById(store[0].categories_id)
-    address = AddressModel().find_by_id(store[0].address_id)
+    category = store[0].categories_id
+    address = store[0].address_id
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     current_user = None
     userAddress = None
@@ -48,7 +48,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
         if session['logged'] == True:
             current_user = session['cur_user']
             if current_user.address_id:
-                userAddress = AddressModel().find_by_id(current_user.address_id)
+                userAddress = current_user.address_id
             
     except:
         pass
@@ -78,7 +78,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             star = request.form.get("star", "")
             if not star:
                 error = "Star is required"
-                return render_template('detail.html', store=store[0], category=category, address=address[0],
+                return render_template('detail.html', store=store[0], category=category, address=address,
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
                                            current_user=current_user, form=form, error=error, user=current_user,
@@ -91,7 +91,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                 else:
                     new_comment, error = CommentModel.create(store_id, comment, star, None)
                 if error:
-                    return render_template('detail.html', store=store[0], category=category, address=address[0],
+                    return render_template('detail.html', store=store[0], category=category, address=address,
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
                                            current_user=current_user, form=form, error=error, user=current_user,
@@ -138,9 +138,9 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
                     # score = Utils.predict_sentiment_score(text)
                     # print(aka)
-                # return redirect(request.url)
+                return redirect(request.url)
 
-    return render_template('detail.html', store=store[0], category=category, address=address[0],
+    return render_template('detail.html', store=store[0], category=category, address=address,
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form, error=error
                            , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
@@ -368,8 +368,8 @@ def stores():
     stores, pages, num = store_model.query_paginate_sort(page, filter)
     datas = []
     for store in stores:
-        address = AddressModel().find_by_id(store.address_id)
-        cates = categories.findAllById(store.categories_id)
+        address = store.address_id
+        cates = store.categories_id
         # classify = CLASS_LIST[store.classification]
         # classify = Utils.get_classification_by_score(store.classification)
         datas += [{

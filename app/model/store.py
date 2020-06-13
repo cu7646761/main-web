@@ -1,10 +1,9 @@
 from flask_mongoengine import Pagination
 from app.entity.store import Store as StoreEntity
 from constants import Pages
-from bson import ObjectId
 from constants import PRED_LIST, CLASS_LIST, PRED_LIST2
 from mongoengine.queryset.visitor import Q
-from app.main.category.models import CategoryModel
+from app.model.category import CategoryModel
 
 
 class StoreModel(StoreEntity):
@@ -121,8 +120,8 @@ class StoreModel(StoreEntity):
         if category != 'other':
             store_filtered = self.objects(category_predict__exact=category)
         else:
-            cates = [CategoryModel().objects(id__exact=cate)[0].id for cate in categories_id]
-            store_filtered = self.objects.filter(categories_id__in=cates)
+            # cates = [CategoryModel().objects(id__exact=cate)[0].id for cate in categories_id]
+            store_filtered = self.objects.filter(categories_id__in=categories_id)
         store_filtered = store_filtered.filter(reviewer_quant__gt=200)
         store_filtered = store_filtered.filter(id__ne=store_id)
         stores_sorted = store_filtered.order_by("score_sentiment")

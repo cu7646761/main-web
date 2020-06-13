@@ -2,7 +2,6 @@ from flask_mongoengine import Pagination
 from app.entity.address import Address as AddressEntity
 from app.entity.user import User as UserEntity
 from constants import Pages
-from bson import ObjectId
 
 
 class AddressModel(AddressEntity):
@@ -37,7 +36,7 @@ class AddressModel(AddressEntity):
             address.save()
             user = UserEntity.objects(id=user_id).get()
             user.address_id = address.id
-            user.save()     
+            user.save()
             # UserEntity.reindex()
             return True, None
         except Exception as e:
@@ -46,10 +45,6 @@ class AddressModel(AddressEntity):
     @classmethod
     def create_store(cls, detail, district, latitude, longtitude):
         try:
-            print(detail)
-            print(district)
-            print(latitude)
-            print(longtitude)
             address = AddressEntity(detail=detail, district=district, latitude=latitude, longtitude=longtitude)
             address.save()
             # UserEntity.reindex()

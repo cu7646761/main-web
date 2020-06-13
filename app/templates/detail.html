@@ -52,7 +52,7 @@
 
                     <p class="reserve-description">
                         {% for ct in category %}
-                            {{ ct[0].name }} ,
+                            {{ ct.name }} ,
                         {% endfor %}...
                     </p>
                     <!-- <br><br> -->
@@ -604,7 +604,6 @@ function loadItems() {
     var swiper = document.querySelector('#swiper-rl')
     var rl_template = document.querySelector('#relst-template');
     var page = 1
-
     function loadrlStore() {
         document.getElementById('loading-text').innerHTML = "Loading...";
         document.getElementById('load-more-st').disabled = true;
