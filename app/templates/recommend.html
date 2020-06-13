@@ -29,7 +29,8 @@
                 if (response.status == 201){
                     openForm()
                     key = Object.keys(data)[0]
-                    document.getElementById("recommend-text").innerHTML += key + " ?"
+                    value = data[key] 
+                    document.getElementById("recommend-text").innerHTML += value + " ?"
                     document.getElementById("btn-recommend").setAttribute('href', `/reset-rec?rp=${key}`)
                     console.log(Object.keys(data)[0])
                 }

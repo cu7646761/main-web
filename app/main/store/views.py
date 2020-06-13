@@ -332,6 +332,7 @@ def stores():
     categories_filter = request.args.get('categories', '', type=str)
     cate_predict_filter = request.args.get('cate_predict', '', type=str)
     star_filter = request.args.get('star', '', type=str)
+    quality_filter = request.args.get('quality', '', type=str)
 
     if request.method == 'POST':
         categories_filter = ""
@@ -341,6 +342,9 @@ def stores():
         categories_filter = categories_filter[:-1]
         star = request.form.get("star")
         star_filter = star
+        quality = request.form.get("quality")
+        quality_filter = quality
+
 
     filter = {
         "classification": class_filter,
@@ -348,6 +352,7 @@ def stores():
         "categories": categories_filter,
         "cate_predict": cate_predict_filter,
         "star": star_filter,
+        "quality": quality_filter,
     }
 
     # add param
@@ -382,6 +387,7 @@ def stores():
         "level": level_filter,
         "address": {},
         "star": star_filter,
+        "quality": quality_filter
     }
     for cate in all_cates:
         selected_dics["cates"][cate.name_link] = False

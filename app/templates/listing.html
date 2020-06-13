@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-{% include "recommend.html"%}
     <!--============================= DETAIL =============================-->
     <section>
         <div class="container container-fluid">
@@ -18,9 +17,9 @@
                             <div class="col-md-3 featured-responsive">
                                 <div class="detail-filter">
                                     <p>Chất lượng</p>
-                                    <select name="star" class="custom-select">
-                                        <option class="star-filter" value=0>Thấp nhất</option>
-                                        <option class="star-filter" value=1>Cao nhất</option>
+                                    <select name="quality" class="custom-select">
+                                        <option class="star-filter" value=0>Cao nhất</option>
+                                        <option class="star-filter" value=1>Thấp nhất</option>
                                     </select>
                                 </div>
                             </div>
@@ -193,6 +192,12 @@
                                     , <i style="color: blue;">{{k}}</i>
                                 {% endif %}
                             {% endfor %}
+                            , Sắp xếp theo chất lượng
+                            {% if selected_dics['quality'] == '1'%}
+                                <b style="color: black;">Thấp nhất</b>
+                            {% else %}
+                                <b style="color: black;">Cao nhất</b>
+                            {% endif %}
                         </p>
                         </div>
                         {% for data in datas %}
@@ -355,4 +360,5 @@
     </section>
 
     <!--//END DETAIL -->
+{% include "recommend.html"%}
 {% endblock %}

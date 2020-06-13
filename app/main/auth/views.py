@@ -12,7 +12,7 @@ from utils import Utils
 from constants import SERVER_NAME
 from flask.helpers import make_response
 from flask.json import jsonify
-from constants import API_KEY
+from constants import API_KEY, CATE_LIST
 from utils import Utils
 
 auth_blueprint = Blueprint(
@@ -177,7 +177,14 @@ def load_predict_cate():
         #     return res
     elif session["search_tsl"]:
         if session['recommendation']:
-            res = make_response(jsonify(session['recommendation']), 201)
+            res_dict = {}
+            rs_list = session['recommendation'].items()
+            print(rs_list)
+            for k,v in rs_list:
+                res_dict[k] = CATE_LIST[k]
+            # res_dict = {k: v for k, v in sorted(res_dict.items(), key=lambda item: item[1], reverse=True)}
+            res = make_response(jsonify(res_dict), 201)
+            print(res.data)
             return res
 
     res = make_response(jsonify({}), 200)
