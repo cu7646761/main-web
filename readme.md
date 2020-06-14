@@ -2,6 +2,10 @@ After install 1 package -> save name into requirements.txt
 =======================================
  > pip freeze > requirements.txt
 
+Upgrade all packages in project
+=======================================
+ > pip install -r requirements.txt --upgrade
+
 How to run server
 =======================================
 1. Access folder that contain run.py file

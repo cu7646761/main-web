@@ -66,7 +66,7 @@ comment_old_lst = data_comment[0]
 #         'district': addr_old['district']
 #     }
 #
-#     # address_new = Address(detail=addr_old['detail'], latitude=addr_old['latitude'], longtitude=addr_old['longtitude'], district=addr_old['district']).save()
+    # address_new = Address(detail=addr_old['detail'], latitude=addr_old['latitude'], longtitude=addr_old['longtitude'], district=addr_old['district']).save()
 #
 #     categories_id_new = []
 #     for cate in store_old['categories_id']:
@@ -153,8 +153,8 @@ comment_old_lst = data_comment[0]
     #             if cmt_old['store_id'] == store['_id']:
     #                 store_old_id = store
     #         print(store)
-    #         # cmt_new = Comment(detail=cmt_old['detail'],user_id=user_old,)
-    #         cmt_new_lst.append(cmt_old)
+    #         cmt_new = Comment(detail=cmt_old['detail'],user_id=user_old,)
+            # cmt_new_lst.append(cmt_old)
 
     # try:
     #     addr_old = None

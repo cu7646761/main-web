@@ -11,7 +11,7 @@ class Comment(Document, SearchableMixin):
     __tablename__ = 'comment'
     __searchable__ = ['detail']
 
-    detail = StringField(max_length=1000)
+    detail = StringField(max_length=1000, default=None)
 
     user_id = ReferenceField(User)
     store_id = ReferenceField(Store, required=True)

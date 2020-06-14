@@ -30,7 +30,6 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
-    print(store)
     session['search'] = store[0].name_translate
     category = store[0].categories_id
     address = store[0].address_id
@@ -145,8 +144,8 @@ def load_relative_store(store_id):
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
-    category = categories.findAllById(store[0].categories_id)
-    address = AddressModel().find_by_id(store[0].address_id)
+    category = store[0].categories_id
+    address = store[0].address_id
     # star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     current_user = None
     userAddress = None
@@ -154,7 +153,7 @@ def load_relative_store(store_id):
         if session['logged'] == True:
             current_user = session['cur_user']
             if current_user.address_id:
-                userAddress = AddressModel().find_by_id(current_user.address_id)
+                userAddress = current_user.address_id
             
     except:
         pass
