@@ -13,7 +13,7 @@ class Comment(Document, SearchableMixin):
     detail = StringField(max_length=1000)
     user_id = ObjectIdField(default=None)
 
-    detail = StringField(max_length=1000)
+    detail = StringField(max_length=1000, default=None)
 
     user_id = ReferenceField(User)
     store_id = ReferenceField(Store, required=True)
