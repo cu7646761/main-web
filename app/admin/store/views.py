@@ -14,6 +14,8 @@ from app.main.search.forms import SearchForm
 from app.model.store import StoreModel
 from constants import UPLOAD_FOLDER, LINK_IMG
 from constants import API_KEY
+from google.cloud import translate
+from utils import Utils
 
 gmaps = googlemaps.Client(key=API_KEY)
 
@@ -105,8 +107,16 @@ def _store(form=None):
             "lat":latitude,
             "lng":longtitude
         }
+        text_tsl = Utils.sample_translate_text(name, "en-US", "britcat3")
+        des_tsl = Utils.sample_translate_text(description, "en-US","britcat3")
+        name_translate = text_tsl.translations[0].translated_text.lower()
+        des_translate = des_tsl.translations[0].translated_text.lower()
+        text_input = name_translate + " " + name_translate + " " + name_translate + " " + description + " "
+        cate_predict_rs = Utils.predict_food_cate(text_input) 
+        category_predict = max(cate_predict_rs, key=cate_predict_rs.get)
         image_list.append(image)
-        res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position)
+        res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position, name_translate,
+                                     category_predict, cate_predict_rs)
 
         if err:
             return redirect('/admin/store/add/')

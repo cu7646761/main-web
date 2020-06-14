@@ -138,7 +138,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
                     # score = Utils.predict_sentiment_score(text)
                     # print(aka)
-                return redirect(request.url)
+                # return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address,
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
@@ -172,34 +172,34 @@ def load_relative_store(store_id):
         for rec in recStore:
             # classify = Utils.get_classification_by_score(rec.classification)
             # classCur =  Utils.get_classification_by_score(store[0].classification)
-            distance = "Không xác định"
-            disCur = "Không xác định"
-            x1 = float(rec.position.get("lat"))
-            y1 = float(rec.position.get("lng"))
-            xCur = float(store[0].position.get("lat"))
-            yCur = float(store[0].position.get("lng"))
+            # distance = "Không xác định"
+            # disCur = "Không xác định"
+            # x1 = float(rec.position.get("lat"))
+            # y1 = float(rec.position.get("lng"))
+            # xCur = float(store[0].position.get("lat"))
+            # yCur = float(store[0].position.get("lng"))
 
-            if session["pos"] is not None:
-                x2 = float(session["pos"].get("lat"))
-                y2 = float(session["pos"].get("lng"))
-                distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-                disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
-            else:
-                if session['logged'] == True:
-                    if current_user.address_id:
-                        x2 = float(userAddress[0].latitude)
-                        y2 = float(userAddress[0].longtitude)
-                        distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-                        disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
-            curStore ={
-                # "classify":classCur,
-                "distance":disCur,
-            }
+            # if session["pos"] is not None:
+            #     # x2 = float(session["pos"].get("lat"))
+            #     # y2 = float(session["pos"].get("lng"))
+            #     # distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+            #     # disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+            # else:
+            #     if session['logged'] == True:
+            #         if current_user.address_id:
+                        # x2 = float(userAddress.latitude)
+                        # y2 = float(userAddress.longtitude)
+                        # distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                        # disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+            # curStore ={
+            #     # "classify":classCur,
+            #     "distance":disCur,
+            # }
             datas += [{
                 "store": rec,
                 # "classify": classify,
-                "distance": distance,
-                "curStore" :curStore,
+                # "distance": distance,
+                # "curStore" :curStore,
             }]
         rs = {
             "datas": datas,
@@ -218,7 +218,7 @@ def load_compare(store_id_cur, store_id_target):
         if session['logged'] == True:
             current_user = session['cur_user']
             if current_user.address_id:
-                userAddress = AddressModel().find_by_id(current_user.address_id)
+                userAddress = AddressModel().find_by_id(current_user.address_id.id)
     except:
         pass
 
