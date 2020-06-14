@@ -1,20 +1,20 @@
+from app.entity.user import User
 from tests.test_client import FlaskClientTestCase
 
 
-class AuthViewsTestCase(FlaskClientTestCase):
+class UserTestCase(FlaskClientTestCase):
 
-    # Ensure get_login is correct
-    def test_get_login(self):
-        with self.client:
-            response = self.client.get('/login', follow_redirects=True)
-            self.assertIn(b'Login', response.data)
+    # Ensure user is inited
+    def test_create(self):
+        user = User(email="longan5@gmail.com", password="huhu").save()
+        self.assertTrue(user.email, "longan5@gmail.com")
 
-    # Ensure get_signup is correct
-    # def test_get_signup(self):
+    # Ensure list city is showed
+    # def test_list_cate(self):
     #     with self.client:
-    #         response = self.client.get('/login', follow_redirects=True)
-    #         self.assertIn(b'Sign up', response.data)
-
+    #         response = self.client.get('/city', follow_redirects=True)
+    #         self.assertIn(b'City Table', response.data)
+    #
     # # Ensure city is created
     # def test_create_city(self):
     #     with self.client:

@@ -50,8 +50,8 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    MONGODB_DB = 'main_3'
-    MONGODB_HOST = 'mongodb://localhost:27017/main_3'
+    MONGODB_DB = 'testing'
+    MONGODB_HOST = 'mongodb+srv://admin:britcat@clusteroptimize-wysnm.gcp.mongodb.net/testing?retryWrites=true&w=majority'
 
     @classmethod
     def init_app(cls, app):

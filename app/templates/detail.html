@@ -555,6 +555,7 @@ function loadItems() {
                 for (; j < data[i].star_num; j++) {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";
                 }
+                console.log(data[i])
                 template_clone.querySelector("#detail").innerHTML = data[i].detail;
                 template_clone.querySelector("#star-num").innerHTML = data[i].star_num;
                 template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].star_num} sao.`;
