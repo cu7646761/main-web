@@ -53,14 +53,6 @@ def remove_inv_char():
             print("----->", newkey)
         if len(invalid_key) > 0:
             store.update(set__entity_score=entity)
-
-
-# do not run manual
-@analyze_blueprint.route("/test_predict_online17273747", methods=["GET","POST"])
-def test_predict_online():
-    rs = Utils.predict_food_cate_online("pizza")
-    print(rs)
-    return jsonify({})
             
 
 # do not run manual
@@ -260,7 +252,7 @@ def gen_entity():
         'meat':1, 'meats':1, 'rib':1, 'dip':1, 'grill':1, 'grills':1, 'ribs':1, 'dips':1,
         'beef':1, 'beefs':1, 'bbq':1, 'steak':1, 'steaks':1, 'barbecues':1, 'barbecue':1,
         'beefsteak':1, 'beefsteaks':1, 'cow':1, 'cows':1, 'pig':1, 'pigs':1, 'kebab':1, 'kebabs':1,
-        'shawarma':1
+        'shawarma':1, 'roll':1, 'rolls':1
     }
     food_cate['chicken'] = {
         'chicken':1, 'chickens':1, 'kfc':1, 'texas':1, 'french':1, 'lotteria':1
@@ -274,11 +266,13 @@ def gen_entity():
         'bar':1, 'bars':1, 'pub':1, 'pubs':1, 'beers':1, 'beer':1, 'wine':1, 'club':1,
         'clubs':1, 'dance':1, 'edm':1, 'vinahouse':1
     }
-    neutral = {
+    other = {
         'staff':3, 'staffs':3, 'food':3, 'foods':3, 'place':3, 'places':3, 'service':3,
-        'service':1, 'services':1, 'restaurant':1, 'restaurants':1, 'space':1, 'spaces':1,
-        'atmosphere':1, 'price':1, 'prices':1, 'taste':1, 'table':1, 'shop':1, 'seat':1,
-        'seats':1, 'family':1, 'meal':1, 'people':1, 'meals':1, 'dinner':1, 'view':1, 'design':1,
+        'services':1, 'restaurant':1, 'restaurants':1, 'space':1, 'spaces':1,
+        'atmosphere':1, 'price':1, 'prices':1, 'people':1}
+    neutral = {
+        'taste':1, 'table':1, 'shop':1, 'seat':1,
+        'seats':1, 'family':1, 'meal':1, 'meals':1, 'dinner':1, 'view':1, 'design':1,
         'friend':1, 'friends':1, 'customer':1, 'customers':1, 'waiter':1, 'waitress':1, 'dish':1, 'dishes':1,
         'time':1, 'times':1, 'quality':1, 'location':1, 'decoration':1, 'lunch':1, 'style':1, 'town':1, 'experience':1,
         'floor':1, 'cuisine':1, 'center':1, 'everything':1, 'air':1, 'money':1, 'one':1, 'some':1, 'more':1, 'choice':1
@@ -289,10 +283,11 @@ def gen_entity():
         
         for i in range(100):
             text_noise = ""
-            sentence_neutral = random.randint(1, 10)
+            sentence_neutral = random.randint(1, 20)
             for j in range(sentence_neutral):
-                temp = random.choice(list(neutral.keys()))
-                text_noise += temp + " "
+                noise = random.choice(list(neutral.keys()))
+                temp = random.choice(list(other.keys()))
+                text_noise += temp + " " + noise + " " + noise + " " + noise + " "
             print(text_noise)
             f_writer.writerow([text_noise, 'other'])    
         for k,v in food_cate.items():
@@ -515,6 +510,14 @@ def update_reviewer_quant():
         #     break
         print(store.name)
 
+    return jsonify({})
+
+
+@analyze_blueprint.route("/test-predict-online17273747", methods=["GET", "POST"])
+def test_predict_online():
+    text = "cafe is the food i like best"
+    rs = Utils.predict_food_cate_online(text)
+    print(rs)
     return jsonify({})
 
 
