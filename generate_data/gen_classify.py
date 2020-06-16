@@ -7,9 +7,9 @@ from bson.json_util import dumps
 from bson.json_util import loads
 
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-75ebf68887a8.json"
-
-PROJECT_ID = "Britcat3" #@param {type:"string"}
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-75ebf68887a8.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/foodblog-279914-4a928f287a48.json"
+PROJECT_ID = "foodblog-279914" #@param {type:"string"}
 COMPUTE_REGION = "us-central1" # Currently only supported region.
 
 automl_client = automl.AutoMlClient()
@@ -55,20 +55,24 @@ def get_name_link_by_id(oid):
     a = loads(dumps(cate))
     return a[0]['name_link']
 
+# list_models = tables_client.list_models()
+# models = { model.display_name: model.name for model in list_models }
 
 list_models = tables_client.list_models()
+print("bbbbbb")
 for model in list_models:
     print("aaaaaa")
-    if model.display_name == "predict_sentiment_20200522110634":
+    if model.display_name == "data_category_20200615061649":
+        print("ssssss")
         my_model = model
-        break
+        inputs = {
+            "text":"pizza"
+        }
+        pr = tables_client.predict(model=my_model, inputs=inputs)
+        print(pr)
 
-inputs = {
-    "text":"pizza"
-}
 
-pr = tables_client.predict(model=my_model, inputs=inputs)
-print(pr)
+# print(pr)
 # cnt = 0
 # for data in all_data:
 #     if cnt <= 2670:

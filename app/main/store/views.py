@@ -104,7 +104,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
                     for sentence in sentences:
                         if sentence == "":
                             continue
-                        sc = Utils.predict_sentiment_score(sentence)
+                        sc = Utils.predict_sentiment_online(sentence)
                         cleaned = re.sub(r"[^(a-zA-Z')\s]",'', sentence)
                         tokenize = word_tokenize(cleaned)
                         pos = nltk.pos_tag(tokenize)

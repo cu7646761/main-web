@@ -112,7 +112,7 @@ def _store(form=None):
         name_translate = text_tsl.translations[0].translated_text.lower()
         des_translate = des_tsl.translations[0].translated_text.lower()
         text_input = name_translate + " " + name_translate + " " + name_translate + " " + description + " "
-        cate_predict_rs = Utils.predict_food_cate(text_input) 
+        cate_predict_rs = Utils.predict_food_cate_online(text_input) 
         category_predict = max(cate_predict_rs, key=cate_predict_rs.get)
         image_list.append(image)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position, name_translate,
