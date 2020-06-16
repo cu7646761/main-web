@@ -13,7 +13,7 @@ neg_dict = {
     'bad':1, 'worst':1, 'disgusting':1, 'dirty':1, 'ugly':1, 'hate':1, 'impolite':1, 'sad':1, 'disappointed':1, 'dislike':1,
     'poor':1, 'noisy':1, 'expensive':1, 'fuck':3, 'fucking':3, 'lousy':2, 'slow':1, 'slowly':1, 'small':1, 'lack':1, 'weak':1,
     'broken':1, 'disregard':1, 'wasted':1, 'boring':1, 'horrible':1, 'angry':1, 'careless':1, 'failed':1, 'dissatisfied':1,
-    'chemicals':1 , 'chemical':1, 'unsafe':1, 'unloading':1
+    'chemicals':1 , 'chemical':1, 'unsafe':1, 'unloading':1, 'suck':1, 'shit':1
 }
 neg_words = {
     'no':1, 'not':1, 'nerver':1, "won't":1, "aren't":1, "don't":1, "isn't":1, "doesn't":1, "can't":1, "couldn't":1, 'none':1
