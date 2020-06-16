@@ -10,7 +10,7 @@ from google.cloud import automl_v1beta1 as automl
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/nguyenphuongvuong/Desktop/Britcat3-dd9d79d99d97.json"
 
-PROJECT_ID = "Britcat3" #@param {type:"string"}
+PROJECT_ID = "britcat3" #@param {type:"string"}
 COMPUTE_REGION = "us-central1" # Currently only supported region.
 
 # automl_client = automl.AutoMlClient()
@@ -68,12 +68,20 @@ class Utils:
         input = {
             "text":text
         }
-        rs = tables_client.predict(
-            model_display_name=model_display_name, inputs=input, feature_importance=True
+        result = tables_client.predict(
+            model_display_name=model_display_name, inputs=input
         )
         # pr = tables_client.predict(model=my_model, inputs=text)
-        rs = pr.payload[0].tables.value.number_value
-        return rs
+        rs_dict = {}
+        for label in result.payload:
+            key = label.tables.value.string_value
+            value = label.tables.score
+            rs_dict.update({key:value})
+
+        print(rs_dict)
+        type_filtered = {k: v for k, v in rs_dict.items() if v >= 0.1}
+        type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
+        return type_sorted
 
 
     @staticmethod
@@ -97,13 +105,25 @@ class Utils:
     
     @staticmethod
     def predict_sentiment_online(text):
+        # list_models = tables_client.list_models()
         model_display_name = "predict_sentiment_20200522110634"
-        rs = tables_client.predict(
-            model_display_name=model_display_name, inputs=text
+        input = {
+            "text":text
+        }
+        result = tables_client.predict(
+            model_display_name=model_display_name, inputs=input
         )
         # pr = tables_client.predict(model=my_model, inputs=text)
-        rs = pr.payload[0].tables.value.number_value
-        return rs
+        rs_dict = {}
+        for label in result.payload:
+            key = label.tables.value.string_value
+            value = label.tables.score
+            rs_dict.update({key:value})
+
+        print(rs_dict)
+        type_sorted = {k: v for k, v in sorted(rs_dict.items(), key=lambda item: item[1], reverse=True)}
+        sc = -rs_dict["0"] + rs_dict["2"]
+        return sc
     
 
     @staticmethod

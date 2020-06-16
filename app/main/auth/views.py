@@ -171,7 +171,7 @@ def load_predict_cate():
         text = tsl.translations[0].translated_text.lower()
         session["search_tsl"] += text + " "
         print(session["search_tsl"])
-        rs = Utils.predict_food_cate(session["search_tsl"])
+        rs = Utils.predict_food_cate_online(session["search_tsl"])
         rs.pop('other', None)
         session['recommendation'] = rs
         print(rs)
