@@ -151,10 +151,10 @@ class StoreModel(StoreEntity):
     @classmethod
     def create(cls, name, description, link_image, categories_id, address_id, position, name_translate, category_predict, type_store):
         try:
-            StoreEntity(name=name, description=description, link_image=link_image, 
+            store = StoreEntity(name=name, description=description, link_image=link_image,
                         categories_id=categories_id, address_id=address_id, position=position, name_translate=name_translate,
                         category_predict=category_predict, type_store=type_store).save()
-            # StoreEntity.reindex()
+            StoreEntity.add_to_index_into_table(store)
             return True, None
         except Exception as e:
             return False, e.__str__()

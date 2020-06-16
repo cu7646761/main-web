@@ -50,3 +50,7 @@ class SearchableMixin(object):
     def reindex(cls):
         for obj in cls.objects:
             add_to_index(cls.__tablename__, obj)
+
+    @classmethod
+    def add_to_index_into_table(cls, obj):
+        add_to_index(cls.__tablename__, obj)

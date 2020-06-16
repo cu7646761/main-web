@@ -10,7 +10,8 @@ from nltk.corpus import stopwords
 
 from app import create_app
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/nguyenphuongvuong/Desktop/Britcat3-dd9d79d99d97.json"
 import csv, random, json
 
 from functools import wraps
