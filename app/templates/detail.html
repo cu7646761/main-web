@@ -49,15 +49,17 @@
                 
                 <div class="col-md-6">
                     <h5>{{ store.name }}</h5>
-
+                    <br><br>
                     <p class="reserve-description">
+                        Danh mục: 
                         {% for ct in category %}
                             {{ ct.name }} ,
                         {% endfor %}...
                     </p>
-                    <!-- <br><br> -->
+            
+                    <br><br>
                     <div class="res-common-minmaxprice">
-                        <span class="fa fa-tag minmaxpriceicon" style="font-size:16px"></span>
+                        <span class="fa fa-tag minmaxpriceicon" style="font-size:14px"></span>
                         <span itemprop="priceRange">
                                 <span> Mức giá: {{ store.min_price }}đ - <span>{{ store.max_price }}</span>đ
                             </span>
@@ -68,17 +70,17 @@
                 <div class="col-md-6">
                     <div class="reserve-seat-block">
                         <div class="reserve-rating">
-                            <span>{{store.score_sentiment|round(2)}}</span>
+                            <a>ĐIỂM: {{((store.score_sentiment+1)*5)|round(2)}}</a>
                         </div>
-                        <div class="review-btn">
-                            <a href="#comment" class="btn btn-outline-danger">NHẬN XÉT</a>
-                            <span>{{ store.reviewer_quant }}</span>
+                            &nbsp; &nbsp;
+                        <div  class="reserve-rating">
+                            <a >{{ store.reviewer_quant }} NHẬN XÉT</a>
                         </div>
-                        <div class="reserve-btn">
+                        <!-- <div class="reserve-btn">
                             <div class="featured-btn-wrap">
-                                <a href="#" class="btn btn-danger">BẢN ĐỒ</a>
+                                <a href="#comment" class="btn btn-danger">{{ store.reviewer_quant }} NHẬN XÉT</a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -137,7 +139,17 @@
                 <div class="col-md-8 responsive-wrap">
                     <div class="booking-checkbox_wrap">
                         <div class="booking-checkbox">
-                            <p> Description ở đây</p>
+                            <p style="color: black;">
+                                <script>
+                                    var description =  $('<textarea />').html("{{store.description}}").text();
+                                    console.log(description)
+                                    if(description == "None"){
+                                        description = "Chưa có mô tả";
+                                    }
+                                    
+                                    document.write(description)
+                                </script>
+                            </p>
                             <hr>
                         </div>
                         <span class="heading">Tự động phân loại</span>
@@ -337,7 +349,7 @@
                         {% endif %}
 
                         <br>
-                        <button type="submit"  value="Đăng">Đăng</button>
+                        <button type="submit" class ="btn btn-primary" value="Đăng">Đăng</button>
                         </form>
                         
                     </div>
@@ -411,7 +423,7 @@
                                 
                             </div>
                             <p class="col-12" id="loading-text"></p>
-                            <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>See more</button>
+                            <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>Xem thêm ...</button>
                         </div>
                         <!-- Add Arrows -->
                         <!-- <div class="swiper-button-next" onclick="loadrlStore()"></div>
@@ -675,4 +687,5 @@ function loadItems() {
     }
     
 </script>
+
 {% endblock %}
