@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<body>
+    <footer class="site-footer">
+        <div class="site-container">
+            <div class="footer-inner">
+                <div class="footer-info">
+                    <div class="footer-info__left">
+                        <img src="{{ url_for('static', filename='images/footer-img.jpg') }}" alt="about me image">
+                        <p>Tìm hiểu thêm về chúng tôi</p>
+                    </div>
+                    <div class="footer-info__right">
+                        <h5>Liên hệ với chúng tôi</h5>
+                        <!-- <p class="footer-phone">Phone: +958734902847</p> -->
+                        <p>Email : britcatk16@gmail.com</p>
+                        <div class="social-icons">
+                            <a href="#" target="_blank"><img src="{{ url_for('static', filename='images/social-twitter.png') }}" alt="social icon"></a>
+                        
+                            <a href="#" target="_blank"><img src="{{ url_for('static', filename='images/social-youtube.png') }}"></a>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-contact-form">
+                    <h5>Form liên hệ</h5>
+                    <form class="contact-form">
+                        <div class="contact-form__input">
+                            <input type="text" name="name" placeholder="Tên">
+                            <input type="email" name="email" placeholder="Email">
+                        </div>
+                        <textarea placeholder="Nội dung"></textarea>
+                        <input type="submit" name="submit" value="Gửi" class="submit-button">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+<!-- Scripts -->
+<script src="js/jquery.min.js"></script>
+<script src="js/slick.min.js"></script>
+<script src="js/main.js"></script>
+{% endblock %}

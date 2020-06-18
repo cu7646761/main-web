@@ -33,6 +33,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     if form is None:
         form = AddCommentForm()
     # form = StoreForm()
+    CommentModel.update(store_id)
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)

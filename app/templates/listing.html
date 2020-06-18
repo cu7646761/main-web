@@ -10,7 +10,7 @@
                         
                             <div class="col-md-7 featured-responsive">
                                 <div class="detail-filter-text">
-                                    <p>Lọc kết quả</p>
+                                    <p>LỌC KẾT QUẢ</p>
                                 </div>
                             </div>
 
@@ -38,7 +38,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="row detail-checkbox-wrap col-11">
+                                <div class="row detail-checkbox-wrap col-12">
                                     {% for cate in categories%}
                                     <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                                         <label class="custom-control custom-checkbox">
@@ -53,17 +53,20 @@
                                     </div>
                                     {% endfor %}
                                     
-                                </div>
-                                <div class="col-1">
-                                    <!-- <a style="margin-top:40px;" id="a_id" href="/stores/?" class="btn btn-dark"><i class="fa fa-search"></i></a> -->
-                                    <input type="submit" style="margin-top:40px;" class="btn btn-dark" value="Find">
-                                </div>
+                                </div>         
                             </div>
-                        
+                        <!-- SEARCH BOX-->
+                            <div class="col-md-5 featured-responsive"></div>
+                            <div class="col-md-7 featured-responsive">
+                                <input type="submit" class="btn btn-dark" value="Tìm kiếm">
+                            </div>
+                        <!-- END SEARCH BOX-->
+                            
+                            
                     </div>
                     </form>
                     <div class="col-md-4 featured-responsive" style="margin-top: 10px;">
-                        <div class="detail-filter-text">
+                        <div class="detail-filter-text-classify" >
                             <p>Chọn độ <b>Phổ biến</b></p>
                         </div>  
                     </div>
@@ -72,7 +75,7 @@
                             <div class="col-6">
                                 <div class="row">
                                     <div class="col-3">
-                                        <a title="Trên 1000 reviews" href="/stores/?level=SS{{additional_params}}" class="btn btn-danger col-6" style="box-shadow: 0px -2px 3px 2px orange;">SS</a>
+                                        <a title="Trên 1000 reviews" href="/stores/?level=SS{{additional_params}}" class="btn btn-danger col-6" >SS</a>
                                     </div>
                                     <div class="col-3">
                                         <a title="Từ 500-1000 reviews" href="/stores/?level=S{{additional_params}}" class="btn btn-danger col-6">S</a>
@@ -179,13 +182,22 @@
                         </nav>
 
 
-                        <div class="col-12"><p>Tìm thấy {{pages}} trang có cửa hàng
+                        <div class="col-12"><p>Tìm thấy {{pages}} trang có cửa hàng 
                             
                             {% if selected_dics['level']%}
-                                cấp <b style="color: red;">{{selected_dics['level']}}</b>,
+                                cấp <b style="color: red;">{{selected_dics['level']}}</b>
                             {% endif %}
                             {% if selected_dics['star']%}
-                                sao <b style="color: black;">{{selected_dics['star']}}</b>
+                                {% if selected_dics['star'] != "None"%}
+                                , có số sao trung bình từ
+                                <b style="color: black;">
+                                    <script>
+                                        document.write("{{selected_dics['star']}}"-1);
+                                    </script>
+                                </b>                            
+                                đến 
+                                <b style="color: black;">{{selected_dics['star']}}</b> sao
+                                {% endif %}
                             {% endif %}
                             {% for k,v in selected_dics["cates"].items() %}
                                 {% if v %}
@@ -210,34 +222,50 @@
                                     <a href="/stores/{{ data['store'].id }}">
                                         <div class="row">
                                             <div class="featured-title-box col-lg-4 col-sm-4 col-xs-12">
-                                                <img height="200px" src="{{ data['store'].link_image[0] }}"  alt="#">
+                                                <img style="height:200px" src="{{ data['store'].link_image[0] }}"  alt="#">
                                             </div>
                                             
                                             <span class="featured-rating-orange">{{((data['score']+1)*5)|round(2)}}</span>
                                             <div class="featured-title-box col-lg-8 col-sm-8 col-xs-12">
-                                                <h6>{{ data['store'].name }}</h6>
+                                                <h6 style="padding-left:12px">{{ data['store'].name }}</h6>
+                                                
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class ="fa fa-list" aria-hidden="true" style="font-size: 15px;" ></i>  
+                                                    &nbsp Danh mục:
                                                 {% for cate in data['cates'] %}
-                                                    <p>{{ cate.name }}</p> <span> • </span>
+                                                    {{ cate.name }} 
                                                 {% endfor %}
+                                                </span> 
                                                 <br>
-                                                <p>{{ data['store'].reviewer_quant }} Đánh giá</p><br>
-                                                <p>{{ data['store'].stars }} Sao</p>
-                                                <ul>
-                                                    <li><span class="icon-location-pin"></span>
-                                                        <p>{{ data['address'].detail }}</p>
-                                                    </li>
-                                                    <li><span class="icon-screen-smartphone"></span>
-                                                        <p>+44 20 7336 8898</p>
-                                                    </li>
-                                                    <li><span class="icon-link"></span>
-                                                        <p>https://burgerandlobster.com</p>
-                                                    </li>
-    
-                                                </ul>
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class ="fa fa-calculator" aria-hidden="true" style="font-size: 15px;" ></i> 
+                                                    &nbsp Số nhận xét:  {{ data['store'].reviewer_quant }} đánh giá
+                                                </span> 
+                                                <br>
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class ="fa fa-star" aria-hidden="true" style="font-size: 15px;" ></i>  
+                                                    &nbsp Số sao trung bình: {{ data['store'].stars }} sao
+                                                </span> 
+
+                                                <br>
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class="icon-location-pin" aria-hidden="true" style="font-size: 15px;" ></i>  
+                                                    &nbsp Địa chỉ: {{ data['address'].detail }}
+                                                </span> 
+                                            
+                                               
                                                 <div class="bottom-icons">
                                                     <!-- <div class="closed-now">CLOSED NOW</div> -->
-                                                    <span class="ti-heart"></span>
-                                                    <span class="ti-bookmark"></span>
+                                                    <!-- <span class="ti-heart"></span>
+                                                    <span class="ti-bookmark"></span> -->
                                                 </div>
                                             </div>
                                         </div>

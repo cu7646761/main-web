@@ -52,6 +52,15 @@ class CommentModel(CommentEntity):
        
            
     @classmethod
+    def update(cls, store_id):
+        store = StoreEntity.objects(id=store_id).get()
+        store.reviewer_quant = store.star_s1 + store.star_s2 + store.star_s3 + store.star_s4 + store.star_s5
+
+        store.stars = round(((
+                                             store.star_s1 * 1 + store.star_s2 * 2 + store.star_s3 * 3 + store.star_s4 * 4 + store.star_s5 * 5) / store.reviewer_quant),
+                                1)
+        store.save()
+        return
     def create(cls, store_id, detail, star, user_id):
         try:
             user = UserEntity.objects(id=user_id).get()

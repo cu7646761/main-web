@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<body>
+	<!-- Navigation -->
+	<nav class="site-navigation">
+		<div class="site-navigation-inner site-container">
+			<img src="./images/site-logo.png" alt="site logo">
+			<div class="main-navigation">
+				<ul class="main-navigation__ul">
+					<li><a href="#">Homepage</a></li>
+					<li><a href="#">Page 1</a></li>
+					<li><a href="#">Page 2</a></li>
+					<li><a href="#">Page 3</a></li>
+					<li><a href="#">Page 4</a></li>
+				</ul>
+			</div>
+			<div id="myBtn" class="burger-container" onclick="myFunction(this)">
+				<div class="bar1"></div>
+				<div class="bar2"></div>
+				<div class="bar3"></div>
+			</div>
+			<script>
+				function myFunction(x) {
+					x.classList.toggle("change");
+				}
+			</script>
+
+		</div>
+	</nav>
+	<!-- Navigation end -->
+
+	<!-- Top banner -->
+	<section class="fh5co-top-banner">
+		<div class="top-banner__inner site-container">
+			<div class="top-banner__image">
+				<img src="{{ url_for('static', filename='images/top-banner-author.jpg') }}" alt="author image">
+			</div>
+			<div class="top-banner__text">
+				<div class="top-banner__text-up">
+					<span class="brand-span">Xin chào! Chúng tôi là nhóm</span>
+	
+				</div>
+				<div class="top-banner__text-down">
+					<h2 class="top-banner__h2">Britcat</h2>
+					<span class="brand-span">Developer</span>
+				</div>
+				<p>“Những devloper nổi tiếng đều gặp phải những vấn đề nan giải cho đến khi họ giải quyết được nó”</p>
+				<a href="#about-us" class="brand-button">Tìm hiểu thêm về chúng tôi > </a>
+			</div>
+		</div>
+	</section>
+	<!-- Top banner end -->
+
+	<!-- About me -->
+	<section class="fh5co-about-me">
+		<div class="about-me-inner site-container">
+			<article class="portfolio-wrapper">
+				<div class="portfolio__img">
+					<img src="{{ url_for('static', filename='images/dang-hoang-an.jpg') }}" class="about-me__profile" alt="about me profile picture">
+				</div>
+				<div class="portfolio__bottom">
+					<div class="portfolio__name">
+						
+						<h2 class="universal-h2">Đặng Hoàng Ân</h2>
+					</div>
+					<p class="more-infor">Sinh viên năm 4 - Trường Đại học Bách Khoa TP.Hồ Chí Minh</p>
+				</div>
+			</article>
+			<div class="about-me__text">
+				<div class="about-me-slider">
+					<div class="about-me-single-slide">
+						<h2 id ="about-us" class="universal-h2 universal-h2-bckg">Về chúng tôi</h2>
+						<p>Chuyên ngành: Khoa học máy tính. Đam mê vào việc phát triển các hệ thống mang tính ứng dụng cao cho người dùng. </p>
+						<p>Có kinh nghiệm làm việc trong các lĩnh vực về hệ thống thông tin</p>
+					</div>	
+				</div>
+			</div>
+		</div>
+        <div class="about-me-bckg"></div>
+        </hr>
+        <div class="about-me-inner site-container">
+			<article class="portfolio-wrapper">
+				<div class="portfolio__img">
+					<img src="{{ url_for('static', filename='images/nguyen-phuong-vuong.jpg') }}" class="about-me__profile" alt="about me profile picture">
+				</div>
+				<div class="portfolio__bottom">
+					<div class="portfolio__name">
+						
+						<h2 class="universal-h2">Nguyễn Phương Vương</h2>
+					</div>
+					<p>Sinh viên năm 4 - Trường Đại học Bách Khoa TP.Hồ Chí Minh</p>
+				</div>
+			</article>
+			<div class="about-me__text">
+				<div class="about-me-slider">
+					<div class="about-me-single-slide">
+						
+						<p>Chuyên ngành: Khoa học máy tính. Đam mê vào việc phát triển các hệ thống mang tính ứng dụng cao cho người dùng. </p>
+						<p>Có kinh nghiệm làm việc trong các lĩnh vực về hệ thống thông tin</p>
+						
+					</div>	
+				</div>
+			</div>
+		</div>
+        <div class="about-me-bckg"></div>
+        <div class="about-me-inner site-container">
+			<article class="portfolio-wrapper">
+				<div class="portfolio__img">
+					<img src="{{ url_for('static', filename='images/luong-thien-chi.jpg') }}" style="width: 200px; height=374px" class="about-me__profile" alt="about me profile picture">
+				</div>
+				<div class="portfolio__bottom">
+					<div class="portfolio__name">
+						
+						<h2 class="universal-h2">Lương Thiện Chí</h2>
+					</div>
+					<p>Sinh viên năm 4 - Trường Đại học Bách Khoa TP.Hồ Chí Minh</p>
+				</div>
+			</article>
+			<div class="about-me__text">
+				<div class="about-me-slider">
+					<div class="about-me-single-slide">
+						<p>Chuyên ngành: Khoa học máy tính. Đam mê vào việc phát triển các hệ thống mang tính ứng dụng cao cho người dùng. </p>
+						<p>Có kinh nghiệm làm việc trong các lĩnh vực về hệ thống thông tin</p>
+						
+					</div>	
+				</div>
+			</div>
+		</div>
+		<div class="about-me-bckg"></div>
+	</section>
+	<!-- About me end -->
+
+	
+	<!-- Quotes -->
+	<section class="fh5co-quotes">
+		<div class="site-container">
+			<div class="about-me-slider">
+				
+				<div>
+					<h2 class="universal-h2 universal-h2-bckg">Mục đích 1</h2>
+					<p>“Mong muốn tạo ra một trang web đề xuất cho người dùng các cửa hàng ăn uống phù hợp và có chất lượng cao. Chỉ số được đánh giá thông qua các từ khóa được đánh giá từ chính bình luận của người dùng. Từ đó người dùng có thể xem xét, đánh giá. ”</p>
+					<a><img src="{{ url_for('static', filename='images/quotes.svg') }}" alt="social svg"></a>
+					<h4>Đặng Hoàng Ân</h4>
+					<p>Nhà phát triển</p>
+                </div>
+                
+                <div>
+					<h2 class="universal-h2 universal-h2-bckg">Mục đích 2</h2>
+					<p>“Trong hướng phát triển website trong tương lai, nhóm phát triển mong muốn tích hợp business vào trong web. Không chỉ là đề xuất và đánh giá cửa hàng, người dùng có thể sử dụng như chính website mang tính Ecommerce, mang lại đa dạng trải nghiệm cho người dùng hơn nữa để cải thiện chất lượng và dịch vụ.”</p>
+                    <a><img src="{{ url_for('static', filename='images/quotes.svg') }}" alt="social svg"></a>
+					<h4>Lương Thiện Chí</h4>
+					<p>Nhà phát triển</p>
+                </div>
+                
+			</div>
+		</div>
+	</section>
+	<!-- Quotes end -->
+
+	<!-- Social -->
+	<section class="fh5co-social">
+		<div class="site-container">
+			<div class="social">
+				<h5>Theo dõi chúng tôi!!</h5>
+				<div class="social-icons">
+					
+					<a href="#" target="_blank"><img src="{{ url_for('static', filename='images/social-twitter.png') }}" alt="social icon"></a>
+						
+					<a href="#" target="_blank"><img src="{{ url_for('static', filename='images/social-youtube.png') }}" alt="social icon"></a>
+				</div>
+				<h5>Cùng chia sẻ với mọi người!!</h5>
+			</div>
+		</div>
+	</section>
+	<!-- Social -->
+
+	<!-- Footer -->
+	<footer class="site-footer">
+		<div class="site-container">
+			<div class="footer-inner">
+				<div class="footer-info">
+					<div class="footer-info__left">
+						<img src="{{ url_for('static', filename='images/footer-img.jpg') }}" alt="about me image">
+						<p>Tìm hiểu thêm về chúng tôi</p>
+					</div>
+					<div class="footer-info__right">
+						<h5>Liên hệ với chúng tôi</h5>
+						<!-- <p class="footer-phone">Phone: +958734902847</p> -->
+						<p>Email : britcatk16@gmail.com</p>
+						<div class="social-icons">
+							<a href="#" target="_blank"><img src="{{ url_for('static', filename='images/social-twitter.png') }}" alt="social icon"></a>
+						
+							<a href="#" target="_blank"><img src="{{ url_for('static', filename='images/social-youtube.png') }}"></a>
+							
+						</div>
+					</div>
+				</div>
+				<div class="footer-contact-form">
+					<h5>Form liên hệ</h5>
+					<form class="contact-form">
+						<div class="contact-form__input">
+							<input type="text" name="name" placeholder="Tên">
+							<input type="email" name="email" placeholder="Email">
+						</div>
+						<textarea placeholder="Nội dung"></textarea>
+						<input type="submit" name="submit" value="Gửi" class="submit-button">
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<div class="site-container footer-bottom-inner">
+				<p>© 2020 Britcat | Nhóm sinh viên trường đại học Bách Khoa thành phố Hồ Chí Minh.</p>
+				
+			</div>
+		</div>
+	</footer>
+	<!-- Footer end -->
+
+	<!-- Scripts -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/slick.min.js"></script>
+	<script src="js/main.js"></script>
+
+</body>
+
+{% endblock %}
