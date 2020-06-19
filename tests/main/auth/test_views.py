@@ -5,6 +5,7 @@ class AuthViewsTestCase(FlaskClientTestCase):
 
     # Ensure get_login is correct
     def test_get_login(self):
+        pass
         with self.client:
             response = self.client.get('/login', follow_redirects=True)
             self.assertIn(b'Login', response.data)

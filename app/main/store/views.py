@@ -3,6 +3,9 @@ import math
 import requests
 import math
 import nltk,re
+# nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
 from nltk.tokenize import word_tokenize
 from constants import Pages, CLASS_LIST
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response

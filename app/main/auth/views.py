@@ -118,14 +118,7 @@ def post_login(error=None):
         _user = UserModel()
         email = request.form.get("email", "")
         plain_text_password = request.form.get("password", "")
-
-        print(email)
-        print(plain_text_password)
-
         user = _user.find_by_email(email)
-
-        print(user)
-
         if len(user) == 0:
             error = "Incorrect email or password"
         elif not Utils.check_password(plain_text_password, user[0].password):
