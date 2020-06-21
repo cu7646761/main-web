@@ -344,6 +344,8 @@ def stores():
         star_filter = star
         quality = request.form.get("quality")
         quality_filter = quality
+        level = request.form.get("level")
+        level_filter = level
 
 
     filter = {
