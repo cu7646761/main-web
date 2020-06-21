@@ -159,6 +159,15 @@ def home(form=None):
     store = StoreModel().find_by_id
     return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
+@auth_blueprint.route('/about-us', methods=['GET'])
+@login_required
+def about_us(form=None):
+    return render_template("about-us.html", user=session['cur_user'])
+
+@auth_blueprint.route('/contact-us', methods=['GET'])
+@login_required
+def contact_us(form=None):
+    return render_template("contact-us.html", user=session['cur_user'])
 
 @auth_blueprint.route('/load-predict-cate', methods=['GET'])
 @login_required

@@ -31,6 +31,9 @@
     <!-- Magnific Popup CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <!-- About Us CSS-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/slick.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-about-us.css') }}">
     <style>
         body
         * {box-sizing: border-box;}
@@ -150,10 +153,10 @@
                                 <a class="nav-link" href="/stores/">Cửa hàng</a>
                             </li>
                             <li class="nav-item active">
-                                <a class="nav-link" href="#">Về chúng tôi</a>
+                                <a class="nav-link" href="/about-us">Về chúng tôi</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Blog</a>
+                                <a class="nav-link" href="/contact-us">Liên hệ</a>
                             </li>
 
                             {% if user %}
@@ -164,8 +167,8 @@
                                     <span class="icon-arrow-down"></span>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" href="/profile/">Profile</a>
-                                    <a class="dropdown-item" href="/logout">Logout</a>
+                                    <a class="dropdown-item" href="/profile/">Trang cá nhân</a>
+                                    <a class="dropdown-item" href="/logout">Đăng xuất</a>
                                 </div>
                             </li>
                             {% else %}
@@ -194,7 +197,6 @@
 <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-
 
 {% block content %}{% endblock %}
 {#<!--============================= FOOTER =============================-->#}
