@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -50,6 +51,7 @@ class TestingConfig(Config):
     TESTING = True
     MONGODB_DB = 'test_blogfood'
     MONGODB_HOST = 'mongodb://localhost:27017/test_blogfood'
+    ELASTICSEARCH_URL = 'http://localhost:9200'
 
     @classmethod
     def init_app(cls, app):
