@@ -41,12 +41,24 @@
                                          style="background-color: #f2f2f2;">
                                         <form method="POST" action="/store" class="form-control"
                                               style="border:0;padding:0;">
-                                            <div class="card" style="border:0;">
-                                                <button type="submit" class="card-body">
-                                                    {{ obj["_source"]["name"] }}
+
+
+                                            <input name="name" value="{{ obj["_source"]["name"] }}"
+                                                   style="display:none;">
+
+
+                                            <div id="carbonads">
+                                                <button class="carbon-wrap" type="submit"
+                                                        class="carbon-img" target="_blank">
+                                                    <img
+                                                            src="{{ obj["thumbnail"] }}"
+                                                            alt="" border="0" style="width: 130px; height: 130px;">
+                                                    <div class="carbon-text">
+                                                        {{ obj["_source"]["name"] }}
+                                                        <br>
+                                                        <p>Địa chỉ: {{ obj['address'] }}</p>
+                                                    </div>
                                                 </button>
-                                                <input name="name" value="{{ obj["_source"]["name"] }}"
-                                                       style="display:none;">
                                             </div>
                                         </form>
                                     </div>
@@ -80,10 +92,10 @@
                         <div class="col-md-12">
                             <div class="find-place-img_wrap">
                                 <div class="grid">
-                                    <figure class="effect-ruby" >
-                                        <a href ="/stores/?categories=nha-hang">
+                                    <figure class="effect-ruby">
+                                        <a href="/stores/?categories=nha-hang">
                                             <img src="{{ url_for('static', filename='images/find-place1.jpg') }}"
-                                                class="img-fluid" alt="img13"/>
+                                                 class="img-fluid" alt="img13"/>
                                             <figcaption>
                                                 <h5>Nhà hàng</h5>
                                             </figcaption>
@@ -98,9 +110,9 @@
                             <div class="find-place-img_wrap">
                                 <div class="grid">
                                     <figure class="effect-ruby">
-                                        <a href ="/stores/?categories=tiem-banh">
+                                        <a href="/stores/?categories=tiem-banh">
                                             <img src="{{ url_for('static', filename='images/find-place6.jpg') }}"
-                                                class="img-fluid" alt="img13"/>
+                                                 class="img-fluid" alt="img13"/>
                                             <figcaption>
                                                 <h5>Tiệm bánh</h5>
                                             </figcaption>
@@ -117,11 +129,11 @@
                             <div class="find-place-img_wrap">
                                 <div class="grid">
                                     <figure class="effect-ruby">
-                                        <a href ="/stores/?categories=cafe">
+                                        <a href="/stores/?categories=cafe">
                                             <img src="{{ url_for('static', filename='images/find-place3.jpg') }}"
-                                                class="img-fluid" alt="img13"/>
+                                                 class="img-fluid" alt="img13"/>
                                             <figcaption>
-                                                <h5 >Cafe/Dessert</h5>
+                                                <h5>Cafe/Dessert</h5>
                                             </figcaption>
                                         </a>
                                     </figure>
@@ -134,9 +146,9 @@
                             <div class="find-place-img_wrap">
                                 <div class="grid">
                                     <figure class="effect-ruby">
-                                        <a href ="/stores/?categories=quan-an">
+                                        <a href="/stores/?categories=quan-an">
                                             <img src="{{ url_for('static', filename='images/find-place2.jpg') }}"
-                                                class="img-fluid" alt="img13"/>
+                                                 class="img-fluid" alt="img13"/>
                                             <figcaption>
                                                 <h5>Quán ăn</h5>
                                             </figcaption>
@@ -153,12 +165,12 @@
                             <div class="find-place-img_wrap">
                                 <div class="grid">
                                     <figure class="effect-ruby">
-                                        <a href ="/stores/?categories=quan-nhau">
+                                        <a href="/stores/?categories=quan-nhau">
                                             <img src="{{ url_for('static', filename='images/find-place4.jpg') }}"
-                                             class="img-fluid" alt="img13"/>
-                                        <figcaption>
-                                            <h5>Quán nhậu</h5>
-                                        </figcaption>
+                                                 class="img-fluid" alt="img13"/>
+                                            <figcaption>
+                                                <h5>Quán nhậu</h5>
+                                            </figcaption>
                                         </a>
                                     </figure>
                                 </div>
@@ -170,9 +182,9 @@
                             <div class="find-place-img_wrap">
                                 <div class="grid">
                                     <figure class="effect-ruby">
-                                        <a href ="/stores/?categories=an-vat-via-he">
+                                        <a href="/stores/?categories=an-vat-via-he">
                                             <img src="{{ url_for('static', filename='images/find-place5.jpg') }}"
-                                                class="img-fluid" alt="img13"/>
+                                                 class="img-fluid" alt="img13"/>
                                             <figcaption>
                                                 <h5>Ăn vặt/Vỉa hè</h5>
                                             </figcaption>
@@ -225,7 +237,7 @@
                                     </li>
 
                                 </ul>
-                               
+
                             </div>
                         </a>
                     </div>
@@ -257,7 +269,7 @@
                                     </li>
 
                                 </ul>
-                               
+
                             </div>
                         </a>
                     </div>
@@ -289,7 +301,7 @@
                                     </li>
 
                                 </ul>
-                               
+
                             </div>
                         </a>
                     </div>
@@ -317,10 +329,10 @@
             </div>
             <div class="row justify-content-center">
                 <div id="map"></div>
-                <!-- <div class="col-md-4"></div> -->             
-                    <!-- <div class="featured-btn-wrap">
-                        <a href="#" class="btn btn-danger"><span class="ti-plus"></span>Tìm kiếm</a>
-                    </div> -->
+                <!-- <div class="col-md-4"></div> -->
+                <!-- <div class="featured-btn-wrap">
+                    <a href="#" class="btn btn-danger"><span class="ti-plus"></span>Tìm kiếm</a>
+                </div> -->
                 <!-- </div> -->
             </div>
         </div>
@@ -334,6 +346,7 @@
         // failed.", it means you probably did not give permission for the browser to
         // locate you.
         var map, infoWindow, pos;
+
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 center: {lat: 10.7822782, lng: 106.7046318},
@@ -343,41 +356,41 @@
             var curLat, curLng;
             // Try HTML5 geolocation.
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                curLat = position.coords.latitude;
-                curLng = position.coords.longitude;
-                // infoWindow.setPosition(pos);
-                // infoWindow.setContent('Location found.');
-                // infoWindow.open(map);
-                
-                fetch(`/load_geo_places`)
-                .then(function(response) {
-                    if (response.status !==200) {
-                        console.log(`Looks like there was a problem load place. Status code: ${response.status}`);
-                        return;
-                    }
-                    response.json().then(function(data) {
-                        locations = data
-                        var markers = locations.map(function(location) {
-                            return new google.maps.Marker({
-                                position: location,
-                                id: location.id,
-                                name: location.name,
-                                image: location.link_img
-                            });
-                        });
-                        var markerCluster = new MarkerClusterer(map, markers,
-                        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-                        markers.map(function(marker){
-                            marker.addListener('click', function() {
-                                console.log(marker.getPosition().toString())
-                                console.log(marker.id)
-                                var infowindow = new google.maps.InfoWindow({
-                                    content: `<a href="/stores/${marker.id}">
+                navigator.geolocation.getCurrentPosition(function (position) {
+                        pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        curLat = position.coords.latitude;
+                        curLng = position.coords.longitude;
+                        // infoWindow.setPosition(pos);
+                        // infoWindow.setContent('Location found.');
+                        // infoWindow.open(map);
+
+                        fetch(`/load_geo_places`)
+                            .then(function (response) {
+                                if (response.status !== 200) {
+                                    console.log(`Looks like there was a problem load place. Status code: ${response.status}`);
+                                    return;
+                                }
+                                response.json().then(function (data) {
+                                    locations = data
+                                    var markers = locations.map(function (location) {
+                                        return new google.maps.Marker({
+                                            position: location,
+                                            id: location.id,
+                                            name: location.name,
+                                            image: location.link_img
+                                        });
+                                    });
+                                    var markerCluster = new MarkerClusterer(map, markers,
+                                        {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+                                    markers.map(function (marker) {
+                                        marker.addListener('click', function () {
+                                            console.log(marker.getPosition().toString())
+                                            console.log(marker.id)
+                                            var infowindow = new google.maps.InfoWindow({
+                                                content: `<a href="/stores/${marker.id}">
                                                 <div class="row">
                                                     <p class="col-12"><b>${marker.name}</b></p><br>
                                                 </div>
@@ -385,59 +398,59 @@
                                                     <img class="col-12" src="${marker.image}" height="160px">
                                                 </div>
                                             </a>`
+                                            });
+
+                                            infowindow.open(map, marker);
+
+                                        });
+                                    })
+
                                 });
 
-                                infowindow.open(map, marker);
-
+                            })
+                            .catch(function (error) {
+                                console.log("Fetch error: " + error);
                             });
-                        })
-                        
-                    });
 
-            })
-            .catch(function(error) {
-                console.log("Fetch error: " + error);
-            });
-            
-            map.setCenter(pos);
-            fetch(`${window.origin}/load_geolocation?lat=${curLat}&lng=${curLng}`)
-            .then(function(response) {
-                if (response.status !== 200) {
-                    console.log(`Looks like there was a problem. Status code: ${response.status}`);
-                    return;
-                }
-                response.json().then(function(data) {
-                    console.log(data);
-                    console.log(curLat, curLng);
-                });
-            })
-            .catch(function(error) {
-                console.log("Fetch error: " + error);
-            });
-        }, 
-        function() {
-            handleLocationError(true, infoWindow, map.getCenter());
-        });
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        }
-            
+                        map.setCenter(pos);
+                        fetch(`${window.origin}/load_geolocation?lat=${curLat}&lng=${curLng}`)
+                            .then(function (response) {
+                                if (response.status !== 200) {
+                                    console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                                    return;
+                                }
+                                response.json().then(function (data) {
+                                    console.log(data);
+                                    console.log(curLat, curLng);
+                                });
+                            })
+                            .catch(function (error) {
+                                console.log("Fetch error: " + error);
+                            });
+                    },
+                    function () {
+                        handleLocationError(true, infoWindow, map.getCenter());
+                    });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, infoWindow, map.getCenter());
+            }
+
         }
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-                                'Error: The Geolocation service failed.' :
-                                'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+            infoWindow.open(map);
         }
-        
+
     </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key={{API_KEY}}&callback=initMap">
+            src="https://maps.googleapis.com/maps/api/js?key={{ API_KEY }}&callback=initMap">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -450,5 +463,5 @@
             }
         });
     </script>
-{% include "recommend.html"%}
+    {% include "recommend.html" %}
 {% endblock %}

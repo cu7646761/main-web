@@ -187,4 +187,4 @@ class StoreModel(StoreEntity):
             store.save()
             return store, None
         except Exception as e:
-            return False, e.__str__()
+            return None, e.__str__()

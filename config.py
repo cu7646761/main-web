@@ -40,8 +40,6 @@ class DevelopmentConfig(Config):
     # MONGODB_HOST = 'mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority'
     MONGODB_DB = 'foodblog_opt1'
     MONGODB_HOST = 'mongodb+srv://admin:britcat@clusteroptimize-wysnm.gcp.mongodb.net/foodblog_opt1?retryWrites=true&w=majority'
-    # MONGODB_DB = 'main_1'
-    # MONGODB_HOST = 'mongodb://localhost:27017/main_1'
 
     @classmethod
     def init_app(cls, app):
@@ -50,8 +48,8 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    MONGODB_DB = 'testing'
-    MONGODB_HOST = 'mongodb+srv://admin:britcat@clusteroptimize-wysnm.gcp.mongodb.net/testing?retryWrites=true&w=majority'
+    MONGODB_DB = 'test_blogfood'
+    MONGODB_HOST = 'mongodb://localhost:27017/test_blogfood'
 
     @classmethod
     def init_app(cls, app):

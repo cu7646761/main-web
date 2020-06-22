@@ -130,7 +130,7 @@ def update_basic(error=None, form=None, user_id=None):
 
     birthday = request.form.get("birthday")
     gender = request.form.get("gender")
-    res_address = request.form.get("result-address")
+    res_address = request.form.get("result_address")
     love_cate = request.form.getlist("love_cate")
     print(love_cate)
     print("check love")

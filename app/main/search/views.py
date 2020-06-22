@@ -22,7 +22,17 @@ def full_text():
     search_obj = []
     for obj, total in search_model:
         if not isinstance(total, int):
+            print("huhu")
+            print(total)
             search_obj.extend(total)
+
+    store = StoreModel()
+    for obj in search_obj:
+        # {'_index': 'store', '_type': '{}', '_id': '5ed78344bcfa96ce65cb43c8', '_score': 7.6114626,
+        #  '_source': {'name': 'Bánh Đa Trộn Badar - Nguyễn Đình Chính'}}
+        _store = store.find_by_name(obj['_source']['name'])
+        obj['thumbnail'] = _store.link_image[0]
+        obj['address'] = _store.address_id.detail
 
     if session['logged'] == True:
         session['search'] += form.q.data + " , "
@@ -50,6 +60,11 @@ def full_text_admin_store():
     list_store = []
     for each in search_obj:
         _store = store.find_by_id(each['_id'])[0]
+        str_delete = None
+        if _store.deleted_at is None:
+            str_delete = 'Chưa xoá'
+        else:
+            str_delete = _store.deleted_at
         list_store.append({
             "_id": each['_id'],
             "name": _store.name,
@@ -57,12 +72,10 @@ def full_text_admin_store():
             "address": _store.address_id.detail,
             "price": _store.min_price + "-" + _store.max_price,
             "created_at": _store.created_at,
-            "deleted_at": _store.deleted_at
+            "deleted_at": str_delete
         })
-    stores, total_pages = store.query_paginate(1)
-
     return render_template('admin/store.html', search_obj=list_store, form=form, user=session['cur_user'],
-                           store_active="active", total_pages=total_pages - 2)
+                           store_active="active", total_pages=None, count=10)
 
 
 @search_blueprint.route('/suggestion-store', methods=['POST'])
@@ -126,8 +139,6 @@ def full_text_admin_user():
     return render_template('admin/user-management.html', search_obj=list_user, form=form, user=session['cur_user'],
                            user_active="active", total_pages=total_pages, count=user.count())
 
-    if session['logged'] == True:
-        session['search'] += form.q.data + " , "
 
 @search_blueprint.route('/suggestion-user', methods=['POST'])
 def suggestion_user():

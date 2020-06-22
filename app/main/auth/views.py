@@ -153,6 +153,18 @@ def home(form=None):
     return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
 
+@auth_blueprint.route('/about-us', methods=['GET'])
+@login_required
+def about_us(form=None):
+    return render_template("about-us.html", user=session['cur_user'])
+
+
+@auth_blueprint.route('/contact-us', methods=['GET'])
+@login_required
+def contact_us(form=None):
+    return render_template("contact-us.html", user=session['cur_user'])
+
+
 @auth_blueprint.route('/load-predict-cate', methods=['GET'])
 @login_required
 def load_predict_cate():
@@ -176,7 +188,7 @@ def load_predict_cate():
             res_dict = {}
             rs_list = session['recommendation'].items()
             print(rs_list)
-            for k,v in rs_list:
+            for k, v in rs_list:
                 res_dict[k] = CATE_LIST[k]
             # res_dict = {k: v for k, v in sorted(res_dict.items(), key=lambda item: item[1], reverse=True)}
             res = make_response(jsonify(res_dict), 201)
@@ -196,10 +208,11 @@ def reset_rec():
         data_update = cur_user.infor_rec + " " + session['search_tsl']
         cur_user.update(set__infor_rec=data_update)
         session['search_tsl'] = ""
-        return redirect('/stores/?cate_predict='+rp)
+        return redirect('/stores/?cate_predict=' + rp)
     elif rp == 'n':
         session['search_tsl'] = ""
         return make_response(jsonify({}), 200)
+
 
 @auth_blueprint.route('/load_geo_places')
 @login_required
@@ -226,6 +239,6 @@ def load_geolocation():
             "lat": request.args.get("lat"),
             "lng": request.args.get("lng")
         }
-        session["pos"] = pos 
+        session["pos"] = pos
     res = make_response(jsonify({"message": "OK"}), 200)
     return res
