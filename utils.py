@@ -6,8 +6,8 @@ from google.cloud import language_v1
 from google.cloud import translate
 from google.cloud.language_v1 import enums
 from google.cloud import automl_v1beta1 as automl
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="C:/Users/Chi Luong Thien/Desktop/Nam4/Britcat3-dd9d79d99d97.json"
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', "")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=GOOGLE_APPLICATION_CREDENTIALS
 
 PROJECT_ID = "britcat3" #@param {type:"string"}
 COMPUTE_REGION = "us-central1" # Currently only supported region.
