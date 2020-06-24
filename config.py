@@ -49,8 +49,8 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    MONGODB_DB = 'test_blogfood'
-    MONGODB_HOST = 'mongodb://localhost:27017/test_blogfood'
+    MONGODB_DB = 'test_blogfood_2'
+    MONGODB_HOST = 'mongodb://localhost:27017/test_blogfood_2'
     ELASTICSEARCH_URL = 'http://localhost:9200'
 
     @classmethod

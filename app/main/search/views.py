@@ -22,17 +22,16 @@ def full_text():
     search_obj = []
     for obj, total in search_model:
         if not isinstance(total, int):
-            print("huhu")
-            print(total)
             search_obj.extend(total)
 
     store = StoreModel()
     for obj in search_obj:
-        # {'_index': 'store', '_type': '{}', '_id': '5ed78344bcfa96ce65cb43c8', '_score': 7.6114626,
-        #  '_source': {'name': 'Bánh Đa Trộn Badar - Nguyễn Đình Chính'}}
-        _store = store.find_by_name(obj['_source']['name'])
-        obj['thumbnail'] = _store.link_image[0]
-        obj['address'] = _store.address_id.detail
+        try:
+            _store = store.find_by_name(obj['_source']['name'])
+            obj['thumbnail'] = _store.link_image[0]
+            obj['address'] = _store.address_id.detail
+        except:
+            continue
 
     if session['logged'] == True:
         session['search'] += form.q.data + " , "
@@ -59,7 +58,10 @@ def full_text_admin_store():
         session['search'] += form.q.data + " , "
     list_store = []
     for each in search_obj:
-        _store = store.find_by_id(each['_id'])[0]
+        try:
+            _store = store.find_by_id(each['_id'])[0]
+        except:
+            continue
         str_delete = None
         if _store.deleted_at is None:
             str_delete = 'Chưa xoá'
@@ -112,7 +114,10 @@ def full_text_admin_user():
         session['search'] += form.q.data + " , "
     list_user = []
     for each in search_obj:
-        _user = user.find_by_id(each['_id'])[0]
+        try:
+            _user = user.find_by_id(each['_id'])[0]
+        except:
+            continue
         active = ""
         if _user.active == 0:
             active = "Chưa kích hoạt"

@@ -157,6 +157,9 @@
                                                     <input type="text" class="form-control" id="address" name="address"
                                                            placeholder="Số và đường" value="{{ address }}" required>
                                                     <label name="res-address" id="res-address"></label>
+                                                    <input type="text" class="form-control" id="check_input_address"
+                                                           name="check_input_address" style="display: none;"
+                                                           value="0">
                                                     <input type="text" class="form-control" id="result_address"
                                                            name="result_address" style="display: none;"
                                                            value="{{ address }}">
@@ -245,13 +248,17 @@
                 }
             });
         }
-
+        $("#city_edit").on("click", function () {
+            $('#check_input_address').val("1");
+        });
         $("#address").on("input", function (data) {
-            $("#res-address").empty();
-            var city = $('#city_edit').find('option:selected').attr("name");
-            var district = $('#district_edit').find('option:selected').attr("name");
-            $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
-            $("#result_address").val($("#address").val() + ", " + district + ", " + city);
+            if (!($('#check_input_address') == "0" && $("#res-address") != "")) {
+                $("#res-address").empty();
+                var city = $('#city_edit').find('option:selected').attr("name");
+                var district = $('#district_edit').find('option:selected').attr("name");
+                $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
+                $("#result_address").val($("#address").val() + ", " + district + ", " + city);
+            }
         });
 
     </script>

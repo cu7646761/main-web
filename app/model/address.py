@@ -37,7 +37,6 @@ class AddressModel(AddressEntity):
             user = UserEntity.objects(id=user_id).get()
             user.address_id = address.id
             user.save()
-            # UserEntity.reindex()
             return True, None
         except Exception as e:
             return False, e.__str__()
@@ -47,7 +46,6 @@ class AddressModel(AddressEntity):
         try:
             address = AddressEntity(detail=detail, district=district, latitude=latitude, longtitude=longtitude)
             address.save()
-            # UserEntity.reindex()
             return address.id, None
         except Exception as e:
             return None, e.__str__()

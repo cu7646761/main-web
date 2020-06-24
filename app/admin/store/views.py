@@ -15,7 +15,6 @@ from app.model.category import CategoryModel
 from app.main.search.forms import SearchForm
 from app.model.store import StoreModel
 from constants import API_KEY
-from google.cloud import translate
 from utils import Utils
 
 gmaps = googlemaps.Client(key=API_KEY)
@@ -95,7 +94,7 @@ def home_store(form=None):
         form = SearchForm()
     stores, total_pages = store.query_paginate(1)
     return render_template("admin/store.html", user=session['cur_user'], form=form, store_active="active",
-                           total_pages=total_pages - 2, search_obj=[], count=store.count())
+                           total_pages=total_pages, search_obj=[], count=store.count())
 
 
 @store_admin_blueprint.route('/add/', methods=['GET', 'POST'])
@@ -143,7 +142,6 @@ def _store(form=None):
         image_list.append(image)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position, name_translate,
                                      category_predict, cate_predict_rs)
-
         if err:
             return redirect('/admin/store/add/')
         return Response(json.dumps({"success": "yes"}), 200)

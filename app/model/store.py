@@ -31,7 +31,7 @@ class StoreModel(StoreEntity):
             if key == "classification" and value != "":
                 classify = PRED_LIST[value]
             elif key == "level":
-                if value=="":
+                if value == "":
                     level = "top"
                 else:
                     level = value
@@ -43,7 +43,7 @@ class StoreModel(StoreEntity):
                 star = float(value)
             elif key == "quality" and value != "" and value != 'None':
                 quality = int(value)
-        
+
         stores_sorted = self.objects
 
         # if level:
@@ -56,8 +56,6 @@ class StoreModel(StoreEntity):
         #             Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))
         #     elif level == 28:
         #         stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
-        
-
 
         if classify:
             stores_sorted = stores_sorted.filter(classifications=classify)
@@ -69,10 +67,10 @@ class StoreModel(StoreEntity):
         elif cates_predict:
             print(cates_predict)
             stores_sorted = stores_sorted.filter(category_predict__in=cates_predict)
-        
+
         if star:
-            stores_sorted = stores_sorted.filter(Q(stars__gt=star-1)&Q(stars__lt=star+0.0001))
-        
+            stores_sorted = stores_sorted.filter(Q(stars__gt=star - 1) & Q(stars__lt=star + 0.0001))
+
         if level:
             print(level)
             if level == "top":
@@ -86,7 +84,8 @@ class StoreModel(StoreEntity):
                 print(PRED_LIST2[level][1])
                 stores_sorted = stores_sorted.filter(reviewer_quant__gt=PRED_LIST2[level][1])
             else:
-                stores_sorted = stores_sorted.filter(Q(reviewer_quant__lte=PRED_LIST2[level][0]) & Q(reviewer_quant__gte=PRED_LIST2[level][1]))
+                stores_sorted = stores_sorted.filter(
+                    Q(reviewer_quant__lte=PRED_LIST2[level][0]) & Q(reviewer_quant__gte=PRED_LIST2[level][1]))
             # elif level in (8, 12, 16, 20, 24):
             #     stores_sorted = stores_sorted.filter(
             #         Q(classification__lte=level + 0.5) & Q(classification__gt=level - 3.5))   
@@ -97,7 +96,7 @@ class StoreModel(StoreEntity):
         else:
             stores_sorted = stores_sorted.order_by("-score_sentiment")
         # num = len(stores_sorted)
-        num=0
+        num = 0
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
         return stores.items, stores.pages, num
 
@@ -106,9 +105,10 @@ class StoreModel(StoreEntity):
 
     def find_by_name(self, name):
         return self.objects(name__exact=name)[0]
+
     def find_by_categories(self, categories_id):
-        lst =[]
-        for x in self.objects:  
+        lst = []
+        for x in self.objects:
             if categories_id == x.categories_id:
                 lst = lst + [x]
         return lst
@@ -126,8 +126,7 @@ class StoreModel(StoreEntity):
         store_filtered = store_filtered.filter(id__ne=store_id)
         stores_sorted = store_filtered.order_by("score_sentiment")
         stores = Pagination(stores_sorted, int(page), 6)
-        
-        
+
         return stores.items, stores.pages
         # for x in self.objects[begin:]:
         #     end += 1  
@@ -140,20 +139,14 @@ class StoreModel(StoreEntity):
         # print(end)
         # return lst, end
 
-    # def edit(self, _id, email):
-    #     try:
-    #         self.objects(id__exact=_id).update(set__email=email)
-    #         StoreEntity.reindex()
-    #         return True, None
-    #     except Exception as e:
-    #         return False, e.__str__()
-
     @classmethod
-    def create(cls, name, description, link_image, categories_id, address_id, position, name_translate, category_predict, type_store):
+    def create(cls, name, description, link_image, categories_id, address_id, position, name_translate,
+               category_predict, type_store):
         try:
             store = StoreEntity(name=name, description=description, link_image=link_image,
-                        categories_id=categories_id, address_id=address_id, position=position, name_translate=name_translate,
-                        category_predict=category_predict, type_store=type_store).save()
+                                categories_id=categories_id, address_id=address_id, position=position,
+                                name_translate=name_translate,
+                                category_predict=category_predict, type_store=type_store).save()
             StoreEntity.add_to_index_into_table(store)
             return True, None
         except Exception as e:
@@ -182,7 +175,6 @@ class StoreModel(StoreEntity):
     def delete(cls, store_id, deleted_at):
         try:
             store = StoreEntity.objects(id=store_id).get()
-            print(store.name)
             store.deleted_at = deleted_at
             store.save()
             return store, None

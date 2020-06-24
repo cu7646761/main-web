@@ -7,13 +7,11 @@ from google.cloud import translate
 from google.cloud.language_v1 import enums
 from google.cloud import automl_v1beta1 as automl
 
-
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/nguyenphuongvuong/Desktop/Britcat3-dd9d79d99d97.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/nguyenphuongvuong/Desktop/Britcat3-dd9d79d99d97.json"
 
-
-PROJECT_ID = "britcat3" #@param {type:"string"}
-COMPUTE_REGION = "us-central1" # Currently only supported region.
+PROJECT_ID = "britcat3"  # @param {type:"string"}
+COMPUTE_REGION = "us-central1"  # Currently only supported region.
 
 # automl_client = automl.AutoMlClient()
 tables_client = automl.TablesClient(project=PROJECT_ID, region=COMPUTE_REGION)
@@ -62,13 +60,12 @@ class Utils:
         elif score > 24.5:
             return 'F'
 
-
     @staticmethod
     def predict_food_cate_online(text):
         # list_models = tables_client.list_models()
         model_display_name = "food_cate_v3_20200515114552"
         input = {
-            "text":text
+            "text": text
         }
         result = tables_client.predict(
             model_display_name=model_display_name, inputs=input
@@ -78,13 +75,11 @@ class Utils:
         for label in result.payload:
             key = label.tables.value.string_value
             value = label.tables.score
-            rs_dict.update({key:value})
+            rs_dict.update({key: value})
 
-        print(rs_dict)
         type_filtered = {k: v for k, v in rs_dict.items() if v >= 0.1}
         type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
         return type_sorted
-
 
     @staticmethod
     def predict_food_cate(text):
@@ -97,20 +92,18 @@ class Utils:
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
-        print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
         type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
         type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
         return type_sorted
 
-    
     @staticmethod
     def predict_sentiment_online(text):
         # list_models = tables_client.list_models()
         model_display_name = "predict_sentiment_20200522110634"
         input = {
-            "text":text
+            "text": text
         }
         result = tables_client.predict(
             model_display_name=model_display_name, inputs=input
@@ -120,13 +113,11 @@ class Utils:
         for label in result.payload:
             key = label.tables.value.string_value
             value = label.tables.score
-            rs_dict.update({key:value})
+            rs_dict.update({key: value})
 
-        print(rs_dict)
         type_sorted = {k: v for k, v in sorted(rs_dict.items(), key=lambda item: item[1], reverse=True)}
         sc = -rs_dict["0"] + rs_dict["2"]
         return sc
-    
 
     @staticmethod
     def predict_sentiment_score(text):
@@ -139,13 +130,11 @@ class Utils:
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
-        print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
         type_sorted = {k: v for k, v in sorted(type_store.items(), key=lambda item: item[1], reverse=True)}
         sc = -type_store["0"] + type_store["2"]
         return sc
-        
 
     @staticmethod
     def analyze_entity_sentiment(text_content):
@@ -201,7 +190,7 @@ class Utils:
             source_language_code='vi',
             target_language_code=target_language)
         # Display the translation for each input text provided
-        for translation in response.translations:
-            print(u"Translated text: {}".format(translation.translated_text))
+        # for translation in response.translations:
+        #     print(u"Translated text: {}".format(translation.translated_text))
 
         return response
