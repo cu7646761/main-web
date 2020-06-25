@@ -1,11 +1,13 @@
 import os
-import requests
+import requests,nltk
 from flask import json
 from app import bcrypt
 from google.cloud import language_v1
 from google.cloud import translate
 from google.cloud.language_v1 import enums
 from google.cloud import automl_v1beta1 as automl
+from nltk.tokenize import word_tokenize
+from constants import Pages, POS_DICT, BAD_DICT, NEG_WORDS, TEMP_DICT, NEUTRAL_WORDS
 GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', "")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=GOOGLE_APPLICATION_CREDENTIALS
 
@@ -142,6 +144,30 @@ class Utils:
         type_sorted = {k: v for k, v in sorted(type_store.items(), key=lambda item: item[1], reverse=True)}
         sc = -type_store["0"] + type_store["2"]
         return sc
+
+    
+    @staticmethod
+    def preprocessing_input(text):
+        tokenized = word_tokenize(text)
+        pos = nltk.pos_tag(tokenized)
+        ci = 0
+        neg_good = 0
+        neg_bad = 0
+        for k,v in pos:
+            ci+=1
+            if k in ('not', "n't", 'hardly', 'never'):
+                cj = ci
+                for w in pos[ci:]:
+                    cj+=1
+                    if cj-ci>3:
+                        break
+                    if w[0] in POS_DICT:
+                        neg_good +=1
+                        break
+                    if w[0] in BAD_DICT:
+                        neg_bad +=1
+                        break
+        return neg_good,neg_bad
         
 
     @staticmethod
