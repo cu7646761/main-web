@@ -88,6 +88,16 @@
                                             </div>
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">
+                                                    <label for="min_price">Giá thấp nhất (vnd)</label>
+                                                    <input id="min_price" name="min_price" class="form-control" type="number" />
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="max_price">Giá cao nhất (vnd)</label>
+                                                    <input id="max_price" name="max_price" class="form-control" type="number">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
                                                     <label for="city">Thành phố</label>
                                                     <select id="city_edit" name="select-city" class="form-control"
                                                             onchange="getDistrictByCity()">
@@ -133,9 +143,6 @@
                         <div class='card-body p-0'>
                             <ul class="list-group list-group-flush">
                                 <div class="file-upload">
-                                    <!-- <button class="file-upload-btn" type="button"
-                                      onclick="$('.file-upload-input').trigger( 'click' )">Add Image</button> -->
-
                                     <div class="image-upload-wrap" id="thumbnail-post"
                                          data-thumbnail-post="">
                                         <input class="file-upload-input" id="imgUpload" type='file'
@@ -156,19 +163,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <li class="list-group-item d-flex px-3">
-                                  <button class="btn btn-sm btn-outline-accent">
-                                    <i class="material-icons">save</i> Save Draft</button>
-                                  <button class="btn btn-sm btn-accent ml-auto">
-                                    <i class="material-icons">file_copy</i> Publish</button>
-                                </li> -->
                             </ul>
 
                         </div>
                     </div>
-                    <!-- / Post Overview -->
-                    <!-- Post Overview -->
-                    
                         <button class="mb-3 col-lg-12 btn btn-primary" id="pulish-post-btn">
                             <i class="material-icons">file_copy</i>
                             Thêm mới

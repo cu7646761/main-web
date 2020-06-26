@@ -568,7 +568,11 @@ function loadItems() {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";
                 }
                 console.log(data[i])
-                template_clone.querySelector("#detail").innerHTML = data[i].detail;
+                if (typeof data[i].detail == "undefined") {
+                    template_clone.querySelector("#detail").innerHTML = ""
+                } else {
+                    template_clone.querySelector("#detail").innerHTML = data[i].detail;
+                }
                 template_clone.querySelector("#star-num").innerHTML = data[i].star_num;
                 template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].star_num} sao.`;
                 template_clone.querySelector("#show-star-user").innerHTML = userStar;

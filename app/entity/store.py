@@ -11,7 +11,7 @@ class Store(Document, SearchableMixin):
     __tablename__ = 'store'
     __searchable__ = ['name']
 
-    name = StringField(max_length=255, required=True)
+    name = StringField(max_length=255, required=True, unique=True)
     name_translate = StringField(max_length=255)
 
     address_id = ReferenceField(Address)

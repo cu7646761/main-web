@@ -76,7 +76,7 @@ def upload(form=None):
         return profile(error='Format of your file is jpg')
 
     if session['cur_user'].link_image != LINK_IMG_AVATAR_DEF:
-        image_name = session['cur_user'].link_image.replace("https://storage.cloud.google.com/bloganuong_images/", "")
+        image_name = session['cur_user'].link_image.replace("https://storage.googleapis.com/bloganuong_images/", "")
         res = delete_image_gc('bloganuong_images', image_name)
         if res is False:
             return profile(error="Error when deleting your image", form=form)
@@ -102,7 +102,7 @@ def delete_image(form=None):
     link_img = session['cur_user'].link_image
     if link_img == LINK_IMG_AVATAR_DEF:
         return profile(error="You must upload your avatar before deleting", form=form)
-    image_name = session['cur_user'].link_image.replace("https://storage.cloud.google.com/bloganuong_images/", "")
+    image_name = session['cur_user'].link_image.replace("https://storage.googleapis.com/bloganuong_images/", "")
     res = delete_image_gc('bloganuong_images', image_name)
     if res is False:
         return profile(error="Error when deleting your image", form=form)

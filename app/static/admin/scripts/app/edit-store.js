@@ -215,6 +215,8 @@ document.getElementById("update-post-btn").addEventListener("click", () => {
     let thumbnail = $('.file-upload-image').attr('src')
     let address_detail = $('#result_address').val()
     let categories = []
+    let min_price = $('#min_price').val()
+    let max_price = $('#max_price').val()
 
     $('input[type=checkbox]').each(function () {
         if (this.checked) {
@@ -223,7 +225,7 @@ document.getElementById("update-post-btn").addEventListener("click", () => {
     });
     let delete_img = $('#delete_img').val();
 
-    if ((title === "") || (content === "") || (address_detail === "") || (categories.length == 0)) {
+    if ((title === "") || (content === "") || (address_detail === "") || (categories.length == 0) || (min_price == "") || (max_price == "")) {
         alert("Bạn nên điền đầy đủ các thông tin về cửa hàng");
         return;
     }
@@ -248,7 +250,9 @@ document.getElementById("update-post-btn").addEventListener("click", () => {
         "address_detail": address_detail,
         "address_district": address_district,
         "image_list": getAttrFromString(content, 'img', 'src'),
-        "delete_img": delete_img
+        "delete_img": delete_img,
+        "min_price": min_price.toString(),
+        "max_price": max_price.toString()
     };
     http.open('POST', url, true);
 

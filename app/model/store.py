@@ -114,6 +114,10 @@ class StoreModel(StoreEntity):
 
     def find_by_name(self, name):
         return self.objects(name__exact=name)[0]
+
+    def find_lst_by_name(self, name):
+        return self.objects(name__exact=name)
+
     def find_by_categories(self, categories_id):
         lst =[]
         for x in self.objects:  
@@ -150,12 +154,13 @@ class StoreModel(StoreEntity):
 
     @classmethod
     def create(cls, name, description, link_image, categories_id, address_id, position, name_translate,
-               category_predict, type_store):
+               category_predict, type_store, min_price, max_price):
         try:
             store = StoreEntity(name=name, description=description, link_image=link_image,
                                 categories_id=categories_id, address_id=address_id, position=position,
                                 name_translate=name_translate,
-                                category_predict=category_predict, type_store=type_store).save()
+                                category_predict=category_predict, type_store=type_store,
+                                min_price=min_price, max_price=max_price).save()
             StoreEntity.add_to_index_into_table(store)
             return True, None
         except Exception as e:
@@ -168,13 +173,15 @@ class StoreModel(StoreEntity):
         return self.objects.order_by("created_at")
 
     @classmethod
-    def update(cls, name, description, link_image, categories_id, store_id, address_id):
+    def update(cls, name, description, link_image, categories_id, store_id, address_id, min_price, max_price):
         try:
             store = StoreEntity.objects(id=store_id).get()
             store.description = description
             store.link_image = link_image
             store.address_id = address_id
             store.categories_id = categories_id
+            store.min_price = min_price
+            store.max_price = max_price
             store.save()
             return True, None
         except Exception as e:

@@ -2,7 +2,7 @@ from google.cloud import storage
 
 
 def upload_image_gc(bucket_name, image_file):
-    # https://storage.cloud.google.com/
+    # https://storage.googleapis.com/
     # https://storage.googleapis.com/bloganuong_images/D8DC1BEF-96EB-4351-A06B-B3BF88004371.JPG
 
     storage_client = storage.Client()
@@ -13,7 +13,7 @@ def upload_image_gc(bucket_name, image_file):
     blob.upload_from_string(image_file.read())
 
     public_link = blob.public_url
-    link = public_link.replace("https://storage.googleapis.com/", "https://storage.cloud.google.com/")
+    link = public_link.replace("https://storage.googleapis.com/", "https://storage.googleapis.com/")
     return link
 
 

@@ -207,10 +207,11 @@ function getAttrFromString(str, node, attr) {
 }
 
 document.getElementById("pulish-post-btn").addEventListener("click", () => {
-
     let title = $('#post-title').val()
     let content = $('.ql-editor').html()
     let thumbnail = $('.file-upload-image').attr('src')
+    let min_price = $('#min_price').val()
+    let max_price = $('#max_price').val()
 
     let categories = []
     $('input[type=checkbox]').each(function () {
@@ -220,7 +221,7 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
     });
     let address_detail = $('#result_address').val()
 
-    if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0)) {
+    if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0) || (min_price == "") || (max_price == "")) {
         alert("Bạn nên điền đầy đủ các thông tin về cửa hàng");
         return;
     }
@@ -240,7 +241,9 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
         "categories": categories,
         "address_detail": address_detail,
         "address_district": address_district,
-        "image_list": getAttrFromString(content, 'img', 'src')
+        "image_list": getAttrFromString(content, 'img', 'src'),
+        "min_price": min_price.toString(),
+        "max_price": max_price.toString()
     };
     http.open('POST', url, true);
 

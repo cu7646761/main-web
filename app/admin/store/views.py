@@ -56,7 +56,7 @@ def remove_image_admin():
     _store = store.find_by_name(title)
     _store.link_image.remove(remove_img)
     _store.save()
-    filename = remove_img.replace("https://storage.cloud.google.com/bloganuong_images/", "")
+    filename = remove_img.replace("https://storage.googleapis.com/bloganuong_images/", "")
     res = delete_image_gc('bloganuong_images', filename)
     return Response(json.dumps({"status": "success"}), 200)
 
@@ -115,6 +115,12 @@ def _store(form=None):
         address_detail = post_data.get("address_detail", "")
         address_district = post_data.get("address_district", "")
         image_list = post_data.get("image_list", "")
+        min_price = post_data.get("min_price", "")
+        max_price = post_data.get("max_price", "")
+
+        st = store.find_lst_by_name(name)
+        if len(st) != 0:
+            return redirect('/admin/store/')
 
         list_obj_cate = []
         for cate in categories:
@@ -141,7 +147,7 @@ def _store(form=None):
 
         image_list.append(image)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position, name_translate,
-                                     category_predict, cate_predict_rs)
+                                     category_predict, cate_predict_rs, min_price, max_price)
         if err:
             return redirect('/admin/store/add/')
         return Response(json.dumps({"success": "yes"}), 200)
@@ -168,6 +174,8 @@ def edit__store(form=None, store_id=None):
         address_detail = post_data.get("address_detail", "")
         address_district = post_data.get("address_district", "")
         image_list = post_data.get("image_list", "")
+        min_price = post_data.get("min_price", "")
+        max_price = post_data.get("max_price", "")
 
         description_old = store_detail.description
         bs = BeautifulSoup(description_old, 'html.parser')
@@ -178,7 +186,7 @@ def edit__store(form=None, store_id=None):
         # if image_old not in image_new => delete old
         for img in arr_images_old:
             if img not in image_list:
-                img_del = img.replace("https://storage.cloud.google.com/bloganuong_images/", "")
+                img_del = img.replace("https://storage.googleapis.com/bloganuong_images/", "")
                 res = delete_image_gc('bloganuong_images', img_del)
         list_obj_cate = []
         for cate in categories:
@@ -193,14 +201,14 @@ def edit__store(form=None, store_id=None):
         if err:
             return redirect('/admin/store/edit/' + store_id)
         image_list.append(thumbnail)
-        res, err = StoreModel.update(name, description, image_list, list_obj_cate, store_id, res_address)
+        res, err = StoreModel.update(name, description, image_list, list_obj_cate, store_id, res_address, min_price, max_price)
         if err:
             return redirect('/admin/store/edit/' + store_id)
         return Response(json.dumps({"success": "yes"}), 200)
     return render_template("admin/edit-store.html", user=session['cur_user'], store_detail=store_detail,
                            address=store_detail.address_id.detail,
                            lst_cate_choose=[x.name for x in store_detail.categories_id], form=form,
-                           store_active="active",
+                           store_active="active", min_price=store_detail.min_price, max_price=store_detail.max_price,
                            total_pages=total_pages, province_list=province_list, cate_list=category.query_all())
 
 
