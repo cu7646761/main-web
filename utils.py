@@ -1,14 +1,15 @@
 import os
-import requests
+import requests,nltk
 from flask import json
 from app import bcrypt
 from google.cloud import language_v1
 from google.cloud import translate
 from google.cloud.language_v1 import enums
 from google.cloud import automl_v1beta1 as automl
-
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/nguyenphuongvuong/Desktop/Britcat3-dd9d79d99d97.json"
+from nltk.tokenize import word_tokenize
+from constants import Pages, POS_DICT, BAD_DICT, NEG_WORDS, TEMP_DICT, NEUTRAL_WORDS
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', "")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=GOOGLE_APPLICATION_CREDENTIALS
 
 PROJECT_ID = "britcat3" #@param {type:"string"}
 COMPUTE_REGION = "us-central1" # Currently only supported region.
@@ -85,6 +86,27 @@ class Utils:
 
 
     @staticmethod
+    def predict_food_cate_online(text):
+        # list_models = tables_client.list_models()
+        model_display_name = "food_cate_v3_20200515114552"
+        input = {
+            "text": text
+        }
+        result = tables_client.predict(
+            model_display_name=model_display_name, inputs=input
+        )
+        # pr = tables_client.predict(model=my_model, inputs=text)
+        rs_dict = {}
+        for label in result.payload:
+            key = label.tables.value.string_value
+            value = label.tables.score
+            rs_dict.update({key: value})
+
+        type_filtered = {k: v for k, v in rs_dict.items() if v >= 0.1}
+        type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
+        return type_sorted
+
+    @staticmethod
     def predict_food_cate(text):
         data = {
             "instances": [{
@@ -95,7 +117,6 @@ class Utils:
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
-        print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
         type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
@@ -137,12 +158,35 @@ class Utils:
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
-        print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
         type_sorted = {k: v for k, v in sorted(type_store.items(), key=lambda item: item[1], reverse=True)}
         sc = -type_store["0"] + type_store["2"]
         return sc
+
+    
+    @staticmethod
+    def preprocessing_input(text):
+        tokenized = word_tokenize(text)
+        pos = nltk.pos_tag(tokenized)
+        ci = 0
+        neg_good = 0
+        neg_bad = 0
+        for k,v in pos:
+            ci+=1
+            if k in ('not', "n't", 'hardly', 'never'):
+                cj = ci
+                for w in pos[ci:]:
+                    cj+=1
+                    if cj-ci>3:
+                        break
+                    if w[0] in POS_DICT:
+                        neg_good +=1
+                        break
+                    if w[0] in BAD_DICT:
+                        neg_bad +=1
+                        break
+        return neg_good,neg_bad
         
 
     @staticmethod
@@ -199,7 +243,7 @@ class Utils:
             source_language_code='vi',
             target_language_code=target_language)
         # Display the translation for each input text provided
-        for translation in response.translations:
-            print(u"Translated text: {}".format(translation.translated_text))
+        # for translation in response.translations:
+        #     print(u"Translated text: {}".format(translation.translated_text))
 
         return response

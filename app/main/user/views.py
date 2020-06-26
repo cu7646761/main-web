@@ -2,6 +2,8 @@ import os
 import googlemaps
 from datetime import datetime
 from flask import redirect, render_template, Blueprint, session, request, jsonify
+from flask_mongoengine.wtf.fields import unicode
+from werkzeug.datastructures import FileStorage
 
 from app.model.address import AddressModel
 from app.model.auth import UserModel
@@ -15,11 +17,13 @@ from utils import Utils
 from vietnam_provinces.enums.districts import ProvinceEnum, DistrictEnum
 from constants import API_KEY
 
+from app.image.image_storage import delete_image_gc, upload_image_gc, get_size
 
 user_blueprint = Blueprint(
     'user', __name__, template_folder='templates')
 
 gmaps = googlemaps.Client(key=API_KEY)
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -47,7 +51,6 @@ def profile(error=None, form=None, success=None):
     if form is None:
         form = UpdatePswForm()
 
-    address = AddressModel()
     addr = ""
     if session['cur_user'].address_id is None:
         addr = ""
@@ -55,7 +58,7 @@ def profile(error=None, form=None, success=None):
         addr = session['cur_user'].address_id.detail
 
     category = CategoryModel()
-    lst_cate_choose = [category.find_by_id(x)[0].name for x in session['cur_user'].favorite_categories]
+    lst_cate_choose = [category.find_by_id(x.id)[0].name for x in session['cur_user'].favorite_categories]
 
     return render_template("profile.html", user=session['cur_user'], error=error, form=form, success=success,
                            province_list=province_list, cate_list=cate.query_all(), address=addr,
@@ -70,15 +73,25 @@ def upload(form=None):
     if file.filename == '':
         return profile(error='No selected file', form=form)
     elif not allowed_file(file.filename):
-        return profile(error='Format of your file is png, jpg, jpeg, gif')
-    date_obj = datetime.now()
-    file.filename = date_obj.strftime("%H:%M:%S.%f - %b %d %Y") + "-" + file.filename
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(UPLOAD_FOLDER, filename))
+        return profile(error='Format of your file is jpg')
+
+    if session['cur_user'].link_image != LINK_IMG_AVATAR_DEF:
+        image_name = session['cur_user'].link_image.replace("https://storage.cloud.google.com/bloganuong_images/", "")
+        res = delete_image_gc('bloganuong_images', image_name)
+        if res is False:
+            return profile(error="Error when deleting your image", form=form)
+
+    date = datetime.today().strftime('%Y-%m-%d-%H-%M-%S')
+    name = file.filename.split('.')[0]
+    ext = file.filename.split('.')[1]
+    file.filename = name + "__" + date + "." + ext
+    if int(get_size(file)) > 150000:
+        return profile(error="Your image must be smaller than 150 KB")
+    link_file = upload_image_gc('bloganuong_images', image_file=file)
     user = UserModel()
-    link_image_new = LINK_IMG + filename
-    session['cur_user'].link_image = link_image_new
-    res, error = user.update_link_image(session['cur_user'].email, link_image_new)
+
+    session['cur_user'].link_image = link_file
+    res, error = user.update_link_image(session['cur_user'].email, link_file)
     if error:
         return profile(error=error, form=form)
     return redirect('/profile')
@@ -89,8 +102,10 @@ def delete_image(form=None):
     link_img = session['cur_user'].link_image
     if link_img == LINK_IMG_AVATAR_DEF:
         return profile(error="You must upload your avatar before deleting", form=form)
-    file_name = link_img[len(SERVER_NAME + '/static/images'):]
-    os.remove(UPLOAD_FOLDER + file_name)
+    image_name = session['cur_user'].link_image.replace("https://storage.cloud.google.com/bloganuong_images/", "")
+    res = delete_image_gc('bloganuong_images', image_name)
+    if res is False:
+        return profile(error="Error when deleting your image", form=form)
     session['cur_user'].link_image = LINK_IMG_AVATAR_DEF
     user = UserModel()
     res, error = user.update_link_image(session['cur_user'].email, LINK_IMG_AVATAR_DEF)
@@ -133,7 +148,7 @@ def update_basic(error=None, form=None):
 
     birthday = request.form.get("birthday")
     gender = request.form.get("gender")
-    res_address = request.form.get("result-address")
+    res_address = request.form.get("result_address")
     love_cate = request.form.getlist("love_cate")
     district = res_address.split(',')[1]
     geocode_result = gmaps.geocode(res_address)
