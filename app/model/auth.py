@@ -58,7 +58,7 @@ class UserModel(UserEntity):
     def create(cls, email, password, active):
         try:
             user = UserEntity(email=email, password=password, active=active).save()
-            # UserEntity.add_to_index_into_table(user)
+            UserEntity.add_to_index_into_table(user)
             return True, None
         except Exception as e:
             return False, e.__str__()
