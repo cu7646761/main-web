@@ -38,15 +38,15 @@ store_old_lst = data_store[0]
 #     cate = Category(name=x['name'],name_link=x['name_link']).save()
 #     print('ok')
 
-data_user = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/db-backup-2/user.json', encoding="utf8") as f:
-    data_user.append(json.load(f))
-user_old_lst = data_user[0]
-
-data_comment = []
-with open(os.path.abspath(os.path.dirname(__file__)) + '/db-backup-2/comment.json', encoding="utf8") as f:
-    data_comment.append(json.load(f))
-comment_old_lst = data_comment[0]
+# data_user = []
+# with open(os.path.abspath(os.path.dirname(__file__)) + '/db-backup-2/user.json', encoding="utf8") as f:
+#     data_user.append(json.load(f))
+# user_old_lst = data_user[0]
+#
+# data_comment = []
+# with open(os.path.abspath(os.path.dirname(__file__)) + '/db-backup-2/comment.json', encoding="utf8") as f:
+#     data_comment.append(json.load(f))
+# comment_old_lst = data_comment[0]
 
 # ----------- Backup store
 # test_1 = [store_old_lst[0]]
@@ -66,7 +66,7 @@ comment_old_lst = data_comment[0]
 #         'district': addr_old['district']
 #     }
 #
-    # address_new = Address(detail=addr_old['detail'], latitude=addr_old['latitude'], longtitude=addr_old['longtitude'], district=addr_old['district']).save()
+# address_new = Address(detail=addr_old['detail'], latitude=addr_old['latitude'], longtitude=addr_old['longtitude'], district=addr_old['district']).save()
 #
 #     categories_id_new = []
 #     for cate in store_old['categories_id']:
@@ -93,10 +93,10 @@ comment_old_lst = data_comment[0]
 #     min_price=store_old['min_price'],
 #     max_price=store_old['max_price'],
 #     star_s1=store_old['star_s1'],
-#     star_s2=store_old['star_s1'],
-#     star_s3=store_old['star_s1'],
-#     star_s4=store_old['star_s1'],
-#     star_s5=store_old['star_s1'],
+#     star_s2=store_old['star_s2'],
+#     star_s3=store_old['star_s3'],
+#     star_s4=store_old['star_s4'],
+#     star_s5=store_old['star_s5'],
 #     stars=store_old['stars'],
 #     reviewer_quant=store_old['reviewer_quant'],
 #     link_image=store_old['link_image'],
@@ -120,121 +120,121 @@ comment_old_lst = data_comment[0]
 # ---------- Backup user
 # test_2 = [user_old_lst[0]]
 # for user_old in user_old_lst:
-    # if user_old['email'] == 'andang12111998@gmail.com':
-    # print(user_old)
-    # email = StringField(max_length=255, required=True, unique=True)
-    # password = StringField(max_length=255)
-    # email_fb = StringField(max_length=255)
-    # id_fb = StringField(max_length=255)
-    # name = StringField(max_length=255)
-    # birthday = DateTimeField()
-    # permission = IntField()
-    # infor_rec = StringField(default=" ")
-    # gender = IntField()
-    # active = IntField(default=0)
-    # address_id = ReferenceField(Address)
-    # favorite_categories = ListField(ReferenceField(Category))
-    # favorite_stores = ListField(ReferenceField(Store))
-    # link_image = StringField(default=LINK_IMG_AVATAR_DEF)
-    # created_at = DateTimeField(default=datetime.datetime.now())
-    # updated_on = DateTimeField(default=None)
+# if user_old['email'] == 'andang12111998@gmail.com':
+# print(user_old)
+# email = StringField(max_length=255, required=True, unique=True)
+# password = StringField(max_length=255)
+# email_fb = StringField(max_length=255)
+# id_fb = StringField(max_length=255)
+# name = StringField(max_length=255)
+# birthday = DateTimeField()
+# permission = IntField()
+# infor_rec = StringField(default=" ")
+# gender = IntField()
+# active = IntField(default=0)
+# address_id = ReferenceField(Address)
+# favorite_categories = ListField(ReferenceField(Category))
+# favorite_stores = ListField(ReferenceField(Store))
+# link_image = StringField(default=LINK_IMG_AVATAR_DEF)
+# created_at = DateTimeField(default=datetime.datetime.now())
+# updated_on = DateTimeField(default=None)
 
-    # cmt_new_lst = []
-    # for cmt_user in user_old['comments_list']:
-    #     cmt_old = None
-    #     for cmt in comment_old_lst:
-    #         if cmt['_id']['$oid'] == cmt_user['$oid']:
-    #             cmt_old = cmt
-    #             break
-    #     if cmt_old is not None:
-    #         # print(cmt_old)
-    #         store_old_id = None
-    #         for store in store_old_lst:
-    #             if cmt_old['store_id'] == store['_id']:
-    #                 store_old_id = store
-    #         print(store)
-    #         cmt_new = Comment(detail=cmt_old['detail'],user_id=user_old,)
-            # cmt_new_lst.append(cmt_old)
+# cmt_new_lst = []
+# for cmt_user in user_old['comments_list']:
+#     cmt_old = None
+#     for cmt in comment_old_lst:
+#         if cmt['_id']['$oid'] == cmt_user['$oid']:
+#             cmt_old = cmt
+#             break
+#     if cmt_old is not None:
+#         # print(cmt_old)
+#         store_old_id = None
+#         for store in store_old_lst:
+#             if cmt_old['store_id'] == store['_id']:
+#                 store_old_id = store
+#         print(store)
+#         cmt_new = Comment(detail=cmt_old['detail'],user_id=user_old,)
+# cmt_new_lst.append(cmt_old)
 
-    # try:
-    #     addr_old = None
-    #     for addr in address_old_lst:
-    #         if addr['_id'] == user_old['address_id']:
-    #             addr_old = addr
-    #             break
-    #     address_new = Address(detail=addr_old['detail'], latitude=addr_old['latitude'], longtitude=addr_old['longtitude'], district=addr_old['district']).save()
-    #     # address_new = None
-    # except:
-    #     address_new = None
-    #
-    # try:
-    #     user_new = User(
-    #         email=user_old['email'],
-    #         password=user_old['password'],
-    #         email_fb=None,
-    #         id_fb=None,
-    #         name=user_old['name'],
-    #         birthday=user_old['birthday'],
-    #         infor_rec=user_old['infor_rec'],
-    #         gender=0,
-    #         active=2,
-    #         address_id=address_new,
-    #         favorite_categories=[],
-    #         favorite_stores=[],
-    #         link_image=user_old['link_image']
-    #     ).save()
-    # except:
-    #     user_new = User(
-    #         email=user_old['email'],
-    #         password=user_old['password'],
-    #         email_fb=None,
-    #         id_fb=None,
-    #         name=None,
-    #         birthday=None,
-    #         infor_rec=None,
-    #         gender=0,
-    #         active=2,
-    #         address_id=address_new,
-    #         favorite_categories=[],
-    #         favorite_stores=[],
-    #         link_image=LINK_IMG_AVATAR_DEF
-    #     ).save()
+# try:
+#     addr_old = None
+#     for addr in address_old_lst:
+#         if addr['_id'] == user_old['address_id']:
+#             addr_old = addr
+#             break
+#     address_new = Address(detail=addr_old['detail'], latitude=addr_old['latitude'], longtitude=addr_old['longtitude'], district=addr_old['district']).save()
+#     # address_new = None
+# except:
+#     address_new = None
+#
+# try:
+#     user_new = User(
+#         email=user_old['email'],
+#         password=user_old['password'],
+#         email_fb=None,
+#         id_fb=None,
+#         name=user_old['name'],
+#         birthday=user_old['birthday'],
+#         infor_rec=user_old['infor_rec'],
+#         gender=0,
+#         active=2,
+#         address_id=address_new,
+#         favorite_categories=[],
+#         favorite_stores=[],
+#         link_image=user_old['link_image']
+#     ).save()
+# except:
+#     user_new = User(
+#         email=user_old['email'],
+#         password=user_old['password'],
+#         email_fb=None,
+#         id_fb=None,
+#         name=None,
+#         birthday=None,
+#         infor_rec=None,
+#         gender=0,
+#         active=2,
+#         address_id=address_new,
+#         favorite_categories=[],
+#         favorite_stores=[],
+#         link_image=LINK_IMG_AVATAR_DEF
+#     ).save()
 
 # ---------- Backup comment
-    # comment list #
-    # detail = StringField(max_length=1000)
-    # user_id = ReferenceField(User)
-    # store_id = ReferenceField(Store)
-    # comment_type = StringField(max_length=10)
-    # star_num = IntField()
-    # cus_name = StringField(max_length=255)
-    # sentiment_dict = DictField()
-    # created_at = DateTimeField(default=datetime.datetime.now())
-    # updated_on = DateTimeField(default=None)
+# comment list #
+# detail = StringField(max_length=1000)
+# user_id = ReferenceField(User)
+# store_id = ReferenceField(Store)
+# comment_type = StringField(max_length=10)
+# star_num = IntField()
+# cus_name = StringField(max_length=255)
+# sentiment_dict = DictField()
+# created_at = DateTimeField(default=datetime.datetime.now())
+# updated_on = DateTimeField(default=None)
 
-for user_old in user_old_lst:
-    # for store in store_old_lst:
-    if 'andang12111998@gmail.com' in user_old['email']:
-        print(user_old['comments_list'])
-        for cmt_old_id in user_old['comments_list']:
-            for cmt_old in comment_old_lst:
-                try:
-                    if cmt_old['_id']['$oid'] == cmt_old_id['$oid']:
-                        for store in store_old_lst:
-                            if cmt_old['store_id'] == store['_id']:
-                                if store['name'] != 'huhu':
-                                    print(user_old)
-                                    print(store)
-                                    user_new = User.objects(email__exact=user_old['email'])[0]
-                                    store_new = Store.objects(name__exact=store['name'])[0]
-
-                                    cmt_new = Comment(detail=cmt_old['detail'],
-                                                      user_id=user_new,
-                                                      store_id=store_new,
-                                                      star_num=cmt_old['star_num'],
-                                                      cus_name="andang12111998").save()
-                except:
-                    continue
+# for user_old in user_old_lst:
+#     # for store in store_old_lst:
+#     if 'andang12111998@gmail.com' in user_old['email']:
+#         print(user_old['comments_list'])
+#         for cmt_old_id in user_old['comments_list']:
+#             for cmt_old in comment_old_lst:
+#                 try:
+#                     if cmt_old['_id']['$oid'] == cmt_old_id['$oid']:
+#                         for store in store_old_lst:
+#                             if cmt_old['store_id'] == store['_id']:
+#                                 if store['name'] != 'huhu':
+#                                     print(user_old)
+#                                     print(store)
+#                                     user_new = User.objects(email__exact=user_old['email'])[0]
+#                                     store_new = Store.objects(name__exact=store['name'])[0]
+#
+#                                     cmt_new = Comment(detail=cmt_old['detail'],
+#                                                       user_id=user_new,
+#                                                       store_id=store_new,
+#                                                       star_num=cmt_old['star_num'],
+#                                                       cus_name="andang12111998").save()
+#                 except:
+#                     continue
 
 
 # for store in store_old_lst:
@@ -325,3 +325,12 @@ for user_old in user_old_lst:
 #                 break
 # {"user_id": ObjectId('5ebd08774828cb2789c1bfad')}
 
+for store_old in store_old_lst:
+    print(store_old['name'])
+    if store_old['name'] != "huhu":
+        store = Store.objects(name=store_old['name']).get()
+        store.star_s2 = store_old['star_s2']
+        store.star_s3 = store_old['star_s3']
+        store.star_s4 = store_old['star_s4']
+        store.star_s5 = store_old['star_s5']
+        store.save()

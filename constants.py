@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 _DOT_ENV_PATH = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(_DOT_ENV_PATH)
 
-API_KEY = os.getenv('API_KEY', "AIzaSyBFIs_p577J18Oqokx2EdZZVVk9XLLzk6Q")
+API_KEY = os.getenv('API_KEY', "")
 
 class Pages(enum.IntEnum):
     NUMBER_PER_PAGE = 10
@@ -28,7 +28,8 @@ GENDER = {"Name": 0, "Nữ": 1, "Khác": 2}
 
 # upload file
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app/static/images')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+# ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'jpg'}
 
 CLASS_LIST = {
     1: 'SS', 2: 'SS', 3: 'S', 4: 'S',

@@ -118,14 +118,7 @@ def post_login(error=None):
         _user = UserModel()
         email = request.form.get("email", "")
         plain_text_password = request.form.get("password", "")
-
-        print(email)
-        print(plain_text_password)
-
         user = _user.find_by_email(email)
-
-        print(user)
-
         if len(user) == 0:
             error = "Incorrect email or password"
         elif not Utils.check_password(plain_text_password, user[0].password):
@@ -168,6 +161,7 @@ def about_us(form=None):
 @login_required
 def contact_us(form=None):
     return render_template("contact-us.html", user=session['cur_user'])
+
 
 @auth_blueprint.route('/load-predict-cate', methods=['GET'])
 @login_required
@@ -212,10 +206,11 @@ def reset_rec():
         data_update = cur_user.infor_rec + " " + session['search_tsl']
         cur_user.update(set__infor_rec=data_update)
         session['search_tsl'] = ""
-        return redirect('/stores/?cate_predict='+rp)
+        return redirect('/stores/?cate_predict=' + rp)
     elif rp == 'n':
         session['search_tsl'] = ""
         return make_response(jsonify({}), 200)
+
 
 @auth_blueprint.route('/load_geo_places')
 @login_required
@@ -242,6 +237,6 @@ def load_geolocation():
             "lat": request.args.get("lat"),
             "lng": request.args.get("lng")
         }
-        session["pos"] = pos 
+        session["pos"] = pos
     res = make_response(jsonify({"message": "OK"}), 200)
     return res

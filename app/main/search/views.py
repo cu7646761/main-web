@@ -24,6 +24,15 @@ def full_text():
         if not isinstance(total, int):
             search_obj.extend(total)
 
+    store = StoreModel()
+    for obj in search_obj:
+        try:
+            _store = store.find_by_name(obj['_source']['name'])
+            obj['thumbnail'] = _store.link_image[0]
+            obj['address'] = _store.address_id.detail
+        except:
+            continue
+
     if session['logged'] == True:
         session['search'] += form.q.data + " , "
     return render_template('index.html', search_obj=search_obj, form=form, user=session['cur_user'])
@@ -49,7 +58,15 @@ def full_text_admin_store():
         session['search'] += form.q.data + " , "
     list_store = []
     for each in search_obj:
-        _store = store.find_by_id(each['_id'])[0]
+        try:
+            _store = store.find_by_id(each['_id'])[0]
+        except:
+            continue
+        str_delete = None
+        if _store.deleted_at is None:
+            str_delete = 'Chưa xoá'
+        else:
+            str_delete = _store.deleted_at
         list_store.append({
             "_id": each['_id'],
             "name": _store.name,
@@ -57,12 +74,10 @@ def full_text_admin_store():
             "address": _store.address_id.detail,
             "price": _store.min_price + "-" + _store.max_price,
             "created_at": _store.created_at,
-            "deleted_at": _store.deleted_at
+            "deleted_at": str_delete
         })
-    stores, total_pages = store.query_paginate(1)
-
     return render_template('admin/store.html', search_obj=list_store, form=form, user=session['cur_user'],
-                           store_active="active", total_pages=total_pages - 2)
+                           store_active="active", total_pages=None, count=10)
 
 
 @search_blueprint.route('/suggestion-store', methods=['POST'])
@@ -99,7 +114,10 @@ def full_text_admin_user():
         session['search'] += form.q.data + " , "
     list_user = []
     for each in search_obj:
-        _user = user.find_by_id(each['_id'])[0]
+        try:
+            _user = user.find_by_id(each['_id'])[0]
+        except:
+            continue
         active = ""
         if _user.active == 0:
             active = "Chưa kích hoạt"

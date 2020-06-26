@@ -86,6 +86,27 @@ class Utils:
 
 
     @staticmethod
+    def predict_food_cate_online(text):
+        # list_models = tables_client.list_models()
+        model_display_name = "food_cate_v3_20200515114552"
+        input = {
+            "text": text
+        }
+        result = tables_client.predict(
+            model_display_name=model_display_name, inputs=input
+        )
+        # pr = tables_client.predict(model=my_model, inputs=text)
+        rs_dict = {}
+        for label in result.payload:
+            key = label.tables.value.string_value
+            value = label.tables.score
+            rs_dict.update({key: value})
+
+        type_filtered = {k: v for k, v in rs_dict.items() if v >= 0.1}
+        type_sorted = {k: v for k, v in sorted(type_filtered.items(), key=lambda item: item[1], reverse=True)}
+        return type_sorted
+
+    @staticmethod
     def predict_food_cate(text):
         data = {
             "instances": [{
@@ -96,7 +117,6 @@ class Utils:
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
-        print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
         type_filtered = {k: v for k, v in type_store.items() if v >= 0.1}
@@ -134,11 +154,10 @@ class Utils:
                 "text": text
             }]
         }
-        response = requests.post('http://localhost:8080/predict', json=data)
+        response = requests.post('http://192.168.99.100:8080/predict', json=data)
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
-        print(rsfm)
         for i in range(len(rsfm["classes"])):
             type_store[rsfm["classes"][i]] = rsfm["scores"][i]
         type_sorted = {k: v for k, v in sorted(type_store.items(), key=lambda item: item[1], reverse=True)}
@@ -224,7 +243,7 @@ class Utils:
             source_language_code='vi',
             target_language_code=target_language)
         # Display the translation for each input text provided
-        for translation in response.translations:
-            print(u"Translated text: {}".format(translation.translated_text))
+        # for translation in response.translations:
+        #     print(u"Translated text: {}".format(translation.translated_text))
 
         return response
