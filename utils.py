@@ -113,7 +113,7 @@ class Utils:
                 "text": text
             }]
         }
-        response = requests.post('http://192.168.99.100:8080/predict', json=data)
+        response = requests.post('https://192.168.43.238:8080/predict', json=data)
         result = json.loads(response.content)
         rsfm = result['predictions'][0]
         type_store = {}
