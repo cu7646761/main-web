@@ -26,7 +26,8 @@ How to run server
 
 How to run tdd test
 =======================================
-1. Access folder that contain run.py file
+1. Convert to testing config
+    > export FLASK_CONFIG='testing'
 2. Run command
     > python manage.py test
     

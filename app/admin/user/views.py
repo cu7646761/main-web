@@ -28,15 +28,15 @@ def user(form=None):
                            total_pages=total_pages, count=user.count(), user_active="active", search_obj=[])
 
 
-@user_admin_blueprint.route('/set-status/<string:user_id>/<int:status>', methods=['GET'])
+@user_admin_blueprint.route('/set-status/<string:user_id>/<int:status>/', methods=['GET'])
 @login_required
 def getStatus(form=None, user_id=None, status=None):
     user = UserModel()
     user.changeStatus(user_id, status)
-    return redirect("/admin/user-management")
+    return redirect("/admin/user-management/")
 
 
-@user_admin_blueprint.route('/api/list', methods=['GET'])
+@user_admin_blueprint.route('/api/list/', methods=['GET'])
 @login_required
 def list_user_api():
     page = request.args.get('page', 1, type=int)
@@ -68,20 +68,20 @@ def list_user_api():
     return make_response(jsonify(res), 200)
 
 
-@user_admin_blueprint.route('/delete/<string:user_id>', methods=['GET'])
+@user_admin_blueprint.route('/delete/<string:user_id>/', methods=['GET'])
 @login_required
 def delete_user(form=None, user_id=None):
     user = UserModel()
     if user_id is not None:
         user.delete(user_id)
-    return redirect('/admin/user-management')
+    return redirect('/admin/user-management/')
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@user_admin_blueprint.route('/district', methods=['GET'])
+@user_admin_blueprint.route('/district/', methods=['GET'])
 def get_district_by_city():
     city_id = request.args.get('city_id')
     district_list = list(DistrictEnum)
@@ -94,28 +94,20 @@ def get_district_by_city():
     return jsonify({'district': dis_with_city})
 
 
-@user_admin_blueprint.route('/edit/<string:user_id>', methods=['GET'])
+@user_admin_blueprint.route('/edit/<string:user_id>/', methods=['GET'])
 @login_required
 def edit(error=None, form=None, user_id=None, success=None):
     user = UserModel().find_by_id(user_id)[0]
-    print(user)
-    print(user_id)
-    print("gi")
     province_list = list(ProvinceEnum)
     cate = CategoryModel()
     if form is None:
         form = UpdatePswForm()
-
-    address = AddressModel()
     addr = ""
     if user.address_id is None:
         addr = ""
     else:
-        addr = address.find_by_id(user.address_id)[0].detail
-
-    category = CategoryModel()
-    lst_cate_choose = [category.find_by_id(x)[0].name for x in user.favorite_categories]
-
+        addr = user.address_id.detail
+    lst_cate_choose = [x.name for x in user.favorite_categories]
     return render_template("admin/edit-user.html", user=session['cur_user'], cur_user=user, error=error, form=form,
                            success=success, province_list=province_list, cate_list=cate.query_all(), address=addr,
                            lst_cate_choose=lst_cate_choose)
@@ -124,16 +116,13 @@ def edit(error=None, form=None, user_id=None, success=None):
 @user_admin_blueprint.route('/edit/<string:user_id>/update-basic', methods=['POST'])
 def update_basic(error=None, form=None, user_id=None):
     current_user = UserModel().find_by_id(user_id)[0]
-    print(current_user)
     if form is None:
         form = UpdatePswForm()
 
     birthday = request.form.get("birthday")
     gender = request.form.get("gender")
-    res_address = request.form.get("result-address")
+    res_address = request.form.get("result_address")
     love_cate = request.form.getlist("love_cate")
-    print(love_cate)
-    print("check love")
     district = res_address.split(',')[1]
     geocode_result = gmaps.geocode(res_address)
     latitude = str(geocode_result[0].get('geometry').get('location').get('lat'))
@@ -141,7 +130,7 @@ def update_basic(error=None, form=None, user_id=None):
     address = AddressModel()
 
     if current_user.address_id:
-        res, err = address.update(current_user.address_id, res_address, district, latitude, longtitude)
+        res, err = address.update(current_user.address_id.id, res_address, district, latitude, longtitude)
     else:
         res, err = address.create(current_user.id, res_address, district, latitude, longtitude)
     if err:

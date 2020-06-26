@@ -165,8 +165,8 @@
                                                 <input type="text" class="form-control" id="address" name="address"
                                                        placeholder="Số và đường" value="{{ address }}" required>
                                                 <label name="res-address" id="res-address"></label>
-                                                <input type="text" class="form-control" id="result-address"
-                                                       name="result-address" style="display: none;"
+                                                <input type="text" class="form-control" id="result_address"
+                                                       name="result_address" style="display: none;"
                                                        value="{{ address }}">
                                             </div>
                                         </div>
@@ -281,7 +281,7 @@
     <script>
         var getDistrictByCity = (cityId) => {
             $("#address").val("");
-            $("#result-address").val("");
+            $("#result_address").val("");
             if (cityId == undefined) {
                 cityId = $("#city_edit :selected").val();
             }
@@ -319,7 +319,7 @@
             var city = $('#city_edit').find('option:selected').attr("name");
             var district = $('#district_edit').find('option:selected').attr("name");
             $("#res-address").append("Địa chỉ: " + $("#address").val() + ", " + district + ", " + city);
-            $("#result-address").val($("#address").val() + ", " + district + ", " + city);
+            $("#result_address").val($("#address").val() + ", " + district + ", " + city);
         });
 
 
