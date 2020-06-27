@@ -2,7 +2,7 @@ from app.model.auth import UserModel
 from tests.test_client import FlaskClientTestCase
 
 
-class UserViewsTestCase(FlaskClientTestCase):
+class UserAdminViewsTestCase(FlaskClientTestCase):
 
     def test_get_admin(self):
         with self.client:

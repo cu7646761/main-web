@@ -21,7 +21,7 @@ class Errors(enum.Flag):
 SERVER_NAME = "http://localhost:5000"
 LINK_IMG = SERVER_NAME + "/static/images/"
 LINK_IMG_AVATAR_DEF = os.path.join(LINK_IMG, 'avatar_an_danh.jpg')
-ADMIN_MAIL = "vuongsponges@gmail.com"
+ADMIN_MAIL = "vuong@samlopthanhphuong.com"
 # SERVER_NAME = "https://blog-an-uong.herokuapp.com"
 
 GENDER = {"Name": 0, "Nữ": 1, "Khác": 2}

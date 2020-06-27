@@ -4,7 +4,7 @@ from constants import LINK_IMG_AVATAR_DEF
 from tests.test_client import FlaskClientTestCase
 
 
-class StoreViewsTestCase(FlaskClientTestCase):
+class StoreAdminViewsTestCase(FlaskClientTestCase):
 
     def test_store_admin_get(self):
         with self.client:

@@ -12,6 +12,8 @@ def send_email(subject=None, recipients=None, html_content=None):
         html_content=html_content)
     try:
         sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        print(sg)
+        print(os.environ.get('SENDGRID_API_KEY'))
         print(ADMIN_MAIL)
         print(recipients)
         print(html_content)
