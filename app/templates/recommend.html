@@ -28,11 +28,12 @@
             response.json().then(function(data) {
                 if (response.status == 201){
                     openForm()
-                    key = Object.keys(data)[0]
+                    key = Object.keys(data)[1]
                     value = data[key] 
                     document.getElementById("recommend-text").innerHTML += value + " ?"
                     document.getElementById("btn-recommend").setAttribute('href', `/reset-rec?rp=${key}`)
-                    console.log(Object.keys(data)[0])
+                    console.log(key)
+                    console.log(Object.keys(data)[1])
                 }
             })
         })

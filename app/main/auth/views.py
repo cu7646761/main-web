@@ -189,8 +189,10 @@ def load_predict_cate():
             for k,v in rs_list:
                 res_dict[k] = CATE_LIST[k]
             # res_dict = {k: v for k, v in sorted(res_dict.items(), key=lambda item: item[1], reverse=True)}
-            res = make_response(jsonify(res_dict), 201)
+            print(list(res_dict.items())[0])
+            res = make_response(jsonify(list(res_dict.items())[0]), 201)
             print(res.data)
+            session['recommendation']=""
             return res
 
     res = make_response(jsonify({}), 200)
