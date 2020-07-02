@@ -34,13 +34,13 @@ def login_required(f):
 @auth_blueprint.route("/login", methods=["GET"])
 def get_login():
     form = LoginForm()
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, footer="footer")
 
 
 @auth_blueprint.route("/signup", methods=["GET"])
 def get_signup():
     form = SignupForm()
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, footer="footer")
 
 
 @auth_blueprint.route("/signup", methods=["POST"])
@@ -52,15 +52,15 @@ def post_signup(error=None):
         password = request.form.get("password", "")
         password_confirm = request.form.get("password_confirm", "")
         if not email:
-            error = "Email is required"
+            error = "Vui lòng nhập email"
         elif not password:
-            error = "Password is required"
+            error = "Vui lòng nhập mật khẩu"
         elif password != password_confirm:
-            error = "Repeat password is incorrect"
+            error = "Mật khẩu lặp lại không đúng"
 
         elif len(user.find_by_email(email)) == 1:
             if user.find_by_email(email)[0].active == 1:
-                error = "User {0} is already registered.".format(email)
+                error = "Người dùng đã được đăng ký".format(email)
             elif user.find_by_email(email)[0].active == 0:
                 try:
                     url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(
@@ -70,8 +70,8 @@ def post_signup(error=None):
                                      html_content=message,
                                      recipients=str(email))
                     return render_template('signup.html',
-                                           success="You account is not activated. Please check email and confirm email to complete sign up",
-                                           form=form)
+                                           success="Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký",
+                                           form=form, footer="footer")
                 except Exception as e:
                     print(str(e))
         if error is None:
@@ -88,12 +88,12 @@ def post_signup(error=None):
                 print(str(e))
 
             if error:
-                return render_template('signup.html', error=error, success=None, form=form)
+                return render_template('signup.html', error=error, success=None, form=form, footer="footer")
 
             return render_template('signup.html',
-                                   success="You account is not activated. Please check email and confirm email to complete sign up",
-                                   form=form)
-    return render_template('signup.html', error=error, form=form)
+                                   success="Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký",
+                                   form=form, footer="footer")
+    return render_template('signup.html', error=error, form=form, footer="footer")
 
 
 @auth_blueprint.route('/confirm-email', methods=['GET'])
@@ -120,11 +120,11 @@ def post_login(error=None):
         plain_text_password = request.form.get("password", "")
         user = _user.find_by_email(email)
         if len(user) == 0:
-            error = "Incorrect email or password"
+            error = "Email hoặc mật khẩu không chính xác"
         elif not Utils.check_password(plain_text_password, user[0].password):
-            error = "Incorrect password"
+            error = "Mật khẩu không chính xác"
         elif user[0].active == 0:
-            error = "You account is not activated. Please check email and confirm email to complete sign up"
+            error = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký"
         if error is None:
             session['logged'] = True
             session['cur_user'] = user[0]
@@ -134,7 +134,7 @@ def post_login(error=None):
             if user[0].active == 2:
                 return redirect('/admin/')
             return redirect('/')
-    return render_template("login.html", error=error, form=form)
+    return render_template("login.html", error=error, form=form, footer="footer")
 
 
 @auth_blueprint.route("/logout", methods=["GET"])

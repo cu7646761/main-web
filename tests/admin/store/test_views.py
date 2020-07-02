@@ -4,7 +4,7 @@ from constants import LINK_IMG_AVATAR_DEF
 from tests.test_client import FlaskClientTestCase
 
 
-class StoreViewsTestCase(FlaskClientTestCase):
+class StoreAdminViewsTestCase(FlaskClientTestCase):
 
     def test_store_admin_get(self):
         with self.client:
@@ -29,6 +29,19 @@ class StoreViewsTestCase(FlaskClientTestCase):
                                         data=json.dumps(dict(
                                             name="Cửa hàng bán xe",
                                             description="<p>hihi</p>",
+                                            image=LINK_IMG_AVATAR_DEF,
+                                            categories=["Buffet"],
+                                            address_detail="200 đường Hai Bà Trưng, Thành phố Quảng Ngãi, Tỉnh Quảng Ngãi",
+                                            image_list=[])
+                                        ), content_type='application/json', follow_redirects=True)
+            self.assertTrue(response.status, 200)
+
+    def test_store_admin_post_add_1(self):
+        with self.client:
+            response = self.client.post('/admin/store/add',
+                                        data=json.dumps(dict(
+                                            name="Cửa hàng bán xe 123",
+                                            description="<p>haha</p>",
                                             image=LINK_IMG_AVATAR_DEF,
                                             categories=["Buffet"],
                                             address_detail="200 đường Hai Bà Trưng, Thành phố Quảng Ngãi, Tỉnh Quảng Ngãi",

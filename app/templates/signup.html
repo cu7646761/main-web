@@ -49,7 +49,7 @@
 
                                         <div class="form-group">
                                             <div class="input-group mb-3">
-                                                {{ form.password(placeholder="Password", class="form-control") }}
+                                                {{ form.password(placeholder="Mật khẩu", class="form-control") }}
                                             </div>
                                         </div>
 
@@ -65,7 +65,7 @@
 
                                         <div class="form-group">
                                             <div class="input-group mb-3">
-                                                {{ form.password_confirm(placeholder="Password Confirm", class="form-control") }}
+                                                {{ form.password_confirm(placeholder="Nhập lại mật khẩu", class="form-control") }}
                                             </div>
                                         </div>
 
@@ -79,7 +79,7 @@
                                             {% endfor %}
                                         {% endif %}
 
-                                        <button type="submit" class="mb-2 btn btn-danger mr-2 w-100">Sign Up</button>
+                                        <button type="submit" class="mb-2 btn btn-danger mr-2 w-100">ĐĂNG KÝ</button>
 
                                         {% if success %}
                                             <div class="input-group mb-3">
@@ -90,27 +90,27 @@
                                                         <span aria-hidden="true">×</span>
                                                     </button>
                                                     <i class="fa fa-thumbs-up mx-2"></i>
-                                                    <strong>{{ success }} |
-                                                        <a class="text-primary" href="/login">
-                                                            Login here
-                                                        </a>
+                                                    <strong>{{ success }}
                                                     </strong>
                                                 </div>
                                             </div>
                                         {% endif %}
                                     </form>
-                                    <hr>
+                                    <a class="text-primary" href="/login">
+                                        ĐĂNG NHẬP ?
+                                    </a>
+                                    {#                                    <hr>#}
                                     {#href="{{ url_for('users.oauth_authorize', provider='facebook') }}"#}
-                                    <a class="btn btn-block btn-primary w-20 center"
-                                       id="submitFb"
-                                       target="windowfb">Sign in with Facebook</a>
+                                    {#                                    <a class="btn btn-block btn-primary w-20 center"#}
+                                    {#                                       id="submitFb"#}
+                                    {#                                       target="windowfb">Sign in with Facebook</a>#}
+                                    {#                                </div>#}
+
                                 </div>
-
                             </div>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
 
             </main>
         </div>
