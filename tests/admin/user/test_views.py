@@ -42,6 +42,21 @@ class UserAdminViewsTestCase(FlaskClientTestCase):
             response = self.client.get("/profile/district?city_id=79", follow_redirects=True)
             self.assertIn(bytes("quan_1", 'utf-8'), response.data)
 
+    def test_get_district_by_city_1(self):
+        with self.client:
+            response = self.client.get("/profile/district?city_id=79", follow_redirects=True)
+            self.assertIn(bytes("quan_3", 'utf-8'), response.data)
+
+    def test_get_district_by_city_2(self):
+        with self.client:
+            response = self.client.get("/profile/district?city_id=79", follow_redirects=True)
+            self.assertIn(bytes("quan_6", 'utf-8'), response.data)
+
+    def test_get_district_by_city_3(self):
+        with self.client:
+            response = self.client.get("/profile/district?city_id=79", follow_redirects=True)
+            self.assertIn(bytes("quan_8", 'utf-8'), response.data)
+
     def test_get_edit_user(self):
         with self.client:
             user = UserModel()
@@ -57,6 +72,19 @@ class UserAdminViewsTestCase(FlaskClientTestCase):
             url = "/admin/user-management/edit/" + str(_user.id) + "/update-basic"
             response = self.client.post(url, data=dict(
                 birthday="15/08/1998",
+                gender=0,
+                result_address="200 đường Hai Bà Trưng, Thành phố Quảng Ngãi, Tỉnh Quảng Ngãi",
+                love_cate=['Sang Trọng', 'Buffet']
+            ), follow_redirects=True)
+            self.assertIn(bytes("thành công", 'utf-8'), response.data)
+
+    def test_post_edit_user_1(self):
+        with self.client:
+            user = UserModel()
+            _user = user.find_by_email("phuongvuong1@gmail.com")[0]
+            url = "/admin/user-management/edit/" + str(_user.id) + "/update-basic"
+            response = self.client.post(url, data=dict(
+                birthday="24/06/1998",
                 gender=0,
                 result_address="200 đường Hai Bà Trưng, Thành phố Quảng Ngãi, Tỉnh Quảng Ngãi",
                 love_cate=['Sang Trọng', 'Buffet']

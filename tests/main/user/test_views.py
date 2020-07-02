@@ -27,3 +27,22 @@ class ProfileViewsTestCase(FlaskClientTestCase):
                                             love_cate="Sang Trọng"
                                         ), follow_redirects=True)
         self.assertIn(response.status, '200 OK')
+
+    def test_post_update_basic_1(self):
+        with self.client:
+            response = self.client.post('/profile/update-basic',
+                                        data=dict(
+                                            birthday="24/06/1998",
+                                            gender="0",
+                                            result_address="18 Trần Ngọc Diện, P. Thảo Điền, Quận 2"
+                                        ), follow_redirects=True)
+        self.assertIn(response.status, '200 OK')
+
+    def test_post_update_basic_2(self):
+        with self.client:
+            response = self.client.post('/profile/update-basic',
+                                        data=dict(
+                                            birthday="24/06/1998",
+                                            result_address="18 Trần Ngọc Diện, P. Thảo Điền, Quận 2"
+                                        ), follow_redirects=True)
+        self.assertIn(response.status, '200 OK')

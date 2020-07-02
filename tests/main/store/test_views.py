@@ -26,6 +26,16 @@ class StoreViewsTestCase(FlaskClientTestCase):
             ), follow_redirects=True)
             self.assertIn(bytes('Ngon lắm đấy nha hihi!', 'utf-8'), response.data)
 
+    def test_store_detail_post_cmt_1(self):
+        with self.client:
+            store = StoreModel()
+            _store = store.find_by_name('Cửa hàng 1')
+            response = self.client.post('/stores/' + str(_store.id), data=dict(
+                comment="Ngon lắm đấy",
+                star="4"
+            ), follow_redirects=True)
+            self.assertIn(bytes('Ngon lắm đấy', 'utf-8'), response.data)
+
     def test_store_get_api(self):
         with self.client:
             store = StoreModel()

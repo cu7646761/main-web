@@ -22,7 +22,7 @@ class Config:
         'flask_mongoengine.panels.MongoDebugPanel'
     )
     DEBUG_TB_INTERCEPT_REDIRECTS = False
-    ELASTICSEARCH_URL = 'https://search-bloganuong-es1-r4v3hmy24bmou3cba5bdkfetzi.ap-southeast-1.es.amazonaws.com'
+    ELASTICSEARCH_URL = 'https://search-bloganuong-es2-6dzkl36ttjgctbjass26vku7qu.ap-southeast-1.es.amazonaws.com'
 
     SESSION_TYPE = 'filesystem'
     PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
