@@ -126,6 +126,7 @@ def post_login(error=None):
         elif user[0].active == 0:
             error = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký"
         if error is None:
+            session.permanent = True
             session['logged'] = True
             session['cur_user'] = user[0]
             session['search'] = ""
