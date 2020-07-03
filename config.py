@@ -25,9 +25,7 @@ class Config:
     ELASTICSEARCH_URL = 'https://search-bloganuong-es2-6dzkl36ttjgctbjass26vku7qu.ap-southeast-1.es.amazonaws.com'
 
     SESSION_TYPE = 'filesystem'
-    PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
-    # The maximum number of items the session stores
-    # before it starts deleting some, default 500
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     SESSION_FILE_THRESHOLD = 100
 
     @staticmethod
