@@ -149,8 +149,6 @@ def full_text_admin_user():
     return render_template('admin/user-management.html', search_obj=list_user, form=form, user=session['cur_user'],
                            user_active="active", total_pages=total_pages, count=user.count())
 
-    if session['logged'] == True:
-        session['search'] += form.q.data + " , "
 
 @search_blueprint.route('/suggestion-user', methods=['POST'])
 @login_required
