@@ -553,9 +553,37 @@ def get_comment_data():
     # comments_good_test = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:10000]
     comments_bad = CommentModel().objects(Q(star_num__lte=2) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
     comments_temp = CommentModel().objects(Q(star_num__exact=3) & Q(detail__ne='') & Q(detail__ne=None))[:500]
+    df = pandas.read_csv("Reviews.csv", usecols = ['Text', 'Score'])
+    document = df.values
+
     with open('testset_sentiment.csv', mode='w') as f:
         f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         f_writer.writerow(['split','text', 'score'])
+
+        for s,t in document:
+            # print(s)
+            raw = t
+            text = raw.lower()
+            text = text.replace('\"','')
+            cleaned = re.sub(r"[^(a-zA-Z')\s]",'', text)
+            tokenized = word_tokenize(cleaned)
+            allowed_word_types = ["J", "V", "R"]
+            pos = nltk.pos_tag(tokenized)
+            print(pos)
+            text_input = ""
+            for w in pos:
+                if w[1][0] in allowed_word_types:
+                    # all_words.append(w[0])
+                    text_input += w[0] + " "
+            score = s
+            if score in (1,2,3):
+                f_writer.writerow(['UNASSIGNED', text_input , 0])
+            # elif score==3:
+            #     f_writer.writerow([text_input , 1])
+            elif score==5:
+                f_writer.writerow(['UNASSIGNED', text_input , 2])
+            print([text_input, score])
+
         for comment in comments_good:
             if comment.detail:
                 raw_text = comment.detail
@@ -565,7 +593,7 @@ def get_comment_data():
                 text = raw_text.lower()
                 input = text.replace('\"','')
                 print(input)
-                f_writer.writerow(['TEST',input, 2])
+                f_writer.writerow(['UNASSIGNED',input, 2])
         for comment in comments_bad:
             if comment.detail:
                 raw_text = comment.detail
@@ -574,7 +602,7 @@ def get_comment_data():
                     raw_text = raw_text.split('(Original)')[0]
                 text = raw_text.lower()
                 text = text.replace('\"','')
-                f_writer.writerow(['TEST',text, 0])
+                f_writer.writerow(['UNASSIGNED',text, 0])
         for comment in comments_temp:
             if comment.detail:
                 raw_text = comment.detail
@@ -583,7 +611,7 @@ def get_comment_data():
                     raw_text = raw_text.split('(Original)')[0]
                 text = raw_text.lower()
                 text = text.replace('\"','')
-                f_writer.writerow(['TEST',text, 1])
+                f_writer.writerow(['UNASSIGNED',text, 1])
         # df = pandas.read_csv("train.tsv", usecols = ['Phrase', 'Sentiment'], sep="\t")
         # document = df.values
         # for record in document:
@@ -592,7 +620,7 @@ def get_comment_data():
         #     text = text.replace('\"','')
 
         pos_dict = {
-            'good':3, 'best':3, 'yummy':3, 'clean':1, 'nice':3, 'beautiful':4, 'ok':1, 'oke':1, 'love':1, 'like':1,
+            'good':3, 'best':3, 'yummy':3, 'clean':1, 'nice':3, 'beautiful':4, 'ok':1, 'oke':1  , 'love':1, 'like':1,
             'polite':1, 'awesome':1, 'happy':1, 'great':1, 'perfect':1, 'delicious':3, 'well':1, 'cool':1, 'appreciate':1,
             'cozy':1, 'lovely':1, ' reasonably':1, 'cheap':1, 'fast':1 ,'tasty':1, 'affordable':1, 'attractive':1, 'cute':1,
             'pretty':3, "vibe":1, "dedicated":1, 'quiet':1, 'convenient':1, 'exciting':1, 'excited':1, 'amazing':1, 'enjoy':1,
@@ -627,27 +655,27 @@ def get_comment_data():
         for k,v in pos_dict.items():
             for i in range(v):
                 choice.append(k)
-            f_writer.writerow(['UNASSIGNED', k, 2])
-        for i in range(60000):
+            f_writer.writerow(['TRAIN', k, 2])
+        for i in range(6000):
             sentence = random.randint(2, 20)
             text = ""
             for j in range(sentence):
                 temp = random.choice(choice)
                 noise = random.choice(list(neutrals.keys()))
                 text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
-            f_writer.writerow(['UNASSIGNED', text, 2])
+            f_writer.writerow(['TRAIN', text, 2])
             print([text, 2])
-        for i in range(5000):
+        for i in range(500):
             sentence = random.randint(2, 20)
             text = ""
             for j in range(sentence):
                 temp = random.choice(choice)
                 noise = random.choice(list(neutrals.keys()))
                 text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
-            f_writer.writerow(['TEST', text, 2])
+            f_writer.writerow(['TRAIN', text, 2])
             print([text, 2])
         # negative pos
-        for i in range(2000):
+        for i in range(500):
             for k,v in neg_words.items():
                 temp = random.choice(choice)
                 noise3 = random.choice(list(neutrals.keys()))
@@ -659,35 +687,35 @@ def get_comment_data():
                     text += noise + " "
                 
                 text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
-                f_writer.writerow(['UNASSIGNED', text, 0])
+                f_writer.writerow(['TRAIN', text, 0])
                 print([text, 0])
         # bad sentiment
         choice = []
         for k,v in neg_dict.items():
             for i in range(v):
                 choice.append(k)
-            f_writer.writerow(['UNASSIGNED', k, 0])
-        for i in range(60000):
+            f_writer.writerow(['TRAIN', k, 0])
+        for i in range(6000):
             sentence = random.randint(2, 20)
             text = ""
             for j in range(sentence):
                 temp = random.choice(choice)
                 noise = random.choice(list(neutrals.keys()))
                 text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
-            f_writer.writerow(['UNASSIGNED', text, 0])
+            f_writer.writerow(['TRAIN', text, 0])
             print([text, 0])
 
-        for i in range(5000):
+        for i in range(500):
             sentence = random.randint(2, 20)
             text = ""
             for j in range(sentence):
                 temp = random.choice(choice)
                 noise = random.choice(list(neutrals.keys()))
                 text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
-            f_writer.writerow(['TEST', text, 0])
+            f_writer.writerow(['TRAIN', text, 0])
             print([text, 0])
         # negative neg
-        for i in range(2000):
+        for i in range(500):
             for k,v in neg_words.items():
                 temp = random.choice(choice)
                 noise3 = random.choice(list(neutrals.keys()))
@@ -698,18 +726,18 @@ def get_comment_data():
                     noise = random.choice(list(neutrals.keys()))
                     text += noise + " "
                 text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
-                f_writer.writerow(['UNASSIGNED', text, 1])
+                f_writer.writerow(['TRAIN', text, 1])
                 print([text, 1])
         # temp sentiment
         choice = []
         for k,v in temp_dict.items():
-            f_writer.writerow(['UNASSIGNED', k, 1])
+            f_writer.writerow(['TRAIN', k, 1])
             for i in range(v):
                 choice.append(k)
         for k,v in neutrals.items():
             choice.append(k)
 
-        for i in range(60000):
+        for i in range(10000):
             sentence = random.randint(2, 20)
             text = ""
             for j in range(sentence):
@@ -726,10 +754,10 @@ def get_comment_data():
                 temp = random.choice(choice)
                 noise = random.choice(list(neutrals.keys()))
                 text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
-            f_writer.writerow(['TEST', text, 1])
+            f_writer.writerow(['UNASSIGNED', text, 1])
             print([text, 1])
         # negative temp
-        for i in range(2000):
+        for i in range(500):
             for k,v in neg_words.items():
                 temp = random.choice(choice)
                 noise3 = random.choice(list(neutrals.keys()))
@@ -741,7 +769,7 @@ def get_comment_data():
                     text += noise + " "
                 
                 text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
-                f_writer.writerow(['UNASSIGNED', text, 0])
+                f_writer.writerow(['TRAIN', text, 0])
                 print([text, 0])
     f.close()
 
