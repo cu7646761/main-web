@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import redirect, render_template, Blueprint, session, request
 
-from app.main.auth.forms import LoginForm, SignupForm
+from app.main.auth.forms import LoginForm, SignupForm, EmailForm, ResetForm
 from app.model.auth import UserModel
 from app.model.store import StoreModel
 from app.main.search.forms import SearchForm
@@ -153,10 +153,79 @@ def home(form=None):
     store = StoreModel().find_by_id
     return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
+
+@auth_blueprint.route('/forget-password', methods=['GET', 'POST'])
+def forget_password(form=None):
+    form = EmailForm()
+    if form.validate_on_submit():
+        _user = UserModel()
+        email = request.form.get("email", "")
+        user = _user.find_by_email(email)
+        if len(user) == 0:
+            error = "Email không chính xác"
+            return render_template("forget-password.html", form=form, error=error, footer="footer")
+        try:
+            url = str(SERVER_NAME) + "/reset-password/user_id=" + str(user[0].id)
+            message = "Bạn đã yêu cầu reset mật khẩu trong hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất reset mật khẩu, xin bạn hãy truy cập vào đường link sau:" + url
+            res = send_email(subject="Xác nhận reset mật khẩu BlogAnUong",
+                             html_content=message,
+                             recipients=str(email))
+            return render_template("forget-password.html", form=form, success="Vui lòng kiểm tra email để lấy lại mật khẩu.", footer="footer")
+        except Exception as e:
+            print(str(e))
+    return render_template("forget-password.html", form=form, footer="footer")
+
+
+@auth_blueprint.route('/reset-password/<string:user_id>', methods=['GET', 'POST'])
+def reset_password(form=None, user_id=None):
+    print(user_id)
+    form = ResetForm()
+    _id = user_id.split("=")[1]
+    if form.validate_on_submit():
+        user = UserModel()
+        password = request.form.get("password", "")
+        password_confirm = request.form.get("password_confirm", "")
+        if not password:
+            error = "Vui lòng nhập mật khẩu"
+        elif password != password_confirm:
+            error = "Mật khẩu lặp lại không đúng"
+        if error is None:
+            hashed_passwd = Utils.hash_password(password_confirm)
+            new_user, error = user.update_psw(email, hashed_passwd.decode())
+            if error:
+                return render_template('reset-password.html', error=error, success=None, form=form, footer="footer")
+            return render_template('reset-password.html',
+                                   success="Tài khoản đã được đổi mật khẩu thành công",
+                                   form=form, footer="footer")
+    return render_template("reset-password.html", form=form, footer="footer")
+
+@auth_blueprint.route('/reset-password', methods=['POST'])
+def post_reset_password(form=None, user_id=None):
+    form = ResetForm()
+    user = UserModel()
+    user_id = request.form.get("user_id", "")
+    email = user.find_by_id(user_id)
+    password = request.form.get("password", "")
+    password_confirm = request.form.get("password_confirm", "")
+    if not password:
+        error = "Vui lòng nhập mật khẩu"
+    elif password != password_confirm:
+        error = "Mật khẩu lặp lại không đúng"
+    if error is None:
+        hashed_passwd = Utils.hash_password(password_confirm)
+        new_user, error = user.update_psw(email, hashed_passwd.decode())
+        if error:
+            return render_template('reset-password.html', error=error, success=None, form=form, footer="footer")
+        return render_template('reset-password.html',
+                               success="Tài khoản đã được đổi mật khẩu thành công",
+                               form=form, footer="footer")
+
+
 @auth_blueprint.route('/about-us', methods=['GET'])
 @login_required
 def about_us(form=None):
     return render_template("about-us.html", user=session['cur_user'])
+
 
 @auth_blueprint.route('/contact-us', methods=['GET'])
 @login_required
@@ -187,7 +256,7 @@ def load_predict_cate():
             res_dict = {}
             rs_list = session['recommendation'].items()
             print(rs_list)
-            for k,v in rs_list:
+            for k, v in rs_list:
                 res_dict[k] = CATE_LIST[k]
             # res_dict = {k: v for k, v in sorted(res_dict.items(), key=lambda item: item[1], reverse=True)}
             res = make_response(jsonify(res_dict), 201)
