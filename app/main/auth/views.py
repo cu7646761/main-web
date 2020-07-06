@@ -176,35 +176,19 @@ def forget_password(form=None):
     return render_template("forget-password.html", form=form, footer="footer")
 
 
-@auth_blueprint.route('/reset-password/<string:user_id>', methods=['GET', 'POST'])
+@auth_blueprint.route('/reset-password/<string:user_id>', methods=['GET'])
 def reset_password(form=None, user_id=None):
     print(user_id)
     form = ResetForm()
     _id = user_id.split("=")[1]
-    if form.validate_on_submit():
-        user = UserModel()
-        password = request.form.get("password", "")
-        password_confirm = request.form.get("password_confirm", "")
-        if not password:
-            error = "Vui lòng nhập mật khẩu"
-        elif password != password_confirm:
-            error = "Mật khẩu lặp lại không đúng"
-        if error is None:
-            hashed_passwd = Utils.hash_password(password_confirm)
-            new_user, error = user.update_psw(email, hashed_passwd.decode())
-            if error:
-                return render_template('reset-password.html', error=error, success=None, form=form, footer="footer")
-            return render_template('reset-password.html',
-                                   success="Tài khoản đã được đổi mật khẩu thành công",
-                                   form=form, footer="footer")
-    return render_template("reset-password.html", form=form, footer="footer")
+    return render_template("reset-password.html", form=form, user_id=_id, footer="footer")
 
 @auth_blueprint.route('/reset-password', methods=['POST'])
-def post_reset_password(form=None, user_id=None):
+def post_reset_password(form=None, user_id=None, error=None):
     form = ResetForm()
     user = UserModel()
     user_id = request.form.get("user_id", "")
-    email = user.find_by_id(user_id)
+    email = user.find_by_id(user_id)[0].email
     password = request.form.get("password", "")
     password_confirm = request.form.get("password_confirm", "")
     if not password:
@@ -215,10 +199,10 @@ def post_reset_password(form=None, user_id=None):
         hashed_passwd = Utils.hash_password(password_confirm)
         new_user, error = user.update_psw(email, hashed_passwd.decode())
         if error:
-            return render_template('reset-password.html', error=error, success=None, form=form, footer="footer")
-        return render_template('reset-password.html',
-                               success="Tài khoản đã được đổi mật khẩu thành công",
-                               form=form, footer="footer")
+            return render_template('reset-password.html', error=error, form=form, footer="footer", user_id=user_id)
+        return render_template('reset-password.html', success="Tài khoản đã được đổi mật khẩu thành công", form=form,
+                               footer="footer", user_id=user_id)
+    return render_template('reset-password.html', error=error, form=form, footer="footer", user_id=user_id)
 
 
 @auth_blueprint.route('/about-us', methods=['GET'])
