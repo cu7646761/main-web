@@ -257,7 +257,7 @@
                                 <div class="customer-review_wrap">
                                     <div class="customer-img" id = "show-comment-user">
                                     </div>
-                                    
+                                    <p id="show-date"></p>
                                     <div class="customer-content-wrap">
                                         <div class="customer-content">
                                             <div class="customer-review">
@@ -576,6 +576,12 @@ function loadItems() {
                 template_clone.querySelector("#star-num").innerHTML = data[i].star_num;
                 template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].star_num} sao.`;
                 template_clone.querySelector("#show-star-user").innerHTML = userStar;
+                let date = new Date(data[i].updated_on.$date)
+                let strDate = date.getUTCFullYear().toString() + "/" +
+                    (date.getUTCMonth() + 1).toString() +
+                    "/" + date.getUTCDate() + " " + date.getUTCHours() +
+                    ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds();
+                template_clone.querySelector("#show-date").innerHTML = strDate;
                 template_clone.querySelector("#show-comment-user").innerHTML = showUser;
 
                 // Append template to dom

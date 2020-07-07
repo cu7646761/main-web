@@ -6,6 +6,7 @@ from google.cloud import translate
 from app.model.comment import CommentModel
 import nltk,re
 import pandas
+import datetime, time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from mongoengine.queryset.visitor import Q
@@ -1499,17 +1500,25 @@ def create_comment_data():
     return jsonify({})
 
 
-# @analyze_blueprint.route("/reset-sentiment-store17273747", methods=["GET", "POST"])
-# def reset_sentiment_store():
-#     all_stores = StoreModel().query_all()
-#     # all_comments = CommentModel().query_all()
-    
-#     for store in all_stores:
-#         # if store.score_sentiment:
-#         #     continue
-#         # cmts = CommentModel().find_by_store_id(store.id)
-#         store.update(set__score_sentiment=None)
-#     return jsonify({})
+@analyze_blueprint.route("/make-time-late17273747", methods=["GET", "POST"])
+def reset_sentiment_store():
+    all_stores = StoreModel().query_all()
+    i =0
+    for store in all_stores:
+        i+=1
+        all_comments = CommentModel().find_by_store_id(store.id)
+        for comment in all_comments:
+            past = comment.updated_on
+            p = time.mktime(past.timetuple())
+            now = datetime.datetime.now()
+            n = time.mktime(now.timetuple())
+            if comment.detail and comment.detail != "": 
+                if n - p > 172800:
+                    comment.update(set__sync_time=True, set__updated_on=now)
+                    print(comment.detail)
+        print(store.name)
+        print(i)
+    return jsonify({})
 
 def sample_translate_text(text, target_language, project_id):
     """

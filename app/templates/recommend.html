@@ -23,17 +23,15 @@
 </script>
 <script>
     function loadPredictCate(){
-        console.log("bame")
         fetch(`/load-predict-cate`).then((response) => {
             response.json().then(function(data) {
                 if (response.status == 201){
                     openForm()
-                    key = Object.keys(data)[1]
-                    value = data[key] 
+                    // key = Object.keys(data)[1]
+                    value = data[1] 
                     document.getElementById("recommend-text").innerHTML += value + " ?"
-                    document.getElementById("btn-recommend").setAttribute('href', `/reset-rec?rp=${key}`)
-                    console.log(key)
-                    console.log(Object.keys(data)[1])
+                    document.getElementById("btn-recommend").setAttribute('href', `/reset-rec?rp=${data[0]}`)
+                    console.log(data[0])
                 }
             })
         })

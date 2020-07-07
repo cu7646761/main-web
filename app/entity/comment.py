@@ -25,6 +25,7 @@ class Comment(Document, SearchableMixin):
 
     created_at = DateTimeField(default=datetime.datetime.now())
     updated_on = DateTimeField(default=None)
+    sync_time = BooleanField()
 
     meta = {'allow_inheritance': True,
             'ordering': ['-updated_on']}
