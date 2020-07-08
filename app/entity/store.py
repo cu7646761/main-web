@@ -42,7 +42,8 @@ class Store(Document, SearchableMixin):
     # entity_sentiment = DictField()
     position = DictField(default={})
     category_predict = StringField(default="")
-
+    lat = FloatField(default=None)
+    lng = FloatField(default=None)
     created_at = DateTimeField(default=datetime.datetime.now())
     updated_on = DateTimeField(default=None)
     deleted_at = DateTimeField(default=None)

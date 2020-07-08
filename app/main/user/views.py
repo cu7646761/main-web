@@ -163,7 +163,7 @@ def update_basic(error=None, form=None):
     except:
         pass
     if current_user.address_id:
-        res, err = address.update(current_user.address_id, res_address, district, latitude, longtitude)
+        res, err = address.update(current_user.address_id.id, res_address, district, latitude, longtitude)
     else:
         res, err = address.create(current_user.id, res_address, district, latitude, longtitude)
     if err:

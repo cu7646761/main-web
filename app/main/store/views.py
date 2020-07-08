@@ -65,7 +65,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     # page = request.args.get('page', 1, type=int)
     # comments, pages = CommentModel().query_paginate_sort(page)
     # datas = []
-    # for comment in comments:
+    # for comment in comments:e 'stores' referenced before
     #     if (str(store_id) == str(comment.store_id)):
     #         datas += [{
     #             "detail": comment.detail,
@@ -336,6 +336,7 @@ def stores():
     cate_predict_filter = request.args.get('cate_predict', '', type=str)
     star_filter = request.args.get('star', '', type=str)
     quality_filter = request.args.get('quality', '', type=str)
+    distance_filter = request.args.get('quality', '', type=str)
 
     if request.method == 'POST':
         categories_filter = ""
@@ -349,6 +350,8 @@ def stores():
         quality_filter = quality
         level = request.form.get("level")
         level_filter = level
+        distance = request.form.get("distance")
+        distance_filter = distance
 
 
     filter = {
@@ -358,6 +361,7 @@ def stores():
         "cate_predict": cate_predict_filter,
         "star": star_filter,
         "quality": quality_filter,
+        "distance": distance_filter
     }
 
     # add param
@@ -392,7 +396,8 @@ def stores():
         "level": level_filter,
         "address": {},
         "star": star_filter,
-        "quality": quality_filter
+        "quality": quality_filter,
+        "distance": distance_filter
     }
     for cate in all_cates:
         selected_dics["cates"][cate.name_link] = False

@@ -1520,6 +1520,21 @@ def reset_sentiment_store():
         print(i)
     return jsonify({})
 
+
+@analyze_blueprint.route("/make-address17273747", methods=["GET", "POST"])
+def make_address():
+    all_stores = StoreModel().query_all()
+    i =0
+    for store in all_stores:
+        i+=1
+        lat = float(store.position['lat'])
+        lng = float(store.position['lng'])
+        store.update(set__lat=lat, set__lng=lng)
+        print(store.name)
+        print(i)
+    return jsonify({})
+
+
 def sample_translate_text(text, target_language, project_id):
     """
     Translating Text

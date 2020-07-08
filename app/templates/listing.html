@@ -8,12 +8,41 @@
                     <form method="POST" action="/stores/">
                     <div class="row detail-filter-wrap">
                         
-                            <div class="col-md-3 featured-responsive">
+                            <div class="col-md-4 featured-responsive">
                                 <div class="detail-filter-text">
                                     <p>LỌC KẾT QUẢ</p>
                                 </div>
                             </div>
-                            <div class="col-md-4 featured-responsive">
+                            <div class="col-md-2 featured-responsive">
+                                <div class="detail-filter">
+                                    <p>Khoảng cách</p>
+                                    <select name="distance" class="custom-select">
+                                        <option class="star-filter" value="">Endless</option>
+                                        {% if selected_dics["distance"]=='1' %}
+                                        <option class="star-filter" value=1 selected='selected'>1 km</option>
+                                        {% else %}
+                                        <option class="star-filter" value=1>1 km</option>
+                                        {%endif%}
+
+                                        {% if selected_dics["distance"]=='5' %}
+                                        <option class="star-filter" value=5 selected='selected'>5 km</option>
+                                        {% else %}
+                                        <option class="star-filter" value=5>5 km</option>
+                                        {%endif%}
+
+                                        {% if selected_dics["distance"]=='10' %}
+                                        <option class="star-filter" value=10 selected='selected'>10 km</option>
+                                        {% else %}
+                                        <option class="star-filter" value=10>10 km</option>
+                                        {%endif%}
+
+                                        <!-- <option class="star-filter" value=5>5 km</option>
+                                        <option class="star-filter" value=10>10 km</option> -->
+                                        
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 featured-responsive">
                                 <div class="detail-filter">
                                     <p>Độ phổ biến</p>
                                     <select name="level" class="custom-select">
@@ -29,7 +58,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3 featured-responsive">
+                            <div class="col-md-2 featured-responsive">
                                 <div class="detail-filter">
                                     <p>Chất lượng</p>
                                     <select name="quality" class="custom-select">
@@ -48,7 +77,7 @@
                                 </div>
                             </div>
                         
-                            <div class="col-md-2 featured-responsive">
+                            <div class="col-md-1 featured-responsive">
                                 <div class="detail-filter">
                                     <p>Số sao</p>
                                     <select name="star" class="custom-select">

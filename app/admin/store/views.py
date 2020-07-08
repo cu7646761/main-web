@@ -147,7 +147,7 @@ def _store(form=None):
 
         image_list.append(image)
         res, err = StoreModel.create(name, description, image_list, list_obj_cate, address_id, position, name_translate,
-                                     category_predict, cate_predict_rs, min_price, max_price)
+                                     category_predict, cate_predict_rs, min_price, max_price, float(latitude), float(longtitude))
         if err:
             return redirect('/admin/store/add/')
         return Response(json.dumps({"success": "yes"}), 200)
@@ -195,13 +195,18 @@ def edit__store(form=None, store_id=None):
         geocode_result = gmaps.geocode(address_detail)
         latitude = geocode_result[0].get('geometry').get('location').get('lat')
         longtitude = geocode_result[0].get('geometry').get('location').get('lng')
+        position = {
+            "lat": latitude,
+            "lng": longtitude
+        }
 
         res_address, err = AddressModel.update(store_detail.address_id.id, address_detail, address_district,
                                                str(latitude), str(longtitude))
         if err:
             return redirect('/admin/store/edit/' + store_id)
         image_list.append(thumbnail)
-        res, err = StoreModel.update(name, description, image_list, list_obj_cate, store_id, res_address, min_price, max_price)
+        res, err = StoreModel.update(name, description, image_list, list_obj_cate, store_id, res_address, min_price, max_price, position,
+                                    float(latitude), float(longtitude))
         if err:
             return redirect('/admin/store/edit/' + store_id)
         return Response(json.dumps({"success": "yes"}), 200)

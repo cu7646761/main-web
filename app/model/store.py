@@ -4,6 +4,9 @@ from constants import Pages
 from constants import PRED_LIST, CLASS_LIST, PRED_LIST2
 from mongoengine.queryset.visitor import Q
 from app.model.category import CategoryModel
+from app.model.address import AddressModel
+from flask import session
+from utils import Utils
 
 
 class StoreModel(StoreEntity):
@@ -43,6 +46,8 @@ class StoreModel(StoreEntity):
                 star = float(value)
             elif key == "quality" and value != "" and value != 'None':
                 quality = int(value)
+            elif key == "distance" and value != "":
+                dis = float(value)
         
         stores_sorted = self.objects
 
@@ -57,7 +62,7 @@ class StoreModel(StoreEntity):
         #     elif level == 28:
         #         stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
         
-
+            
 
         if classify:
             stores_sorted = stores_sorted.filter(classifications=classify)
@@ -104,6 +109,47 @@ class StoreModel(StoreEntity):
             stores_sorted = stores_sorted.order_by("score_sentiment")
         else:
             stores_sorted = stores_sorted.order_by("-score_sentiment")
+        
+        if dis:
+            # ssd = stores_sorted
+            # store_sastified = []
+            if dis == 1:
+                R_lat = dis/110.6
+                R_lng = dis/108
+            elif dis == 5:
+                R_lat = dis/110.8
+                R_lng = dis/108.3
+            elif dis == 10:
+                R_lat = dis/111
+                R_lng = dis/108.5
+            if session['pos'] is not None:
+                print("aa")
+                lat_u = float(session['pos'].get('lat'))    
+                lon_u = float(session['pos'].get('lng'))
+            else:
+                current_user = session['cur_user']
+                if current_user.address_id:
+                    userAddress = AddressModel().find_by_id(current_user.address_id.id)
+                    lat_u = float(userAddress[0].latitude)
+                    lon_u = float(userAddress[0].longtitude)
+
+            stores_sorted = stores_sorted.filter(Q(lat__lt=lat_u+R_lat) & Q(lat__gt=lat_u-R_lat) & Q(lng__lt=lon_u+R_lng) & Q(lng__gt=lon_u-R_lng))
+            # print(lat_u+dis)
+            # address_stores_filter = address_stores.filter()
+            # print(address_stores_filter)
+            print(stores_sorted.count())
+            # for store in ssd:
+            #     lat_s = float(store.address_id.latitude)
+            #     lon_s = float(store.address_id.longtitude)
+            #     if session['pos'] is not None:
+            #         lat_u = float(session['pos'].get('lat'))
+            #         lon_u = float(session['pos'].get('lng'))
+            #     d = Utils.getDistanceFromLatLonInKm(lat_s, lon_s, lat_u, lon_u)
+            #     if d < dis:
+            #         store_sastified.append(store.id)
+            # stores_sorted = stores_sorted.filter(id__in=store_sastified)
+                
+
         # num = len(stores_sorted)
         num = 0
         stores = Pagination(stores_sorted, int(page), int(Pages['NUMBER_PER_PAGE']))
@@ -154,13 +200,13 @@ class StoreModel(StoreEntity):
 
     @classmethod
     def create(cls, name, description, link_image, categories_id, address_id, position, name_translate,
-               category_predict, type_store, min_price, max_price):
+               category_predict, type_store, min_price, max_price, lat, lng):
         try:
             store = StoreEntity(name=name, description=description, link_image=link_image,
                                 categories_id=categories_id, address_id=address_id, position=position,
                                 name_translate=name_translate,
                                 category_predict=category_predict, type_store=type_store,
-                                min_price=min_price, max_price=max_price).save()
+                                min_price=min_price, max_price=max_price, lat=lat, lng=lng).save()
             StoreEntity.add_to_index_into_table(store)
             return True, None
         except Exception as e:
@@ -173,7 +219,7 @@ class StoreModel(StoreEntity):
         return self.objects.order_by("created_at")
 
     @classmethod
-    def update(cls, name, description, link_image, categories_id, store_id, address_id, min_price, max_price):
+    def update(cls, name, description, link_image, categories_id, store_id, address_id, min_price, max_price, position, lat, lng):
         try:
             store = StoreEntity.objects(id=store_id).get()
             store.description = description
@@ -182,6 +228,9 @@ class StoreModel(StoreEntity):
             store.categories_id = categories_id
             store.min_price = min_price
             store.max_price = max_price
+            store.position = position
+            store.lat = lat
+            store.lng = lng
             store.save()
             return True, None
         except Exception as e:
@@ -196,3 +245,4 @@ class StoreModel(StoreEntity):
             return store, None
         except Exception as e:
             return None, e.__str__()
+    
