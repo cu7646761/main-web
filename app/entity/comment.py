@@ -22,6 +22,7 @@ class Comment(Document, SearchableMixin):
     star_num = IntField()
     cus_name = StringField(max_length=255)
     sentiment_dict = DictField()
+    sync_time = BooleanField()
 
     created_at = DateTimeField(default=datetime.datetime.now())
     updated_on = DateTimeField(default=None)
