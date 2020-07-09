@@ -33,6 +33,7 @@ store_blueprint = Blueprint(
 @store_blueprint.route("/stores/<string:store_id>", methods=["GET", "POST"])
 @login_required
 def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
+    print(session['pos'])
     if form is None:
         form = AddCommentForm()
     # form = StoreForm()

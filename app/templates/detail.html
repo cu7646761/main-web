@@ -687,9 +687,9 @@ function loadItems() {
                 document.getElementById("show-reviewRec").innerHTML = reviewRec;
                 document.getElementById("show-storeRec").innerHTML = storeRec;
                 document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
-                document.getElementById("show-classifyRec").innerHTML = classifyRec;
+                document.getElementById("show-classifyRec").innerHTML = Math.round((classifyRec+1)*5*100)/100;
                 document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
-                document.getElementById("show-classifyCur").innerHTML = classifyCur;
+                document.getElementById("show-classifyCur").innerHTML = Math.round((classifyCur+1)*5*100)/100;
             }
             )
         })

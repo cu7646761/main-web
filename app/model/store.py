@@ -62,15 +62,6 @@ class StoreModel(StoreEntity):
         #     elif level == 28:
         #         stores_sorted = stores_sorted.filter(classification__gt=level - 3.5)
         
-            
-
-        if classify:
-            stores_sorted = stores_sorted.filter(classifications=classify)
-
-        if categories:
-            cates = [CategoryModel().objects(name_link__exact=cate)[0].id for cate in categories]
-            stores_sorted = stores_sorted.filter(categories_id__in=cates)
-
         if classify:
             stores_sorted = stores_sorted.filter(classifications=classify)
 
@@ -127,11 +118,15 @@ class StoreModel(StoreEntity):
                 lat_u = float(session['pos'].get('lat'))    
                 lon_u = float(session['pos'].get('lng'))
             else:
+                print(session["pos"])
                 current_user = session['cur_user']
                 if current_user.address_id:
                     userAddress = AddressModel().find_by_id(current_user.address_id.id)
                     lat_u = float(userAddress[0].latitude)
                     lon_u = float(userAddress[0].longtitude)
+                else:
+                    lat_u = 10.7733796 
+                    lon_u = 106.6584253,17
 
             stores_sorted = stores_sorted.filter(Q(lat__lt=lat_u+R_lat) & Q(lat__gt=lat_u-R_lat) & Q(lng__lt=lon_u+R_lng) & Q(lng__gt=lon_u-R_lng))
             # print(lat_u+dis)

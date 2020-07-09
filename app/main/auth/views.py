@@ -294,5 +294,6 @@ def load_geolocation():
             "lng": request.args.get("lng")
         }
         session["pos"] = pos
+        print(session['pos'])
     res = make_response(jsonify({"message": "OK"}), 200)
     return res
