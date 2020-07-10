@@ -48,6 +48,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     current_user = None
     userAddress = None
     error = None
+    comment = None
     try:
         if session['logged'] == True:
             current_user = session['cur_user']
@@ -78,7 +79,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
         commentModel = CommentModel()
         if form.validate_on_submit():
             name = request.form.get("name", "")
-            comment = request.form.get("comment", "")
+            comment = request.form.get("comment", None)
             star = request.form.get("star", "")
             if not star:
                 error = "Star is required"
@@ -90,64 +91,70 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             if error is None:
 
                 if current_user:
-                    new_comment, error = CommentModel.create(store_id, comment, star, current_user.id)
+                    new_comment, error = commentModel.create(store_id, comment, star, current_user.id)
                     
                 else:
-                    new_comment, error = CommentModel.create(store_id, comment, star, None)
+                    new_comment, error = commentModel.create(store_id, comment, star, None)
                 if error:
                     return render_template('detail.html', store=store[0], category=category, address=address,
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
                                            current_user=current_user, form=form, error=error, user=current_user,
                                            entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
-                if comment !="":
-                    text_tsl = Utils.sample_translate_text(comment, "en-US", "britcat3")
-                    text = text_tsl.translations[0].translated_text.lower()
-                    sentences = text.split(".")
-                    score_list = []
-                    et_dict = dict(store[0].entity_score)
-                    for sentence in sentences:
-                        if sentence == "":
-                            continue
-                        sc = Utils.predict_sentiment_online(sentence)
-                        cleaned = re.sub(r"[^(a-zA-Z')\s]",'', sentence)
-                        tokenize = word_tokenize(cleaned)
-                        pos = nltk.pos_tag(tokenize)
-                        allow_type = ["N"]
-                        all_words = []
-                        for w in pos:
-                            if w[1][0] in allow_type:
-                                all_words.append(w[0])
-                        
-                        for word in all_words:
-                            if word == "i":
-                                continue
-                            uword = word.upper()
-
-                            if not et_dict.get(uword, False):
-                                et_dict[uword] = {
-                                    "quantity": 1,
-                                    "sentiment": sc
-                                }
-                            else:
-                                et_dict[uword] = {
-                                    "quantity": et_dict[uword]["quantity"]+1,
-                                    "sentiment": et_dict[uword]["sentiment"]+sc               
-                                }
-                        score_list.append(sc)
-                    score = sum(score_list)/len(score_list)
-                    review_list = CommentModel().find_by_store_id(store_id)
-                    quant_comment = review_list.filter(Q(detail__ne=None)&Q(detail__ne=""))
-                    score_sentiment = (store[0].score_sentiment*(quant_comment.count()-1) + score)/quant_comment.count()
-                    store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
+                if comment is not None:
+                    comment = new_comment
                     # score = Utils.predict_sentiment_score(text)
-                    # print(aka)
-                # return redirect(request.url)
 
     return render_template('detail.html', store=store[0], category=category, address=address,
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form, error=error
-                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
+                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted, comment=comment)
+
+
+@store_blueprint.route("/load-analyze-comment/<string:store_id>/<string:comment>")
+def load_analyze_comment(store_id, comment):
+    store = StoreModel().find_by_id(store_id)
+    cur_comment = CommentModel().find_by_id(comment)[0]
+    text_tsl = Utils.sample_translate_text(cur_comment.detail, "en-US", "britcat3")
+    text = text_tsl.translations[0].translated_text.lower()
+    sentences = re.split(",|\.|but", text)
+    score_list = []
+    et_dict = dict(store[0].entity_score)
+    for sentence in sentences:
+        if sentence == "":
+            continue
+        sc = Utils.predict_sentiment_online(sentence)
+        cleaned = re.sub(r"[^(a-zA-Z')\s]",'', sentence)
+        tokenize = word_tokenize(cleaned)
+        pos = nltk.pos_tag(tokenize)
+        allow_type = ["N"]
+        all_words = []
+        for w in pos:
+            if w[1][0] in allow_type:
+                all_words.append(w[0])
+        
+        for word in all_words:
+            if word == "i":
+                continue
+            uword = word.upper()
+
+            if not et_dict.get(uword, False):
+                et_dict[uword] = {
+                    "quantity": 1,
+                    "sentiment": sc
+                }
+            else:
+                et_dict[uword] = {
+                    "quantity": et_dict[uword]["quantity"]+1,
+                    "sentiment": et_dict[uword]["sentiment"]+sc               
+                }
+        score_list.append(sc)
+    score = sum(score_list)/len(score_list)
+    review_list = CommentModel().find_by_store_id(store_id)
+    quant_comment = review_list.filter(Q(detail__ne=None)&Q(detail__ne=""))
+    score_sentiment = (store[0].score_sentiment*(quant_comment.count()-1) + score)/quant_comment.count()
+    store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
+    return make_response(jsonify({}), 200)
 
 
 @store_blueprint.route("/load-relative-store/<string:store_id>")

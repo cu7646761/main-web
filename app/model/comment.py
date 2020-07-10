@@ -88,9 +88,9 @@ class CommentModel(CommentEntity):
                                          store.star_s1 * 1 + store.star_s2 * 2 + store.star_s3 * 3 + store.star_s4 * 4 + store.star_s5 * 5) / store.reviewer_quant),
                                 1)
             store.save()
-            return True, None
+            return comment.id, None
         except Exception as e:
-            return False, e.__str__()
+            return None, e.__str__()
 
     def count(self):
         return self.objects.count()
