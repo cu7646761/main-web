@@ -415,6 +415,20 @@ def stores():
                            current_page=page, additional_params=additional_params,
                            categories=all_cates, selected_dics=selected_dics, user=session['cur_user'])
 
+@login_required
+@store_blueprint.route("/recommend-suitable-store/", methods=["GET"])
+def recommend_suitale_store():
+    store = StoreModel()
+    current_user = session["cur_user"]
+    rs = Utils.predict_food_cate_online(current_user.infor_rec)
+    food_cates = ""
+    for k,v in rs.items():
+        food_cates+=k + ","
+    food_cates = food_cates[:-1]
+    print(rs)
+    return redirect('/stores/?cate_predict='+food_cates)
+
+
 @store_blueprint.route("/store", methods=["POST"])
 def get_store_api():
     store = StoreModel()

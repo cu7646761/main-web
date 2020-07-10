@@ -40,7 +40,12 @@
                 <div class="col-8 col-sm-8 text-center text-sm-left mb-0 py-4">
                     <h3 class="page-title">Chỉnh sửa cửa hàng</h3>
                 </div>
-                <div class="col-4 col-sm-4 text-right justify-content-end pr-3 py-4">
+                <div class="col-2 col-sm-2 text-right justify-content-end pr-3 py-4">
+                    <a href="/admin/store/analyze-food-cate/{{store_detail.id}}" class="btn btn-lg btn-warning ml-auto">
+                        Phân tích lại cửa hàng
+                    </a>
+                </div>
+                <div class="col-2 col-sm-2 text-right justify-content-end pr-3 py-4">
                     <a href="/admin/store/" class="btn btn-lg btn-accent ml-auto">
                         <i class="fa fa-arrow-left"></i> &nbsp Trở lại
                     </a>
@@ -61,13 +66,34 @@
                                 <div id="editor-container" class="add-new-post__editor mb-1"
                                      data-post-id="{{ store_detail.description }}">
                                 </div>
+                                <hr style="border:3px solid #f1f1f1">
+                                <div class="row">
+                                    <span class="col-12">Tự động phân loại</span><br>
+                                    <hr style="border:3px solid #f1f1f1">
+                                    
+                                </div>
+                                {% for k,v in store_detail.type_store.items() %}
+                                <div class="row">
+                                    
+                                    {% if v >0.1%}
+                                    <div class="col-2">
+                                        <div class="btn btn-success col-8">{{k.upper()}} :</div>
+                                    </div>
+                                    <input class="form-control form-control-lg mb-3 col-1" type="text"
+                                    value="{{ (v*100)|round(2) }} %" disabled>
+                                    {% endif %}
+                                    
+                                </div>
+                                {% endfor %}
                             </form>
                         </div>
                     </div>
                     <!-- / Add New Post Form -->
+                    
                 </div>
-            </div>
 
+            </div>
+            
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card card-small mb-4">

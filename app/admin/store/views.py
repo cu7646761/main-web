@@ -224,3 +224,18 @@ def delete_store(form=None, store_id=None):
         deleted_at = datetime.now()
         res, err = StoreModel.delete(store_id, deleted_at)
     return redirect('/admin/store/')
+
+
+@store_admin_blueprint.route("/analyze-food-cate/<string:store_id>", methods=["GET","POST"])
+@login_required_admin
+def analyze_food_cate(store_id):
+    store = StoreModel().find_by_id(store_id)[0]
+    # comments = CommentModel().find_by_store_id(store_id)
+    entity_dict = store.entity_score
+    text = store.name + " " + store.name + " " + store.name + " " + store.description
+    for k,v in entity_dict.items():
+        text += k + " "
+    rs = Utils.predict_food_cate_online(text)
+    category_predict = max(rs, key=rs.get)
+    store.update(set__type_store=rs, set__category_predict=category_predict)
+    return redirect("/admin/store/edit/"+ store_id)
