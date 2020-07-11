@@ -30,14 +30,6 @@ How to run tdd test
     > export FLASK_CONFIG='testing'
 2. Run command
     > python manage.py test
-    
-How to run bdd test
-=======================================
-1. Access folder that contain run.py file
-2. Run command
-    > behave features/checkform.feature <br>
-     behave features/checkfb.feature <br>
-     behave features/checktw.feature
                   
 How to run generate_data
 =======================================
@@ -52,14 +44,7 @@ Work with github
 =======================================
 1. Link docs: https://docs.google.com/document/d/1dyJDHd9g7ZIg4bhdWCf1m3j3L5yI3tpefdt1XyxIaLY/edit
 
-Work with Flask gmail
-=======================================
-1. Link docs: <br>
-1.1. https://pythonhosted.org/Flask-Mail/ <br>
-1.2. https://stackoverflow.com/questions/10147455/how-to-send-an-email-with-gmail-as-provider-using-python/27515833#27515833<br>
-1.3. https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support<br>
-
-How to config mail with sendgrid
+How to config mail with sendgrid email
 =======================================
 1. Steps <br>
 1.1. echo "export SENDGRID_API_KEY='this is private'" > sendgrid.env <br>
