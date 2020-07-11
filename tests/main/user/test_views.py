@@ -6,7 +6,7 @@ class ProfileViewsTestCase(FlaskClientTestCase):
     def test_get_profile(self):
         with self.client:
             response = self.client.get('/profile', follow_redirects=True)
-        self.assertIn(b'sinh', response.data)
+        self.assertIn(bytes(str("Thông tin cá nhân"), 'utf-8'), response.data)
 
     def test_post_update_pass(self):
         with self.client:

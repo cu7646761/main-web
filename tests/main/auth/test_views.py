@@ -7,7 +7,7 @@ class AuthViewsTestCase(FlaskClientTestCase):
     def test_get_login(self):
         with self.client:
             response = self.client.get('/login', follow_redirects=True)
-            self.assertIn(b'Login', response.data)
+            self.assertIn(bytes("ĐĂNG NHẬP", 'utf-8'), response.data)
 
     def test_home(self):
         hashed_passwd = Utils.hash_password("huhu")
@@ -18,12 +18,12 @@ class AuthViewsTestCase(FlaskClientTestCase):
     def test_logout(self):
         with self.client:
             response = self.client.get('/logout', follow_redirects=True)
-            self.assertIn(b'Login', response.data)
+            self.assertIn(bytes("ĐĂNG NHẬP", 'utf-8'), response.data)
 
     def test_get_signup(self):
         with self.client:
             response = self.client.get('/signup', follow_redirects=True)
-            self.assertIn(b'Sign Up', response.data)
+            self.assertIn(bytes("ĐĂNG KÝ", 'utf-8'), response.data)
 
     def test_post_signup(self):
         with self.client:

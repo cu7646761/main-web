@@ -68,6 +68,7 @@ class FlaskClientTestCase(unittest.TestCase):
             with self.client.session_transaction() as session:
                 session['cur_user'] = _user
                 session['logged'] = True
+                session['pos'] = {'lat': '10.8225398', 'lng': '106.6379724'}
             response = self.client.post('/login', data=dict(
                 email="phuongvuong1998@gmail.com",
                 passwpord=hashed_passwd
