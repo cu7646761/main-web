@@ -1,98 +1,132 @@
 {% extends "base.html" %}
 {% block content %}
-{% include "recommend.html"%}
     <!--============================= DETAIL =============================-->
     <section>
         <div class="container container-fluid">
             <div class="row">
                 <div class="col-md-12 responsive-wrap">
+                    <form method="POST" action="/stores/">
                     <div class="row detail-filter-wrap">
-                        <div class="col-md-4 featured-responsive">
-                            <div class="detail-filter-text">
-                                <p>34 Results For <span>Restaurant</span></p>
-                            </div>
-                        </div>
-                        <div class="col-md-8 featured-responsive">
-                            <div class="detail-filter">
-                                <p>Filter by</p>
-                                <form class="filter-dropdown">
-                                    <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect">
-                                        <option selected>Best Match</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
-                                </form>
-                                <form class="filter-dropdown">
-                                    <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect1">
-                                        <option selected>Restaurants</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
-                                </form>
-                                
-                                <div class="map-responsive-wrap">
-                                    <a class="map-icon" href="#"><span class="icon-location-pin"></span></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row detail-checkbox-wrap">
-                        {% for cate in categories%}
-                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
-                            <label class="custom-control custom-checkbox">
-                                {% if selected_dics["cates"][cate.name_link] %}
-                                <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}" checked>
-                                {% else %}
-                                <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="{{cate.name_link}}">
-                                {% endif %}
-                                <span class="custom-control-indicator"></span>
-                                <span class="custom-control-descriptioBiken">{{cate.name}}</span>
-                            </label>
-                        </div>
-                        {% endfor %}
                         
-                    </div>
-                    <div class="row">
-                        <div class="row col-11">
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <a href="/stores/?level=SS{{additional_params}}" class="btn btn-danger col-6" style="box-shadow: 0px -2px 3px 2px orange;">SS</a>
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="/stores/?level=S{{additional_params}}" class="btn btn-danger col-6">S</a>
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="/stores/?level=A{{additional_params}}" class="btn btn-warning col-6">A</a>    
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="/stores/?level=B{{additional_params}}" class="btn btn-primary col-6">B</a>    
-                                    </div>
+                            <div class="col-md-2 featured-responsive">
+                                <div class="detail-filter-text">
+                                    <p>LỌC KẾT QUẢ</p>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <a href="/stores/?level=C{{additional_params}}" class="btn btn-info col-6">C</a>
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="/stores/?level=D{{additional_params}}" class="btn btn-success col-6">D</a>
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="/stores/?level=E{{additional_params}}" class="btn btn-secondary col-6">E</a>
-                                    </div>
-                                    <div class="col-3">
-                                        <a href="/stores/?level=F{{additional_params}}" class="btn btn-dark col-6">F</a>
-                                    </div>    
+                            <div class="col-md-2 featured-responsive">
+                                <div class="detail-filter">
+                                    <p>Khoảng cách</p>
+                                    <select name="distance" class="custom-select">
+                                        <option class="star-filter" value="">Endless</option>
+                                        {% if selected_dics["distance"]=='1' %}
+                                        <option class="star-filter" value=1 selected='selected'>1 km</option>
+                                        {% else %}
+                                        <option class="star-filter" value=1>1 km</option>
+                                        {%endif%}
+
+                                        {% if selected_dics["distance"]=='5' %}
+                                        <option class="star-filter" value=5 selected='selected'>5 km</option>
+                                        {% else %}
+                                        <option class="star-filter" value=5>5 km</option>
+                                        {%endif%}
+
+                                        {% if selected_dics["distance"]=='10' %}
+                                        <option class="star-filter" value=10 selected='selected'>10 km</option>
+                                        {% else %}
+                                        <option class="star-filter" value=10>10 km</option>
+                                        {%endif%}
+
+                                        <!-- <option class="star-filter" value=5>5 km</option>
+                                        <option class="star-filter" value=10>10 km</option> -->
+                                        
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-1">
-                            <a id="a_id" href="/stores/?" class="btn btn-light"><i class="fa fa-search"></i></a>
-                        </div>
+                            <div class="col-md-3 featured-responsive">
+                                <div class="detail-filter">
+                                    <p>Độ phổ biến</p>
+                                    <select name="level" class="custom-select">
+                                        {% set level_dict = [('SS','> 1000'),('S','500-1000'),('A','200-500'),('B','100-200'),('C','50-100'),('D','10-50'),('E','3-10'),('F','0-3')] %}
+                                        <option class="star-filter" value=""></option>
+                                        {% for level,des in level_dict %}
+                                        {% if selected_dics["level"]==level %}
+                                        <option class="star-filter" value={{level}} selected="selected">{{level}} ({{des}} reviews)</option>
+                                        {% else%}
+                                        <option class="star-filter" value={{level}}>{{level}} ({{des}} reviews)</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 featured-responsive">
+                                <div class="detail-filter">
+                                    <p>Chất lượng</p>
+                                    <select name="quality" class="custom-select">
+                                        {% if selected_dics["quality"]=='0' %}
+                                        <option class="star-filter" value=0 selected="selected">Cao nhất</option>
+                                        {% else %}
+                                        <option class="star-filter" value=0>Cao nhất</option>
+                                        {% endif %}
+
+                                        {% if selected_dics["quality"]=='1' %}
+                                        <option class="star-filter" value=1 selected="selected">Thấp nhất</option>
+                                        {% else %}
+                                        <option class="star-filter" value=1>Thấp nhất</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        
+                            <div class="col-md-1 featured-responsive">
+                                <div class="detail-filter">
+                                    <p>Số sao</p>
+                                    <select name="star" class="custom-select">
+                                        <option class="star-filter">None</option>
+                                        {% set stars = ['1','2','3','4','5'] %}
+                                        {% for star in stars %}
+                                        {% if selected_dics['star'] == star %}
+                                        <option class="star-filter" value={{star}} selected="selected">{{star}} sao</option>
+                                        {% else %}
+                                        <option class="star-filter" value={{star}}>{{star}} sao</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-1 featured-responsive">
+                                <button class="btn btn-success">Phù hợp vói tôi</button>
+                            </div> -->
+                            <div class="col-md-2 featured-responsive">
+                                <a class="btn btn-success" style="height: 1.5cm; margin-left: 45px; padding-top: 17px;" href="/recommend-suitable-store">Phù hợp với tôi</a>
+                            </div>
+                            <div class="row">
+                                <div class="row detail-checkbox-wrap col-12">
+                                    {% for cate in categories%}
+                                    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                                        <label class="custom-control custom-checkbox">
+                                            {% if selected_dics["cates"][cate.name_link] %}
+                                            <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="cate" value="{{cate.name_link}}" checked>
+                                            {% else %}
+                                            <input onclick="updateParamSearch()" type="checkbox" class="custom-control-input cate_id" name="cate" value="{{cate.name_link}}">
+                                            {% endif %}
+                                            <span class="custom-control-indicator"></span>
+                                            <span class="custom-control-descriptioBiken">{{cate.name}}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                    
+                                </div>         
+                            </div>
+                        <!-- SEARCH BOX-->
+                            <div class="col-md-5 featured-responsive"></div>
+                            <div class="col-md-7 featured-responsive">
+                                <input type="submit" class="btn btn-dark" value="Tìm kiếm">
+                            </div>
+                        <!-- END SEARCH BOX-->
+                                        
                     </div>
+                    </form>
+                    
                     <div class="row light-bg detail-options-wrap">
                         <nav aria-label="Page navigation example" class="col-12">
                             <ul class="pagination justify-content-end">
@@ -168,16 +202,36 @@
                         </nav>
 
 
-                        <div class="col-12"><p>Tìm thấy khoảng {{pages*10}} cửa hàng
-                            
+                        <div class="col-12"><p>Tìm thấy {{pages}} trang có cửa hàng 
+                            {% if selected_dics['distance']%}
+                                trong vòng <b style="color: blue;">{{selected_dics['distance']}} km</b>
+                            {% endif %}
                             {% if selected_dics['level']%}
                                 cấp <b style="color: red;">{{selected_dics['level']}}</b>
+                            {% endif %}
+                            {% if selected_dics['star']%}
+                                {% if selected_dics['star'] != "None"%}
+                                , có số sao trung bình từ
+                                <b style="color: black;">
+                                    <script>
+                                        document.write("{{selected_dics['star']}}"-1);
+                                    </script>
+                                </b>                            
+                                đến 
+                                <b style="color: black;">{{selected_dics['star']}}</b> sao
+                                {% endif %}
                             {% endif %}
                             {% for k,v in selected_dics["cates"].items() %}
                                 {% if v %}
                                     , <i style="color: blue;">{{k}}</i>
                                 {% endif %}
                             {% endfor %}
+                            , Sắp xếp theo chất lượng
+                            {% if selected_dics['quality'] == '1'%}
+                                <b style="color: black;">Thấp nhất</b>
+                            {% else %}
+                                <b style="color: black;">Cao nhất</b>
+                            {% endif %}
                         </p>
                         </div>
                         {% for data in datas %}
@@ -190,34 +244,50 @@
                                     <a href="/stores/{{ data['store'].id }}">
                                         <div class="row">
                                             <div class="featured-title-box col-lg-4 col-sm-4 col-xs-12">
-                                                <img height="200px" src="{{ data['store'].link_image[0] }}"  alt="#">
+                                                <img style="height:200px" src="{{ data['store'].link_image[0] }}"  alt="#">
                                             </div>
                                             
-                                            <span class="featured-rating-orange">{{data['score']|round(2)}}</span>
+                                            <span class="featured-rating-orange">{{((data['score']+1)*5)|round(2)}}</span>
                                             <div class="featured-title-box col-lg-8 col-sm-8 col-xs-12">
-                                                <h6>{{ data['store'].name }}</h6>
+                                                <h6 style="padding-left:12px">{{ data['store'].name }}</h6>
+                                                
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class ="fa fa-list" aria-hidden="true" style="font-size: 15px;" ></i>  
+                                                    &nbsp Danh mục:
                                                 {% for cate in data['cates'] %}
-                                                    <p>{{ cate[0].name }}</p> <span> • </span>
+                                                    {{ cate.name }} 
                                                 {% endfor %}
+                                                </span> 
                                                 <br>
-                                                <p>{{ data['store'].reviewer_quant }} Reviews</p>
-    
-                                                <ul>
-                                                    <li><span class="icon-location-pin"></span>
-                                                        <p>{{ data['address'][0].detail }}</p>
-                                                    </li>
-                                                    <li><span class="icon-screen-smartphone"></span>
-                                                        <p>+44 20 7336 8898</p>
-                                                    </li>
-                                                    <li><span class="icon-link"></span>
-                                                        <p>https://burgerandlobster.com</p>
-                                                    </li>
-    
-                                                </ul>
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class ="fa fa-calculator" aria-hidden="true" style="font-size: 15px;" ></i> 
+                                                    &nbsp Số nhận xét:  {{ data['store'].reviewer_quant }} đánh giá
+                                                </span> 
+                                                <br>
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class ="fa fa-star" aria-hidden="true" style="font-size: 15px;" ></i>  
+                                                    &nbsp Số sao trung bình: {{ data['store'].stars }} sao
+                                                </span> 
+
+                                                <br>
+                                                <p style="padding-top:30px">
+                                                </p>
+                                                <span> 
+                                                    <i class="icon-location-pin" aria-hidden="true" style="font-size: 15px;" ></i>  
+                                                    &nbsp Địa chỉ: {{ data['address'].detail }}
+                                                </span> 
+                                            
+                                               
                                                 <div class="bottom-icons">
                                                     <!-- <div class="closed-now">CLOSED NOW</div> -->
-                                                    <span class="ti-heart"></span>
-                                                    <span class="ti-bookmark"></span>
+                                                    <!-- <span class="ti-heart"></span>
+                                                    <span class="ti-bookmark"></span> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -309,20 +379,64 @@
             </div>
         </div>
         <script>
+            link = "/stores/"
             function updateParamSearch(){
                 var cates = document.getElementsByTagName("input");
-                var link ="/stores/?categories="
+                var cates = document.getElementsByClassName("level_filter");
+                var temp ="?categories="
                 for (cate of cates){
                     if (cate.checked == true){
-                        link+=cate.name+','
+                        temp+=cate.name+','
                     }
                 }
-                link = link.substring(0, link.length - 1);
-                document.getElementById("a_id").href = link
+                temp = temp.substring(0, temp.length - 1);
+                console.log(temp)
+                // document.getElementById("a_id").href = link + temp
+            }
+            function updateParamStarSearch(){
+                console.log("aaa")
+                var cates = document.getElementsByClassName("stars_filter");
+                var temp ="?star="
+                for (cate of cates){
+                    if (cate.checked == true){
+                        temp+=cate.value+','
+                    }
+                }
+                temp = temp.substring(0, temp.length - 1);
+                console.log(temp)
+                // document.getElementById("a_id").href = link + temp
             }
             updateParamSearch()
+        </script>
+        <script>
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    curLat = position.coords.latitude;
+                    curLng = position.coords.longitude;
+                    fetch(`${window.origin}/load_geolocation?lat=${curLat}&lng=${curLng}`)
+                    .then(function (response) {
+                        if (response.status !== 200) {
+                            console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                            return;
+                        }
+                        response.json().then(function (data) {
+                            console.log(data);
+                            console.log(curLat, curLng);
+                        });
+                    })
+                    .catch(function (error) {
+                        console.log("Fetch error: " + error);
+                    });
+                })
+            } 
         </script>
     </section>
 
     <!--//END DETAIL -->
+{% include "recommend.html"%}
 {% endblock %}

@@ -143,9 +143,6 @@ flask_session/sendgrid.env
 
 flask_session/*
 
-app/static/images/*.png
-app/static/images/*.jpg
-app/static/images/*.jpeg
 venv/
 
 env/

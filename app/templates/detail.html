@@ -49,15 +49,17 @@
                 
                 <div class="col-md-6">
                     <h5>{{ store.name }}</h5>
-
+                    <br><br>
                     <p class="reserve-description">
+                        Danh mục: 
                         {% for ct in category %}
-                            {{ ct[0].name }} ,
+                            {{ ct.name }} ,
                         {% endfor %}...
                     </p>
-                    <!-- <br><br> -->
+            
+                    <br><br>
                     <div class="res-common-minmaxprice">
-                        <span class="fa fa-tag minmaxpriceicon" style="font-size:16px"></span>
+                        <span class="fa fa-tag minmaxpriceicon" style="font-size:14px"></span>
                         <span itemprop="priceRange">
                                 <span> Mức giá: {{ store.min_price }}đ - <span>{{ store.max_price }}</span>đ
                             </span>
@@ -68,17 +70,17 @@
                 <div class="col-md-6">
                     <div class="reserve-seat-block">
                         <div class="reserve-rating">
-                            <span>{{store.score_sentiment|round(2)}}</span>
+                            <a>ĐIỂM: {{((store.score_sentiment+1)*5)|round(2)}}</a>
                         </div>
-                        <div class="review-btn">
-                            <a href="#comment" class="btn btn-outline-danger">NHẬN XÉT</a>
-                            <span>{{ store.reviewer_quant }}</span>
+                            &nbsp; &nbsp;
+                        <div  class="reserve-rating">
+                            <a >{{ store.reviewer_quant }} NHẬN XÉT</a>
                         </div>
-                        <div class="reserve-btn">
+                        <!-- <div class="reserve-btn">
                             <div class="featured-btn-wrap">
-                                <a href="#" class="btn btn-danger">BẢN ĐỒ</a>
+                                <a href="#comment" class="btn btn-danger">{{ store.reviewer_quant }} NHẬN XÉT</a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -103,10 +105,10 @@
                             <table id="alter" align="center">
                                 <tr>
                                     <th>Cửa hàng</th>
-                                    <th>Đánh giá</th>
+                                    <th>Số sao</th>
                                     <th>Số nhận xét</th>
                                     <th>Khoảng cách</th>
-                                    <th>Phân loại</th>
+                                    <th>Điểm đánh giá</th>
                                 </tr> 
                                 <tr>
                                     <td>{{store.name}}</td>
@@ -137,7 +139,17 @@
                 <div class="col-md-8 responsive-wrap">
                     <div class="booking-checkbox_wrap">
                         <div class="booking-checkbox">
-                            <p> Description ở đây</p>
+                            <p style="color: black;">
+                                <script>
+                                    var description =  $('<textarea />').html("{{store.description}}").text();
+                                    console.log(description)
+                                    if(description == "None"){
+                                        description = "Chưa có mô tả";
+                                    }
+                                    
+                                    document.write(description)
+                                </script>
+                            </p>
                             <hr>
                         </div>
                         <span class="heading">Tự động phân loại</span>
@@ -245,8 +257,8 @@
                                 <div class="customer-review_wrap">
                                     <div class="customer-img" id = "show-comment-user">
                                     </div>
-                                    
                                     <div class="customer-content-wrap">
+                                        <p id="show-date"></p>
                                         <div class="customer-content">
                                             <div class="customer-review">
                                                 <h6 class="text-muted" id="star-num-text"></h6>
@@ -337,7 +349,7 @@
                         {% endif %}
 
                         <br>
-                        <button type="submit"  value="Đăng">Đăng</button>
+                        <button type="submit" class ="btn btn-primary" value="Đăng">Đăng</button>
                         </form>
                         
                     </div>
@@ -347,7 +359,7 @@
                 <div class="col-md-4 responsive-wrap">
                     <div class="contact-info">
                         <div id="map"></div>
-                        <div class="address">
+                        <div class="address mb-2">
                             <span class="icon-location-pin"></span>
                             <p>{{ address.detail }}</p>
                         </div>
@@ -364,7 +376,7 @@
                             <p>Mon - Sun 09:30 am - 05:30 pm <br>
                                 <span class="open-now">OPEN NOW</span></p>
                         </div> -->
-                        <a href="#" class="btn btn-outline-danger btn-contact">CHỈ ĐƯỜNG</a>
+
                     </div>
                     <div class="overflow-auto" id="please-scroll" style="height: 400px;">
                         {% for k,v in entity_dict %}
@@ -411,7 +423,7 @@
                                 
                             </div>
                             <p class="col-12" id="loading-text"></p>
-                            <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>See more</button>
+                            <button id="load-more-st" class='btn btn-success col-12' onclick="loadrlStore()" disabled>Xem thêm ...</button>
                         </div>
                         <!-- Add Arrows -->
                         <!-- <div class="swiper-button-next" onclick="loadrlStore()"></div>
@@ -555,10 +567,21 @@ function loadItems() {
                 for (; j < data[i].star_num; j++) {
                     userStar += "<i class=\"fa fa-star icon-c\"></i>";
                 }
-                template_clone.querySelector("#detail").innerHTML = data[i].detail;
+                console.log(data[i])
+                if (typeof data[i].detail == "undefined") {
+                    template_clone.querySelector("#detail").innerHTML = ""
+                } else {
+                    template_clone.querySelector("#detail").innerHTML = data[i].detail;
+                }
                 template_clone.querySelector("#star-num").innerHTML = data[i].star_num;
                 template_clone.querySelector("#star-num-text").innerHTML = `Đã đánh giá  ${data[i].star_num} sao.`;
                 template_clone.querySelector("#show-star-user").innerHTML = userStar;
+                let date = new Date(data[i].updated_on.$date)
+                let strDate = date.getUTCFullYear().toString() + "/" +
+                    (date.getUTCMonth() + 1).toString() +
+                    "/" + date.getUTCDate() + " " + date.getUTCHours() +
+                    ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds();
+                template_clone.querySelector("#show-date").innerHTML = strDate;
                 template_clone.querySelector("#show-comment-user").innerHTML = showUser;
 
                 // Append template to dom
@@ -581,15 +604,15 @@ function loadItems() {
     // Uncomment below to see the entry.intersectionRatio when
     // the sentinel comes into view
 
-    entries.forEach(entry => {
-      console.log(entry.intersectionRatio);
-    })
+        entries.forEach(entry => {
+            console.log(entry.intersectionRatio);
+        })
 
-    // If intersectionRatio is 0, the sentinel is out of view
-    // and we don't need to do anything. Exit the function
-        // if (entries[0].intersectionRatio <= 0) {
-        //     return;
-        // }
+        // If intersectionRatio is 0, the sentinel is out of view
+        // and we don't need to do anything. Exit the function
+        if (entries[0].intersectionRatio <= 0) {
+            return;
+        }
 
         // Call the loadItems function
         loadItems();
@@ -604,7 +627,6 @@ function loadItems() {
     var swiper = document.querySelector('#swiper-rl')
     var rl_template = document.querySelector('#relst-template');
     var page = 1
-    
     function loadrlStore() {
         document.getElementById('loading-text').innerHTML = "Loading...";
         document.getElementById('load-more-st').disabled = true;
@@ -665,9 +687,9 @@ function loadItems() {
                 document.getElementById("show-reviewRec").innerHTML = reviewRec;
                 document.getElementById("show-storeRec").innerHTML = storeRec;
                 document.getElementById("show-distanceRec").innerHTML = distanceRec + " km";
-                document.getElementById("show-classifyRec").innerHTML = classifyRec;
+                document.getElementById("show-classifyRec").innerHTML = Math.round((classifyRec+1)*5*100)/100;
                 document.getElementById("show-distanceCur").innerHTML = distanceCur + " km";
-                document.getElementById("show-classifyCur").innerHTML = classifyCur;
+                document.getElementById("show-classifyCur").innerHTML = Math.round((classifyCur+1)*5*100)/100;
             }
             )
         })
@@ -675,4 +697,23 @@ function loadItems() {
     }
     
 </script>
+
+{% if comment %}
+    <script>
+        fetch(`${window.origin}/load-analyze-comment/{{store.id}}/{{comment}}`)
+        .then(function (response) {
+            if (response.status !== 200) {
+                console.log(`Looks like there was a problem. Status code: ${response.status}`);
+                return;
+            }
+            response.json().then(function (data) {
+                console.log(data);
+            });
+        })
+        .catch(function (error) {
+            console.log("Fetch error: " + error);
+        });
+    </script>
+{% endif %}
+
 {% endblock %}

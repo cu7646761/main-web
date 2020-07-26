@@ -3,39 +3,40 @@ from pymongo import MongoClient
 from google.cloud import language_v1
 from google.cloud.language_v1 import enums
 from google.cloud import translate
-from app.main.comment.models import CommentModel
+from app.model.comment import CommentModel
 import nltk,re
+import pandas
+import datetime, time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+from mongoengine.queryset.visitor import Q
 
 from app import create_app
 import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pain/Downloads/Britcat3-dd9d79d99d97.json"
 import csv, random, json
 
 from functools import wraps
 import time
 import math
 import requests
-from constants import Pages
+from constants import Pages, POS_DICT, BAD_DICT, NEG_WORDS, TEMP_DICT, NEUTRAL_WORDS
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
 
-from app.main.store.models import StoreModel
-from app.main.comment.models import CommentModel
-from app.main.category.models import CategoryModel
-from app.main.address.models import AddressModel
+from app.model.store import StoreModel
+from app.model.comment import CommentModel
+from app.model.category import CategoryModel
+from app.model.address import AddressModel
 
 
 from utils import Utils
 from constants import CLASS_LIST
-from app.main.comment.models import CommentModel
 
 from flask.helpers import url_for
 
 analyze_blueprint = Blueprint(
     'analyze', __name__, template_folder='templates')
-
 
 # do not run manual
 @analyze_blueprint.route("/remove_character17273747", methods=["GET","POST"])
@@ -237,9 +238,9 @@ def gen_entity():
         'capuchino':1, 'bubble':1, 'latte':1, ' cocktail':1
     }
     food_cate['smoothie'] = {
-        'fruit':1, 'fruits':1, 'smoothie':1, 'juice':1, 'juices':1, 'milk':1, 'beams':1, 'beam':1,
-        'avocado':1, 'avocados':1, 'durian':1, 'durians':1, 'yogurt':1, 'yogurts':1, 'melon':1,
-        'yoghurt':1, 'yoghurts':1, 'icecream':1, 'butter':1, 'peach':1
+        'fruit':1, 'fruits':1, 'smoothie':1, 'juice':1, 'juices':1, 'beams':1, 'beam':1,
+        'avocado':1, 'avocados':1, 'durian':1, 'durians':1, 'yogurt':1, 'yogurts':1,
+        'yoghurt':1, 'yoghurts':1, 'butter':1, 'peach':1
     }
     food_cate['cake'] = {
         'cake':2, 'cakes':2, 'chocolate':1, 'chocolates':1, 'dessert':1, 'desserts':1, 'tiramisu':1,
@@ -254,7 +255,7 @@ def gen_entity():
         'meat':1, 'meats':1, 'rib':1, 'dip':1, 'grill':1, 'grills':1, 'ribs':1, 'dips':1,
         'beef':1, 'beefs':1, 'bbq':1, 'steak':1, 'steaks':1, 'barbecues':1, 'barbecue':1,
         'beefsteak':1, 'beefsteaks':1, 'cow':1, 'cows':1, 'pig':1, 'pigs':1, 'kebab':1, 'kebabs':1,
-        'shawarma':1
+        'shawarma':1, 'roll':1, 'rolls':1
     }
     food_cate['chicken'] = {
         'chicken':1, 'chickens':1, 'kfc':1, 'texas':1, 'french':1, 'lotteria':1
@@ -268,11 +269,13 @@ def gen_entity():
         'bar':1, 'bars':1, 'pub':1, 'pubs':1, 'beers':1, 'beer':1, 'wine':1, 'club':1,
         'clubs':1, 'dance':1, 'edm':1, 'vinahouse':1
     }
-    neutral = {
+    other = {
         'staff':3, 'staffs':3, 'food':3, 'foods':3, 'place':3, 'places':3, 'service':3,
-        'service':1, 'services':1, 'restaurant':1, 'restaurants':1, 'space':1, 'spaces':1,
-        'atmosphere':1, 'price':1, 'prices':1, 'taste':1, 'table':1, 'shop':1, 'seat':1,
-        'seats':1, 'family':1, 'meal':1, 'people':1, 'meals':1, 'dinner':1, 'view':1, 'design':1,
+        'services':1, 'restaurant':1, 'restaurants':1, 'space':1, 'spaces':1,
+        'atmosphere':1, 'price':1, 'prices':1, 'people':1}
+    neutral = {
+        'taste':1, 'table':1, 'shop':1, 'seat':1,
+        'seats':1, 'family':1, 'meal':1, 'meals':1, 'dinner':1, 'view':1, 'design':1,
         'friend':1, 'friends':1, 'customer':1, 'customers':1, 'waiter':1, 'waitress':1, 'dish':1, 'dishes':1,
         'time':1, 'times':1, 'quality':1, 'location':1, 'decoration':1, 'lunch':1, 'style':1, 'town':1, 'experience':1,
         'floor':1, 'cuisine':1, 'center':1, 'everything':1, 'air':1, 'money':1, 'one':1, 'some':1, 'more':1, 'choice':1
@@ -283,10 +286,11 @@ def gen_entity():
         
         for i in range(100):
             text_noise = ""
-            sentence_neutral = random.randint(1, 10)
+            sentence_neutral = random.randint(1, 20)
             for j in range(sentence_neutral):
-                temp = random.choice(list(neutral.keys()))
-                text_noise += temp + " "
+                noise = random.choice(list(neutral.keys()))
+                temp = random.choice(list(other.keys()))
+                text_noise += temp + " " + noise + " " + noise + " " + noise + " "
             print(text_noise)
             f_writer.writerow([text_noise, 'other'])    
         for k,v in food_cate.items():
@@ -440,52 +444,53 @@ def update_sentiment_comment():
 @analyze_blueprint.route("/update-sentiment-store17273747", methods=["GET", "POST"])
 def update_sentiment_store():
     all_stores = StoreModel().query_all()
-    all_comments = CommentModel().query_all()
     count = 0
-    for store in all_stores:
-        count+=1
-        print(count)
-        print(store.name)
-        if store.score_sentiment:
+    id = "5e963eb3d971b71612a3f5f5"
+    store = StoreModel().find_by_id(id)[0]
+    # for store in all_stores:
+    count+=1
+    print(count)
+    print(store.name)
+    # if store.score_sentiment:
+    #     continue
+    cmts = CommentModel().find_by_store_id(store.id)
+    all_sentiment = 0
+    j=0
+    for comment in cmts:
+        cmt = comment
+        if not cmt.detail:
             continue
-        cmts = CommentModel().find_by_store_id(store.id)
-        all_sentiment = 0
-        j=0
-        for comment in cmts:
-            cmt = comment
-            if not cmt.detail:
-                continue
-            j+=1
-            print(j)
+        j+=1
+        print(j)
 
-            raw_text = cmt.detail
-            if raw_text.startswith('(Translated by Google)'):
-                raw_text = raw_text.split('(Translated by Google)')[-1][1:]
-                raw_text = raw_text.split('(Original)')[0]
-            text = raw_text.lower()
-            data = {
-                "instances": [{
-                    "text": text
-                }]
-            }
-            response = requests.post('http://localhost:8080/predict', json=data)
-            result = json.loads(response.content)
-            print(text)
-            rsfm = result['predictions'][0] 
-            cmt.update(set__sentiment_dict=rsfm)
-            sentiment_cmt = {}
-            for i in range(len(rsfm["classes"])):
-                sentiment_cmt[rsfm["classes"][i]] = rsfm["scores"][i]
-            sentiment = sentiment_cmt["0"]*(-1) + sentiment_cmt["2"]
-            print(sentiment)
-            all_sentiment += sentiment
-        if j != 0:
-            score_stm = all_sentiment/j
-        else:
-            score_stm = all_sentiment
-        print(score_stm)
-        store.update(set__score_sentiment=score_stm)
-        print(store.name)
+        raw_text = cmt.detail
+        if raw_text.startswith('(Translated by Google)'):
+            raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+            raw_text = raw_text.split('(Original)')[0]
+        text = raw_text.lower()
+        data = {
+            "instances": [{
+                "text": text
+            }]
+        }
+        response = requests.post('http://localhost:8080/predict', json=data)
+        result = json.loads(response.content)
+        print(text)
+        rsfm = result['predictions'][0] 
+        cmt.update(set__sentiment_dict=rsfm)
+        sentiment_cmt = {}
+        for i in range(len(rsfm["classes"])):
+            sentiment_cmt[rsfm["classes"][i]] = rsfm["scores"][i]
+        sentiment = sentiment_cmt["0"]*(-1) + sentiment_cmt["2"]
+        print(sentiment)
+        all_sentiment += sentiment
+    if j != 0:
+        score_stm = all_sentiment/j
+    else:
+        score_stm = all_sentiment
+    print(score_stm)
+    store.update(set__score_sentiment=score_stm)
+    print(store.name)
 
     return jsonify({})
 
@@ -511,17 +516,1024 @@ def update_reviewer_quant():
     return jsonify({})
 
 
-# @analyze_blueprint.route("/reset-sentiment-store17273747", methods=["GET", "POST"])
-# def reset_sentiment_store():
-#     all_stores = StoreModel().query_all()
-#     # all_comments = CommentModel().query_all()
-    
-#     for store in all_stores:
-#         # if store.score_sentiment:
-#         #     continue
-#         # cmts = CommentModel().find_by_store_id(store.id)
-#         store.update(set__score_sentiment=None)
-#     return jsonify({})
+@analyze_blueprint.route("/test-predict-online17273747", methods=["GET", "POST"])
+def test_predict_online():
+    text = "very delicious The bread is super crunchy (not dry) I don't bad dare to eat pork, I think it 's delicious shocked 45000VND / 1 serving"
+    tokenized = word_tokenize(text)
+    # stopped = [w for w in tokenized if not w in stop_words]
+    # print(tokenized)
+    # allowed_word_types = ['J']
+    pos = nltk.pos_tag(tokenized)
+    ci = 0
+    neg_good = 0
+    neg_bad = 0
+    for k,v in pos:
+        ci+=1
+        if k in ('not', "n't", 'hardly', 'never'):
+            cj = ci
+            for w in pos[ci:]:
+                cj+=1
+                if cj-ci>3:
+                    break
+                if w[0] in POS_DICT:
+                    neg_good +=1
+                    break
+                if w[0] in BAD_DICT:
+                    neg_bad +=1
+                    break
+                
+    print(pos)
+    print(neg_good)
+    print(neg_bad)
+    return jsonify({})
+
+
+@analyze_blueprint.route("/get-comment-data17273747", methods=["GET", "POST"])
+def get_comment_data():
+    comments_good = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
+    # comments_good_test = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:10000]
+    comments_bad = CommentModel().objects(Q(star_num__lte=2) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
+    comments_temp = CommentModel().objects(Q(star_num__exact=3) & Q(detail__ne='') & Q(detail__ne=None))[:500]
+    df = pandas.read_csv("Reviews.csv", usecols = ['Text', 'Score'])
+    document = df.values
+
+    with open('testset_sentiment.csv', mode='w') as f:
+        f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        f_writer.writerow(['split','text', 'score'])
+
+        for s,t in document:
+            # print(s)
+            raw = t
+            text = raw.lower()
+            text = text.replace('\"','')
+            cleaned = re.sub(r"[^(a-zA-Z')\s]",'', text)
+            tokenized = word_tokenize(cleaned)
+            allowed_word_types = ["J", "V", "R"]
+            pos = nltk.pos_tag(tokenized)
+            print(pos)
+            text_input = ""
+            for w in pos:
+                if w[1][0] in allowed_word_types:
+                    # all_words.append(w[0])
+                    text_input += w[0] + " "
+            score = s
+            if score in (1,2,3):
+                f_writer.writerow(['UNASSIGNED', text_input , 0])
+            # elif score==3:
+            #     f_writer.writerow([text_input , 1])
+            elif score==5:
+                f_writer.writerow(['UNASSIGNED', text_input , 2])
+            print([text_input, score])
+
+        for comment in comments_good:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                input = text.replace('\"','')
+                print(input)
+                f_writer.writerow(['UNASSIGNED',input, 2])
+        for comment in comments_bad:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                f_writer.writerow(['UNASSIGNED',text, 0])
+        for comment in comments_temp:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                f_writer.writerow(['UNASSIGNED',text, 1])
+        # df = pandas.read_csv("train.tsv", usecols = ['Phrase', 'Sentiment'], sep="\t")
+        # document = df.values
+        # for record in document:
+        #     raw = record['Pharse']
+        #     text = raw.lower()
+        #     text = text.replace('\"','')
+
+        pos_dict = {
+            'good':3, 'best':3, 'yummy':3, 'clean':1, 'nice':3, 'beautiful':4, 'ok':1, 'oke':1  , 'love':1, 'like':1,
+            'polite':1, 'awesome':1, 'happy':1, 'great':1, 'perfect':1, 'delicious':3, 'well':1, 'cool':1, 'appreciate':1,
+            'cozy':1, 'lovely':1, ' reasonably':1, 'cheap':1, 'fast':1 ,'tasty':1, 'affordable':1, 'attractive':1, 'cute':1,
+            'pretty':3, "vibe":1, "dedicated":1, 'quiet':1, 'convenient':1, 'exciting':1, 'excited':1, 'amazing':1, 'enjoy':1,
+            'enjoyed':1, 'pleasure':1, 'pleased':1, 'friendly':1, 'quick':1, 'satisfied':1, 'wonderfull':1, 'okay':1, 
+            'enthusiastic':1, 'loved':1, 'highly':1, 'impress':1 ,'impressed':1, 'impression':1, 'liked':1, 'appreciate':1, 'special':1,
+            'lively':1, 'excellent':3, 'wonderful':1
+        }
+        neg_dict = {
+            'bad':1, 'worst':1, 'disgusting':1, 'dirty':1, 'ugly':1, 'hate':1, 'impolite':1, 'sad':1, 'disappointed':1, 'dislike':1,
+            'poor':1, 'noisy':1, 'expensive':1, 'fuck':3, 'fucking':3, 'lousy':2, 'slow':1, 'slowly':1, 'small':1, 'lack':1, 'weak':1,
+            'broken':1, 'disregard':1, 'wasted':1, 'boring':1, 'horrible':1, 'angry':1, 'careless':1, 'failed':1, 'dissatisfied':1,
+            'chemicals':1 , 'chemical':1, 'unsafe':1, 'unloading':1, 'suck':1, 'shit':1, 'hated':1, 'abhor':1, 'abominable':1
+        }
+        neg_words = {
+            'no':1, 'not':1, 'nerver':1, "won't":1, "aren't":1, "don't":1, "isn't":1, "doesn't":1, "can't":1, "couldn't":1, 'none':1,
+            "haven't":1, "hasn't":1, "didn't":1, "wasn't":1, "weren't":1, "wouldn't":1, 'hardly':1, 'k':1, 'ko':1
+        }
+        temp_dict = {
+            'simple':1, 'normal':1, 'temporary':1, 'ordinary':1, 'dc':1, 'tam':1, 'normally':1, 'average':1 
+        }
+        neutrals = {
+            'staff':3, 'staffs':3, 'i':1, 'me':1,
+            'food':3, 'foods':3, 'place':3, 'places':3, 'service':3,
+            'service':1, 'services':1, 'restaurant':1, 'restaurants':1, 'space':1, 'spaces':1,
+            'atmosphere':1, 'price':1, 'prices':1, 'taste':1, 'table':1, 'shop':1, 'seat':1,
+            'seats':1, 'family':1, 'meal':1, 'people':1, 'meals':1, 'dinner':1, 'view':1, 'design':1,
+            'friend':1, 'friends':1, 'customer':1, 'customers':1, 'waiter':1, 'waitress':1, 'dish':1, 'dishes':1,
+            'time':1, 'times':1, 'quality':1, 'location':1, 'decoration':1, 'lunch':1, 'style':1, 'town':1, 'experience':1,
+            'floor':1, 'cuisine':1, 'center':1, 'everything':1, 'air':1, 'money':1, 'one':1, 'some':1, 'more':1, 'choice':1
+        }
+        choice = []
+        for k,v in pos_dict.items():
+            for i in range(v):
+                choice.append(k)
+            f_writer.writerow(['TRAIN', k, 2])
+        for i in range(6000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TRAIN', text, 2])
+            print([text, 2])
+        for i in range(500):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TRAIN', text, 2])
+            print([text, 2])
+        # negative pos
+        for i in range(500):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 20)
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                
+                text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['TRAIN', text, 0])
+                print([text, 0])
+        # bad sentiment
+        choice = []
+        for k,v in neg_dict.items():
+            for i in range(v):
+                choice.append(k)
+            f_writer.writerow(['TRAIN', k, 0])
+        for i in range(6000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TRAIN', text, 0])
+            print([text, 0])
+
+        for i in range(500):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TRAIN', text, 0])
+            print([text, 0])
+        # negative neg
+        for i in range(500):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 20)
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['TRAIN', text, 1])
+                print([text, 1])
+        # temp sentiment
+        choice = []
+        for k,v in temp_dict.items():
+            f_writer.writerow(['TRAIN', k, 1])
+            for i in range(v):
+                choice.append(k)
+        for k,v in neutrals.items():
+            choice.append(k)
+
+        for i in range(10000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text, 1])
+            print([text, 1])
+        
+        for i in range(500):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text, 1])
+            print([text, 1])
+        # negative temp
+        for i in range(500):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 20)
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                
+                text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['TRAIN', text, 0])
+                print([text, 0])
+    f.close()
+
+
+    return jsonify({})
+
+
+@analyze_blueprint.route("/gen-comment-data17273747", methods=["GET", "POST"])
+def gen_comment_data():
+    comments_good = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
+    # comments_good_test = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:10000]
+    comments_bad = CommentModel().objects(Q(star_num__lte=2) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
+    comments_temp = CommentModel().objects(Q(star_num__exact=3) & Q(detail__ne='') & Q(detail__ne=None))[:500]
+    with open('testset_sentiment.csv', mode='w') as f:
+        f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        f_writer.writerow(['split','text','neg_good','neg_bad', 'score'])
+        for comment in comments_good:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                print(text)
+                g,b = Utils.preprocessing_input(text)
+                f_writer.writerow(['TEST', text, g, b, 2])
+        for comment in comments_bad:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                g,b = Utils.preprocessing_input(text)
+                f_writer.writerow(['TEST',text,g,b, 0])
+        for comment in comments_temp:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                g,b = Utils.preprocessing_input(text)
+                f_writer.writerow(['TEST',text,g,b, 1])
+        # df = pandas.read_csv("train.tsv", usecols = ['Phrase', 'Sentiment'], sep="\t")
+        # document = df.values
+        # for record in document:
+        #     raw = record['Pharse']
+        #     text = raw.lower()
+        #     text = text.replace('\"','')
+
+        pos_dict = POS_DICT
+        neg_dict = BAD_DICT
+        neg_words = NEG_WORDS
+        temp_dict = TEMP_DICT
+        neutrals = NEUTRAL_WORDS
+        choice = []
+        for k,v in pos_dict.items():
+            for i in range(v):
+                choice.append(k)
+            f_writer.writerow(['UNASSIGNED', k,0,0, 2])
+        for i in range(60000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text,0,0, 2])
+            print([text,0,0, 2])
+        for i in range(5000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TEST', text,0,0, 2])
+            print([text,0,0, 2])
+        # negative pos
+        for i in range(2000):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                distance_s = random.randint(0, 3)
+                distance_l = random.randint(4, 20)
+                s_distance = []
+                l_distance = []
+                for c in range(distance_s):
+                    s_distance.append(random.choice(list(neutrals.keys())))
+                for c in range(distance_l):
+                    l_distance.append(random.choice(list(neutrals.keys())))
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(1, 5)
+
+                #short dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,1,0,0])
+                print([text,1,0, 0])
+                
+                #long dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in l_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0,0,2])
+                print([text,0,0,2])
+
+                #revert
+                text = ""
+                distance_r = random.randint(1, 7)
+                r_distance = []
+                for c in range(distance_r):
+                    r_distance.append(random.choice(list(neutrals.keys())))
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += temp+" "
+                for ele in r_distance:
+                    text += ele + " "
+                text += k + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0,0,2])
+                print([text,0,0,2])
+        # bad sentiment
+        choice = []
+        for k,v in neg_dict.items():
+            for i in range(v):
+                choice.append(k)
+            f_writer.writerow(['UNASSIGNED', k,0,0, 0])
+        for i in range(60000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text,0,0, 0])
+            print([text,0,0, 0])
+
+        for i in range(5000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TEST', text,0,0, 0])
+            print([text,0,0, 0])
+        # negative neg
+        for i in range(2000):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                distance_s = random.randint(0, 3)
+                distance_l = random.randint(4, 20)
+                s_distance = []
+                l_distance = []
+                for c in range(distance_s):
+                    s_distance.append(random.choice(list(neutrals.keys())))
+                for c in range(distance_l):
+                    l_distance.append(random.choice(list(neutrals.keys())))
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(1, 5)
+
+                #short dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0,1,1])
+                print([text,0,1 ,1])
+                
+                #long dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in l_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0,0,0])
+                print([text,0,0, 0])
+
+                #revert
+                text = ""
+                distance_r = random.randint(1, 7)
+                r_distance = []
+                for c in range(distance_r):
+                    r_distance.append(random.choice(list(neutrals.keys())))
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += temp+" "
+                for ele in r_distance:
+                    text += ele + " "
+                text += k + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0,0,0])
+                print([text,0,0, 0])
+        # temp sentiment
+        choice = []
+        for k,v in temp_dict.items():
+            f_writer.writerow(['UNASSIGNED', k,0,0, 1])
+            for i in range(v):
+                choice.append(k)
+        for k,v in neutrals.items():
+            choice.append(k)
+
+        for i in range(60000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text,0,0, 1])
+            print([text,0,0, 1])
+        
+        for i in range(500):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['TEST', text,0,0, 1])
+            print([text,0,0,1])
+        # negative temp
+        for i in range(2000):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 20)
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                
+                text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0,0, 0])
+                print([text,0,0, 0])
+        
+        g_choice = []
+        for k,v in pos_dict.items():
+            for i in range(v):
+                g_choice.append(k)
+        b_choice = []
+        for k,v in neg_dict.items():
+            for i in range(v):
+                b_choice.append(k)
+
+        #good
+        for count in range(5000):
+            distance_s = random.randint(0, 3)
+            s_distance = []
+            for c in range(distance_s):
+                s_distance.append(random.choice(list(neutrals.keys())))
+            text = ""
+            
+            loop_nbad = random.randint(3,7)
+            loop_ngood = random.randint(0,loop_nbad)
+
+            for loop in range(loop_nbad):
+                bow = random.choice(b_choice)
+                # gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += bow + " " + noise3 + " " + noise4 + " "
+
+            for loop in range(loop_ngood):
+                # bow = random.choice(b_choice)
+                gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += gow + " " + noise3 + " " + noise4 + " "
+
+            f_writer.writerow(['UNASSIGNED', text,loop_ngood,loop_nbad,1])
+            print([text,loop_ngood,loop_nbad, 1])
+
+        # bad
+        for count in range(5000):
+            distance_s = random.randint(0, 3)
+            s_distance = []
+            for c in range(distance_s):
+                s_distance.append(random.choice(list(neutrals.keys())))
+            text = ""
+            
+            loop_ngood = random.randint(3,7)
+            loop_nbad = random.randint(0,loop_ngood-2)
+
+            for loop in range(loop_nbad):
+                bow = random.choice(b_choice)
+                # gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += bow + " " + noise3 + " " + noise4 + " "
+
+            for loop in range(loop_ngood):
+                # bow = random.choice(b_choice)
+                gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += gow + " " + noise3 + " " + noise4 + " "
+
+            f_writer.writerow(['UNASSIGNED', text,loop_ngood,loop_nbad,0])
+            print([text,loop_ngood,loop_nbad, 0])
+        
+    f.close()
+
+
+    return jsonify({})
+
+
+@analyze_blueprint.route("/create-comment-data17273747", methods=["GET", "POST"])
+def create_comment_data():
+    comments_good = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
+    # comments_good_test = CommentModel().objects(Q(star_num__gte=4) & Q(detail__ne='') & Q(detail__ne=None))[:10000]
+    comments_bad = CommentModel().objects(Q(star_num__lte=2) & Q(detail__ne='') & Q(detail__ne=None))[:5000]
+    comments_temp = CommentModel().objects(Q(star_num__exact=3) & Q(detail__ne='') & Q(detail__ne=None))[:500]
+    with open('testset_sentiment.csv', mode='w') as f:
+        f_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        # f_writer.writerow(['split','text', 'score'])
+        for comment in comments_good:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                print(text)
+                g,b = Utils.preprocessing_input(text)
+                # f_writer.writerow(['TEST', text, 2])
+        for comment in comments_bad:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                g,b = Utils.preprocessing_input(text)
+                # f_writer.writerow(['TEST',text, 0])
+        for comment in comments_temp:
+            if comment.detail:
+                raw_text = comment.detail
+                if raw_text.startswith('(Translated by Google)'):
+                    raw_text = raw_text.split('(Translated by Google)')[-1][1:]
+                    raw_text = raw_text.split('(Original)')[0]
+                text = raw_text.lower()
+                text = text.replace('\"','')
+                g,b = Utils.preprocessing_input(text)
+                # f_writer.writerow(['TEST',text, 1])
+        # df = pandas.read_csv("train.tsv", usecols = ['Phrase', 'Sentiment'], sep="\t")
+        # document = df.values
+        # for record in document:
+        #     raw = record['Pharse']
+        #     text = raw.lower()
+        #     text = text.replace('\"','')
+
+        pos_dict = POS_DICT
+        neg_dict = BAD_DICT
+        neg_words = NEG_WORDS
+        temp_dict = TEMP_DICT
+        neutrals = NEUTRAL_WORDS
+        choice = []
+        for k,v in pos_dict.items():
+            for i in range(v):
+                choice.append(k)
+            f_writer.writerow(['UNASSIGNED', k, 2])
+        for i in range(10000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text, 2])
+            print([text,0,0, 2])
+        # for i in range(5000):
+        #     sentence = random.randint(2, 20)
+        #     text = ""
+        #     for j in range(sentence):
+        #         temp = random.choice(choice)
+        #         noise = random.choice(list(neutrals.keys()))
+        #         text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+        #     f_writer.writerow(['TEST', text, 2])
+        #     print([text,0,0, 2])
+        # negative pos
+        for i in range(500):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                distance_s = random.randint(0, 3)
+                distance_l = random.randint(4, 20)
+                s_distance = []
+                l_distance = []
+                for c in range(distance_s):
+                    s_distance.append(random.choice(list(neutrals.keys())))
+                for c in range(distance_l):
+                    l_distance.append(random.choice(list(neutrals.keys())))
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(1, 5)
+
+                #short dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0])
+                print([text,1,0, 0])
+                
+                #long dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in l_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,2])
+                print([text,0,0,2])
+
+                #revert
+                text = ""
+                distance_r = random.randint(1, 7)
+                r_distance = []
+                for c in range(distance_r):
+                    r_distance.append(random.choice(list(neutrals.keys())))
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += temp+" "
+                for ele in r_distance:
+                    text += ele + " "
+                text += k + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,2])
+                print([text,0,0,2])
+        # bad sentiment
+        choice = []
+        for k,v in neg_dict.items():
+            for i in range(v):
+                choice.append(k)
+            f_writer.writerow(['UNASSIGNED', k, 0])
+        for i in range(10000):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text, 0])
+            print([text,0,0, 0])
+
+        # for i in range(5000):
+        #     sentence = random.randint(2, 20)
+        #     text = ""
+        #     for j in range(sentence):
+        #         temp = random.choice(choice)
+        #         noise = random.choice(list(neutrals.keys()))
+        #         text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+        #     f_writer.writerow(['TEST', text, 0])
+        #     print([text,0,0, 0])
+        # negative neg
+        for i in range(500):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                distance_s = random.randint(0, 3)
+                distance_l = random.randint(4, 20)
+                s_distance = []
+                l_distance = []
+                for c in range(distance_s):
+                    s_distance.append(random.choice(list(neutrals.keys())))
+                for c in range(distance_l):
+                    l_distance.append(random.choice(list(neutrals.keys())))
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(1, 5)
+
+                #short dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,1])
+                print([text,0,1 ,1])
+                
+                #long dis
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += k+" "
+                for ele in l_distance:
+                    text += ele + " "
+                text += temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0])
+                print([text,0,0, 0])
+
+                #revert
+                text = ""
+                distance_r = random.randint(1, 7)
+                r_distance = []
+                for c in range(distance_r):
+                    r_distance.append(random.choice(list(neutrals.keys())))
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += temp+" "
+                for ele in r_distance:
+                    text += ele + " "
+                text += k + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text,0])
+                print([text,0,0, 0])
+        # temp sentiment
+        choice = []
+        for k,v in temp_dict.items():
+            f_writer.writerow(['UNASSIGNED', k, 1])
+            for i in range(v):
+                choice.append(k)
+        for k,v in neutrals.items():
+            choice.append(k)
+
+        for i in range(500):
+            sentence = random.randint(2, 20)
+            text = ""
+            for j in range(sentence):
+                temp = random.choice(choice)
+                noise = random.choice(list(neutrals.keys()))
+                text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+            f_writer.writerow(['UNASSIGNED', text, 1])
+            print([text,0,0, 1])
+        
+        # for i in range(500):
+        #     sentence = random.randint(2, 20)
+        #     text = ""
+        #     for j in range(sentence):
+        #         temp = random.choice(choice)
+        #         noise = random.choice(list(neutrals.keys()))
+        #         text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
+        #     f_writer.writerow(['TEST', text, 1])
+        #     print([text,0,0,1])
+        # negative temp
+        for i in range(100):
+            for k,v in neg_words.items():
+                temp = random.choice(choice)
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 20)
+                text = ""
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                
+                text += " " + k + " " + temp + " " + noise3 + " " + noise4 + " "
+                f_writer.writerow(['UNASSIGNED', text, 0])
+                print([text,0,0, 0])
+        
+        g_choice = []
+        for k,v in pos_dict.items():
+            for i in range(v):
+                g_choice.append(k)
+        b_choice = []
+        for k,v in neg_dict.items():
+            for i in range(v):
+                b_choice.append(k)
+
+        #good
+        for count in range(5000):
+            distance_s = random.randint(0, 3)
+            s_distance = []
+            for c in range(distance_s):
+                s_distance.append(random.choice(list(neutrals.keys())))
+            text = ""
+            
+            loop_nbad = random.randint(3,7)
+            loop_ngood = random.randint(0,loop_nbad)
+
+            for loop in range(loop_nbad):
+                bow = random.choice(b_choice)
+                # gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += bow + " " + noise3 + " " + noise4 + " "
+
+            for loop in range(loop_ngood):
+                # bow = random.choice(b_choice)
+                gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += gow + " " + noise3 + " " + noise4 + " "
+
+            f_writer.writerow(['UNASSIGNED', text,1])
+            print([text,loop_ngood,loop_nbad, 1])
+
+        # bad
+        for count in range(5000):
+            distance_s = random.randint(0, 3)
+            s_distance = []
+            for c in range(distance_s):
+                s_distance.append(random.choice(list(neutrals.keys())))
+            text = ""
+            
+            loop_ngood = random.randint(3,7)
+            loop_nbad = random.randint(0,loop_ngood-2)
+
+            for loop in range(loop_nbad):
+                bow = random.choice(b_choice)
+                # gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += bow + " " + noise3 + " " + noise4 + " "
+
+            for loop in range(loop_ngood):
+                # bow = random.choice(b_choice)
+                gow = random.choice(g_choice)
+                now = random.choice(list(neg_words.keys()))
+
+                noise3 = random.choice(list(neutrals.keys()))
+                noise4 = random.choice(list(neutrals.keys()))
+                sentence = random.randint(2, 5)
+                for j in range(sentence):
+                    noise = random.choice(list(neutrals.keys()))
+                    text += noise + " "
+                text += now+" "
+                for ele in s_distance:
+                    text += ele + " "
+                text += gow + " " + noise3 + " " + noise4 + " "
+
+            f_writer.writerow(['UNASSIGNED', text,0])
+            print([text,loop_ngood,loop_nbad, 0])
+        
+    f.close()
+
+
+    return jsonify({})
+
+
+@analyze_blueprint.route("/make-time-late17273747", methods=["GET", "POST"])
+def reset_sentiment_store():
+    all_stores = StoreModel().query_all()
+    i =0
+    for store in all_stores:
+        i+=1
+        all_comments = CommentModel().find_by_store_id(store.id)
+        for comment in all_comments:
+            past = comment.updated_on
+            p = time.mktime(past.timetuple())
+            now = datetime.datetime.now()
+            n = time.mktime(now.timetuple())
+            if comment.detail and comment.detail != "": 
+                if n - p > 172800:
+                    comment.update(set__sync_time=True, set__updated_on=now)
+                    print(comment.detail)
+        print(store.name)
+        print(i)
+    return jsonify({})
+
+
+@analyze_blueprint.route("/make-address17273747", methods=["GET", "POST"])
+def make_address():
+    all_stores = StoreModel().query_all()
+    i =0
+    for store in all_stores:
+        i+=1
+        lat = float(store.position['lat'])
+        lng = float(store.position['lng'])
+        store.update(set__lat=lat, set__lng=lng)
+        print(store.name)
+        print(i)
+    return jsonify({})
+
 
 def sample_translate_text(text, target_language, project_id):
     """

@@ -1,25 +1,41 @@
-import mongoengine
+from mongoengine.document import Document
+from mongoengine.fields import *
 import datetime
-from app.main.search.models import SearchableMixin
+
+from app.entity.store import Store
+from app.entity.user import User
+from app.main.search.search import SearchableMixin
 
 
-class Comment(mongoengine.Document, SearchableMixin):
-    __tablename__ = 'comment_mongo'
+class Comment(Document, SearchableMixin):
+    __tablename__ = 'comment'
     __searchable__ = ['detail']
-    detail = mongoengine.StringField(max_length=1000)
-    user_id = mongoengine.ObjectIdField(default=None)
+    detail = StringField(max_length=1000)
+    user_id = ObjectIdField(default=None)
 
-    store_id = mongoengine.ObjectIdField()
-    # comment_type: s,a,b,c,d,e,f,g,h,i
-    comment_type = mongoengine.StringField(max_length=10)
-    star_num = mongoengine.IntField()
-    cus_name = mongoengine.StringField(max_length=255)
-    sentiment_dict = mongoengine.DictField()
-    created_at = mongoengine.DateTimeField(default=datetime.datetime.now)
-    updated_on = mongoengine.DateTimeField(default=datetime.datetime.now)
+    detail = StringField(max_length=1000, default=None)
+
+    user_id = ReferenceField(User)
+    store_id = ReferenceField(Store, required=True)
+
+    comment_type = StringField(max_length=10)
+    star_num = IntField()
+    cus_name = StringField(max_length=255)
+    sentiment_dict = DictField()
+    sync_time = BooleanField()
+
+    created_at = DateTimeField(default=datetime.datetime.now())
+    updated_on = DateTimeField(default=None)
+    sync_time = BooleanField()
 
     meta = {'allow_inheritance': True,
             'ordering': ['-updated_on']}
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = datetime.datetime.now()
+        self.updated_on = datetime.datetime.now()
+        return super(Comment, self).save(*args, **kwargs)
 
     def __repr__(self):
         return '<Comment %r>' % (self.detail)

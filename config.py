@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -21,12 +22,10 @@ class Config:
         'flask_mongoengine.panels.MongoDebugPanel'
     )
     DEBUG_TB_INTERCEPT_REDIRECTS = False
-    ELASTICSEARCH_URL = 'http://localhost:9200'
+    ELASTICSEARCH_URL = 'https://search-bloganuong-es2-6dzkl36ttjgctbjass26vku7qu.ap-southeast-1.es.amazonaws.com'
 
     SESSION_TYPE = 'filesystem'
-    PERMANENT_SESSION_LIFETIME = timedelta(hours=5)
-    # The maximum number of items the session stores
-    # before it starts deleting some, default 500
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     SESSION_FILE_THRESHOLD = 100
 
     @staticmethod
@@ -36,10 +35,10 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    MONGODB_DB = 'foodblog1'
-    MONGODB_HOST = 'mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority'
-    # MONGODB_DB = 'main_1'
-    # MONGODB_HOST = 'mongodb://localhost:27017/main_1'
+    # MONGODB_DB = 'foodblog1'
+    # MONGODB_HOST = 'mongodb+srv://hoangan:hoangan123456@cluster0-ypawj.gcp.mongodb.net/foodblog1?retryWrites=true&w=majority'
+    MONGODB_DB = 'foodblog_opt1'
+    MONGODB_HOST = 'mongodb+srv://admin:britcat@clusteroptimize-wysnm.gcp.mongodb.net/foodblog_opt1?retryWrites=true&w=majority'
 
     @classmethod
     def init_app(cls, app):
@@ -48,8 +47,9 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    MONGODB_DB = 'main_3'
-    MONGODB_HOST = 'mongodb://localhost:27017/main_3'
+    MONGODB_DB = 'test_blogfood_2'
+    MONGODB_HOST = 'mongodb://localhost:27017/test_blogfood_2'
+    ELASTICSEARCH_URL = 'http://localhost:9200'
 
     @classmethod
     def init_app(cls, app):

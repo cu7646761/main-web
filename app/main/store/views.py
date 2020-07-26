@@ -1,23 +1,25 @@
-from functools import wraps
 import time
 import math
 import requests
 import math
 import nltk,re
+# nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
 from nltk.tokenize import word_tokenize
 from constants import Pages, CLASS_LIST
 from flask import redirect, render_template, Blueprint, session, request, request, jsonify, make_response
 
 from app.main.store.forms import StoreForm
-from app.main.store.models import StoreModel
+from app.model.store import StoreModel
 from app.main.comment.forms import AddCommentForm
-from app.main.category.models import CategoryModel
-from app.main.address.models import AddressModel
+from app.model.category import CategoryModel
+from app.model.address import AddressModel
 from app.main.auth.views import login_required
 
 from utils import Utils
 from constants import CLASS_LIST
-from app.main.comment.models import CommentModel
+from app.model.comment import CommentModel
 
 from flask.helpers import url_for
 from math import sqrt
@@ -31,24 +33,27 @@ store_blueprint = Blueprint(
 @store_blueprint.route("/stores/<string:store_id>", methods=["GET", "POST"])
 @login_required
 def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
+    print(session['pos'])
     if form is None:
         form = AddCommentForm()
     # form = StoreForm()
+    CommentModel.update(store_id)
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
     session['search'] = store[0].name_translate
-    category = categories.findAllById(store[0].categories_id)
-    address = AddressModel().find_by_id(store[0].address_id)
+    category = store[0].categories_id
+    address = store[0].address_id
     star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     current_user = None
     userAddress = None
     error = None
+    comment = None
     try:
         if session['logged'] == True:
             current_user = session['cur_user']
             if current_user.address_id:
-                userAddress = AddressModel().find_by_id(current_user.address_id)
+                userAddress = current_user.address_id
             
     except:
         pass
@@ -62,7 +67,7 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
     # page = request.args.get('page', 1, type=int)
     # comments, pages = CommentModel().query_paginate_sort(page)
     # datas = []
-    # for comment in comments:
+    # for comment in comments:e 'stores' referenced before
     #     if (str(store_id) == str(comment.store_id)):
     #         datas += [{
     #             "detail": comment.detail,
@@ -74,11 +79,11 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
         commentModel = CommentModel()
         if form.validate_on_submit():
             name = request.form.get("name", "")
-            comment = request.form.get("comment", "")
+            comment = request.form.get("comment", None)
             star = request.form.get("star", "")
             if not star:
                 error = "Star is required"
-                return render_template('detail.html', store=store[0], category=category, address=address[0],
+                return render_template('detail.html', store=store[0], category=category, address=address,
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
                                            current_user=current_user, form=form, error=error, user=current_user,
@@ -86,64 +91,70 @@ def view_detail(store_id=None, page=1, db=list(), form=None, error=None):
             if error is None:
 
                 if current_user:
-                    new_comment, error = CommentModel.create(store_id, comment, star, current_user.id)
+                    new_comment, error = commentModel.create(store_id, comment, star, current_user.id)
                     
                 else:
-                    new_comment, error = CommentModel.create(store_id, comment, star, None)
+                    new_comment, error = commentModel.create(store_id, comment, star, None)
                 if error:
-                    return render_template('detail.html', store=store[0], category=category, address=address[0],
+                    return render_template('detail.html', store=store[0], category=category, address=address,
                                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4,
                                            star_s5=star_s5, avr_star=avr_star, cnt=cnt, store_id=store_id,
                                            current_user=current_user, form=form, error=error, user=current_user,
                                            entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
-                if comment !="":
-                    text_tsl = Utils.sample_translate_text(comment, "en-US", "britcat3")
-                    text = text_tsl.translations[0].translated_text.lower()
-                    sentences = text.split(".")
-                    score_list = []
-                    et_dict = dict(store[0].entity_score)
-                    for sentence in sentences:
-                        if sentence == "":
-                            continue
-                        sc = Utils.predict_sentiment_score(sentence)
-                        cleaned = re.sub(r"[^(a-zA-Z')\s]",'', sentence)
-                        tokenize = word_tokenize(cleaned)
-                        pos = nltk.pos_tag(tokenize)
-                        allow_type = ["N"]
-                        all_words = []
-                        for w in pos:
-                            if w[1][0] in allow_type:
-                                all_words.append(w[0])
-                        
-                        for word in all_words:
-                            if word == "i":
-                                continue
-                            uword = word.upper()
-
-                            if not et_dict.get(uword, False):
-                                et_dict[uword] = {
-                                    "quantity": 1,
-                                    "sentiment": sc
-                                }
-                            else:
-                                et_dict[uword] = {
-                                    "quantity": et_dict[uword]["quantity"]+1,
-                                    "sentiment": et_dict[uword]["sentiment"]+sc               
-                                }
-                        score_list.append(sc)
-                    score = sum(score_list)/len(score_list)
-                    review_list = CommentModel().find_by_store_id(store_id)
-                    quant_comment = review_list.filter(Q(detail__ne=None)&Q(detail__ne=""))
-                    score_sentiment = (store[0].score_sentiment + score)/len(quant_comment)
-                    store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
+                if comment is not None:
+                    comment = new_comment
                     # score = Utils.predict_sentiment_score(text)
-                    # print(aka)
-                return redirect(request.url)
 
-    return render_template('detail.html', store=store[0], category=category, address=address[0],
+    return render_template('detail.html', store=store[0], category=category, address=address,
                            star_s1=star_s1, star_s2=star_s2, star_s3=star_s3, star_s4=star_s4, star_s5=star_s5,
                            avr_star=avr_star, cnt=cnt, store_id=store_id, current_user=current_user, form=form, error=error
-                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted)
+                           , user=current_user, entity_dict=entity_dict[0:15], API_KEY=API_KEY, cate_dict=type_sorted, comment=comment)
+
+
+@store_blueprint.route("/load-analyze-comment/<string:store_id>/<string:comment>")
+def load_analyze_comment(store_id, comment):
+    store = StoreModel().find_by_id(store_id)
+    cur_comment = CommentModel().find_by_id(comment)[0]
+    text_tsl = Utils.sample_translate_text(cur_comment.detail, "en-US", "britcat3")
+    text = text_tsl.translations[0].translated_text.lower()
+    sentences = re.split(",|\.|but", text)
+    score_list = []
+    et_dict = dict(store[0].entity_score)
+    for sentence in sentences:
+        if sentence == "":
+            continue
+        sc = Utils.predict_sentiment_online(sentence)
+        cleaned = re.sub(r"[^(a-zA-Z')\s]",'', sentence)
+        tokenize = word_tokenize(cleaned)
+        pos = nltk.pos_tag(tokenize)
+        allow_type = ["N"]
+        all_words = []
+        for w in pos:
+            if w[1][0] in allow_type:
+                all_words.append(w[0])
+        
+        for word in all_words:
+            if word == "i":
+                continue
+            uword = word.upper()
+
+            if not et_dict.get(uword, False):
+                et_dict[uword] = {
+                    "quantity": 1,
+                    "sentiment": sc
+                }
+            else:
+                et_dict[uword] = {
+                    "quantity": et_dict[uword]["quantity"]+1,
+                    "sentiment": et_dict[uword]["sentiment"]+sc               
+                }
+        score_list.append(sc)
+    score = sum(score_list)/len(score_list)
+    review_list = CommentModel().find_by_store_id(store_id)
+    quant_comment = review_list.filter(Q(detail__ne=None)&Q(detail__ne=""))
+    score_sentiment = (store[0].score_sentiment*(quant_comment.count()-1) + score)/quant_comment.count()
+    store[0].update(set__entity_score=et_dict, set__score_sentiment=score_sentiment)
+    return make_response(jsonify({}), 200)
 
 
 @store_blueprint.route("/load-relative-store/<string:store_id>")
@@ -151,8 +162,8 @@ def load_relative_store(store_id):
     stores = StoreModel()
     categories = CategoryModel()
     store = stores.find_by_id(store_id)
-    category = categories.findAllById(store[0].categories_id)
-    address = AddressModel().find_by_id(store[0].address_id)
+    category = store[0].categories_id
+    address = store[0].address_id
     # star_s1, star_s2, star_s3, star_s4, star_s5, avr_star, cnt = countStar(store)
     current_user = None
     userAddress = None
@@ -160,7 +171,7 @@ def load_relative_store(store_id):
         if session['logged'] == True:
             current_user = session['cur_user']
             if current_user.address_id:
-                userAddress = AddressModel().find_by_id(current_user.address_id)
+                userAddress = current_user.address_id
             
     except:
         pass
@@ -170,36 +181,36 @@ def load_relative_store(store_id):
         recStore, pg = stores.find_optimize_by_categories(store[0].category_predict, store[0].categories_id, page, store[0].id)
         datas = []
         for rec in recStore:
-            classify = Utils.get_classification_by_score(rec.classification)
-            classCur =  Utils.get_classification_by_score(store[0].classification)
-            distance = "Không xác định"
-            disCur = "Không xác định"
-            x1 = float(rec.position.get("lat"))
-            y1 = float(rec.position.get("lng"))
-            xCur = float(store[0].position.get("lat"))
-            yCur = float(store[0].position.get("lng"))
+            # classify = Utils.get_classification_by_score(rec.classification)
+            # classCur =  Utils.get_classification_by_score(store[0].classification)
+            # distance = "Không xác định"
+            # disCur = "Không xác định"
+            # x1 = float(rec.position.get("lat"))
+            # y1 = float(rec.position.get("lng"))
+            # xCur = float(store[0].position.get("lat"))
+            # yCur = float(store[0].position.get("lng"))
 
-            if session["pos"] is not None:
-                x2 = float(session["pos"].get("lat"))
-                y2 = float(session["pos"].get("lng"))
-                distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-                disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
-            else:
-                if session['logged'] == True:
-                    if current_user.address_id:
-                        x2 = float(userAddress[0].latitude)
-                        y2 = float(userAddress[0].longtitude)
-                        distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
-                        disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
-            curStore ={
-                "classify":classCur,
-                "distance":disCur,
-            }
+            # if session["pos"] is not None:
+            #     # x2 = float(session["pos"].get("lat"))
+            #     # y2 = float(session["pos"].get("lng"))
+            #     # distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+            #     # disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+            # else:
+            #     if session['logged'] == True:
+            #         if current_user.address_id:
+                        # x2 = float(userAddress.latitude)
+                        # y2 = float(userAddress.longtitude)
+                        # distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
+                        # disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
+            # curStore ={
+            #     # "classify":classCur,
+            #     "distance":disCur,
+            # }
             datas += [{
                 "store": rec,
-                "classify": classify,
-                "distance": distance,
-                "curStore" :curStore,
+                # "classify": classify,
+                # "distance": distance,
+                # "curStore" :curStore,
             }]
         rs = {
             "datas": datas,
@@ -218,15 +229,17 @@ def load_compare(store_id_cur, store_id_target):
         if session['logged'] == True:
             current_user = session['cur_user']
             if current_user.address_id:
-                userAddress = AddressModel().find_by_id(current_user.address_id)
+                userAddress = AddressModel().find_by_id(current_user.address_id.id)
     except:
         pass
 
     store_model = StoreModel()
     store_cur = store_model.find_by_id(store_id_cur)[0]
     store_target = store_model.find_by_id(store_id_target)[0]
-    classCur =  Utils.get_classification_by_score(store_cur.classification)
-    classify_tar = Utils.get_classification_by_score(store_target.classification)
+    # classCur =  Utils.get_classification_by_score(store_cur.classification)
+    class_cur = store_cur.score_sentiment
+    # classify_tar = Utils.get_classification_by_score(store_target.classification)
+    classify_tar = store_target.score_sentiment
     distance = "Không xác định"
     disCur = "Không xác định"
     x1 = float(store_target.position.get("lat"))
@@ -247,12 +260,12 @@ def load_compare(store_id_cur, store_id_target):
                 distance = round(getDistanceFromLatLonInKm(x1,y1,x2,y2),1)
                 disCur = round(getDistanceFromLatLonInKm(xCur,yCur,x2,y2),1)
     data = {
-        "class_cur":classCur,
+        "class_cur":round(class_cur,2),
         "dis_cur":disCur,
         "star_cur":store_cur.stars,
         "review_cur":store_cur.reviewer_quant,
         "name_cur": store_cur.name,
-        "class_tar":classify_tar,
+        "class_tar":round(classify_tar,2),
         "dis_tar":distance,
         "star_tar":store_target.stars,
         "review_tar":store_target.reviewer_quant,
@@ -321,7 +334,7 @@ def getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2):
 def deg2rad(deg):
     return deg*(math.pi/180)
 
-@store_blueprint.route('/stores/', methods=['GET'])
+@store_blueprint.route('/stores/', methods=['GET', 'POST'])
 @login_required
 def stores():
     page = request.args.get('page', 1, type=int)
@@ -329,11 +342,34 @@ def stores():
     level_filter = request.args.get('level', '', type=str)
     categories_filter = request.args.get('categories', '', type=str)
     cate_predict_filter = request.args.get('cate_predict', '', type=str)
+    star_filter = request.args.get('star', '', type=str)
+    quality_filter = request.args.get('quality', '', type=str)
+    distance_filter = request.args.get('quality', '', type=str)
+
+    if request.method == 'POST':
+        categories_filter = ""
+        cate_param = request.form.getlist("cate")
+        for c in cate_param:
+            categories_filter +=c+","
+        categories_filter = categories_filter[:-1]
+        star = request.form.get("star")
+        star_filter = star
+        quality = request.form.get("quality")
+        quality_filter = quality
+        level = request.form.get("level")
+        level_filter = level
+        distance = request.form.get("distance")
+        distance_filter = distance
+
+
     filter = {
         "classification": class_filter,
         "level": level_filter,
         "categories": categories_filter,
-        "cate_predict": cate_predict_filter
+        "cate_predict": cate_predict_filter,
+        "star": star_filter,
+        "quality": quality_filter,
+        "distance": distance_filter
     }
 
     # add param
@@ -346,11 +382,11 @@ def stores():
     comment_model = CommentModel()
     adr_model = AddressModel()
 
-    stores, pages = store_model.query_paginate_sort(page, filter)
+    stores, pages, num = store_model.query_paginate_sort(page, filter)
     datas = []
     for store in stores:
-        address = AddressModel().find_by_id(store.address_id)
-        cates = categories.findAllById(store.categories_id)
+        address = store.address_id
+        cates = store.categories_id
         # classify = CLASS_LIST[store.classification]
         # classify = Utils.get_classification_by_score(store.classification)
         datas += [{
@@ -366,39 +402,32 @@ def stores():
     selected_dics = {
         "cates": {},
         "level": level_filter,
-        "address": {}
+        "address": {},
+        "star": star_filter,
+        "quality": quality_filter,
+        "distance": distance_filter
     }
     for cate in all_cates:
         selected_dics["cates"][cate.name_link] = False
         if cate.name_link in selected_cates:
             selected_dics["cates"][cate.name_link] = True
-    # address = 
-    return render_template("listing.html", datas=datas, pages=pages,
+    return render_template("listing.html", datas=datas, pages=pages, num=num,
                            current_page=page, additional_params=additional_params,
                            categories=all_cates, selected_dics=selected_dics, user=session['cur_user'])
 
+@login_required
+@store_blueprint.route("/recommend-suitable-store/", methods=["GET"])
+def recommend_suitale_store():
+    store = StoreModel()
+    current_user = session["cur_user"]
+    rs = Utils.predict_food_cate_online(current_user.infor_rec)
+    food_cates = ""
+    for k,v in rs.items():
+        food_cates+=k + ","
+    food_cates = food_cates[:-1]
+    print(rs)
+    return redirect('/stores/?cate_predict='+food_cates)
 
-# @auth_blueprint.route("/detail-store", methods=["POST"])
-# def post_signup(error=None):
-#     form = DetailStoreForm()
-#     if form.validate_on_submit():
-#         user = StoreModel()
-#         email = request.form.get("email", "")
-#         password = request.form.get("password", "")
-#         if not email:
-#             error = "Email is required"
-#         elif not password:
-#             error = "Password is required"
-#         elif len(user.find_by_email(email)) == 1:
-#             error = "Store {0} is already registered.".format(email)
-#         if error is None:
-#             # the name is available, store it in the database
-#             hashed_passwd = Utils.hash_password(password)
-#             new_user, error = StoreModel.create(email, hashed_passwd)
-#             if error:
-#                 return render_template('signup.html', error=error, success=None, form=form)
-#             return render_template('signup.html', success="You have signed up successfully", form=form)
-#     return render_template('signup.html', error=error, form=form)
 
 @store_blueprint.route("/store", methods=["POST"])
 def get_store_api():
@@ -409,4 +438,3 @@ def get_store_api():
     except:
         name = request.data.decode("utf-8").split("=")[1]
     return jsonify({"id": str(store.find_by_name(name).id)})
-    

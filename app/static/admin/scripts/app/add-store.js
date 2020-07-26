@@ -1,8 +1,6 @@
-/*
- |--------------------------------------------------------------------------
- | Shards Dashboards: Blog Add New Post Template
- |--------------------------------------------------------------------------
- */
+var URL_SERVER = 'http://127.0.0.1:5000';
+var IMGUR_API_URL = URL_SERVER + '/admin/store/images/';
+var IMGRM_API_URL = URL_SERVER + '/admin/store/images/delete/';
 
 'use strict';
 var test = new Object();
@@ -18,11 +16,6 @@ var test = new Object();
             [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent         // remove formatting button
             ['image', 'link'],
         ];
-
-        var IMGUR_CLIENT_ID = 'bcab3ce060640ba';
-        // var IMGUR_API_URL = 'https://api.imgur.com/3/image';
-        var IMGUR_API_URL = 'http://127.0.0.1:5000/admin/store/images/';
-
 
         // Init the Quill RTE
         var quill = new Quill('#editor-container', {
@@ -45,12 +38,10 @@ var test = new Object();
         Object.assign(test, quill)
 
         quill.getModule('toolbar').addHandler('image', (quill) => {
-            console.log("huhu0")
             selectLocalImage(quill);
         });
 
         function selectLocalImage() {
-            console.log("huhu")
             const input = document.createElement('input');
             input.setAttribute('type', 'file');
             input.click();
@@ -71,7 +62,6 @@ var test = new Object();
 
             // push image url to rich editor.
             const range = quill.getSelection();
-            console.log("%%%")
             quill.insertEmbed(range.index, 'image', url);
         }
 
@@ -80,8 +70,6 @@ var test = new Object();
             data.append('image', image);
             var xhr = new XMLHttpRequest();
             xhr.open('POST', IMGUR_API_URL, true);
-            // xhr.setRequestHeader('Authorization', 'Client-ID ' + IMGUR_CLIENT_ID);
-            // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     var response = JSON.parse(xhr.responseText);
@@ -113,7 +101,6 @@ var test = new Object();
     });
 })(jQuery);
 
-var IMGUR_API_URL = 'http://127.0.0.1:5000/admin/store/images/';
 
 function readURL(input) {
     if (input.files && input.files[0]) {
@@ -168,6 +155,19 @@ function removeUpload() {
     $('.file-upload-input').replaceWith($('.file-upload-input').clone());
     $('.file-upload-content').hide();
     $('.image-upload-wrap').show();
+
+    var data = new FormData();
+    data.append('delete_img', $('#delete_img').val());
+    data.append('post-title', $('#post-title').val());
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', IMGRM_API_URL, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            var response = JSON.parse(xhr.responseText);
+            console.log(response);
+        }
+    }
+    xhr.send(data);
 }
 
 $('.image-upload-wrap').bind('dragover', function () {
@@ -207,33 +207,33 @@ function getAttrFromString(str, node, attr) {
 }
 
 document.getElementById("pulish-post-btn").addEventListener("click", () => {
-
     let title = $('#post-title').val()
     let content = $('.ql-editor').html()
     let thumbnail = $('.file-upload-image').attr('src')
+    let min_price = $('#min_price').val()
+    let max_price = $('#max_price').val()
 
     let categories = []
-    console.log(categories)
     $('input[type=checkbox]').each(function () {
-        if (this.checked){
-            categories.push($(this).val()) ;
-            console.log("hehe")
-            console.log(categories)
+        if (this.checked) {
+            categories.push($(this).val());
         }
     });
-    let address_detail = $('#result-address').val()
+    let address_detail = $('#result_address').val()
 
-    if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0)) {
+    if ((title === "") || (content === "") || (thumbnail === "#") || (address_detail === "") || (categories.length == 0) || (min_price == "") || (max_price == "")) {
         alert("Bạn nên điền đầy đủ các thông tin về cửa hàng");
+        return;
+    }
+    if (thumbnail == "" || (thumbnail === "#")) {
+        alert("Bạn cần thêm thumbnail để thêm cửa hàng!");
         return;
     }
 
     let address_district = address_detail.split(",")[1].trim()
-
-
     var http = new XMLHttpRequest();
 
-    var url = 'http://127.0.0.1:5000/admin/store/add/';
+    var url = URL_SERVER + '/admin/store/add/';
     var params = {
         "description": content,
         "name": title,
@@ -241,7 +241,9 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
         "categories": categories,
         "address_detail": address_detail,
         "address_district": address_district,
-        "image_list": getAttrFromString(content, 'img', 'src')
+        "image_list": getAttrFromString(content, 'img', 'src'),
+        "min_price": min_price.toString(),
+        "max_price": max_price.toString()
     };
     http.open('POST', url, true);
 
@@ -252,7 +254,7 @@ document.getElementById("pulish-post-btn").addEventListener("click", () => {
         console.log(http.status)
         if (http.readyState == 4 && http.status == 200) {
             console.log("Send ok")
-            location.replace("http://127.0.0.1:5000/admin/store/");
+            location.replace(URL_SERVER + "/admin/store/");
         }
     }
     http.send(JSON.stringify(params));

@@ -69,7 +69,6 @@
                                     <tr>
                                         <th scope="col" class="border-0">Tên</th>
                                         <th scope="col" class="border-0">Số sao trung bình</th>
-                                        {#                                        <th scope="col" class="border-0">Số bình luận</th>#}
                                         <th scope="col" class="border-0">Địa chỉ</th>
                                         <th scope="col" class="border-0">Mức giá</th>
                                         <th scope="col" class="border-0">Ngày tạo</th>
@@ -89,10 +88,12 @@
                                                 <td style="width:150px">{{ obj["created_at"] }}</td>
                                                 <td style="width:150px">{{ obj["deleted_at"] }}</td>
                                                 <td>
-                                                    <a type="button" class="btn btn-info" href=/admin/store/edit/{{ obj["_id"] }}>
+                                                    <a type="button" class="btn btn-info"
+                                                       href=/admin/store/edit/{{ obj["_id"] }}>
                                                         Sửa
                                                     </a>&nbsp
-                                                    <a type="button" class="btn btn-danger" href=/admin/store/delete/{{ obj["_id"] }}>
+                                                    <a type="button" class="btn btn-danger"
+                                                       href=/admin/store/delete/{{ obj["_id"] }}>
                                                         Xoá
                                                     </a>
                                                 </td>
@@ -114,47 +115,54 @@
                 </div>
             </div>
 
-            </div>
-            <div class="container">
-                <nav aria-label="Page navigation">
-                    Hiển thị trên tổng số {{count}} cửa hàng.
-                    <ul class="pagination justify-content-end" id="pagination"></ul>
-                </nav>
-            </div>
+        </div>
+        <div class="container">
+            <nav aria-label="Page navigation">
+                Hiển thị trên tổng số {{ count }} cửa hàng.
+                <ul class="pagination justify-content-end" id="pagination"></ul>
+            </nav>
+        </div>
         </div>
     </main>
 
 
     <script type="text/javascript">
-        $('#pagination').twbsPagination({
-            totalPages: parseInt($("#totalPages").attr('value')),
-            visiblePages: 4,
-            onPageClick: function (event, page) {
-                $('#body-store').empty();
-                $('#body-store').append(`
+        if (!(isNaN(parseInt($("#totalPages").attr('value'))))) {
+            $('#pagination').twbsPagination({
+                totalPages: parseInt($("#totalPages").attr('value')),
+                visiblePages: 4,
+                onPageClick: function (event, page) {
+                    $('#body-store').empty();
+                    $('#body-store').append(`
                                    <tr>
                                         <td>Đang tải ...</td>
                                     </tr>`
-                );
+                    );
 
-                $('#page-content').text('Page ' + page);
-                $.ajax('/admin/store/api/list?page=' + page,
-                    {
-                        dataType: 'json',
-                        success: function (data) {
-                            var all_store = "";
-                            $('#body-store').empty();
+                    $('#page-content').text('Page ' + page);
+                    $.ajax('/admin/store/api/list?page=' + page,
+                        {
+                            dataType: 'json',
+                            success: function (data) {
+                                var all_store = "";
+                                $('#body-store').empty();
 
-                            for (var i = 0; i < data.data.length; i++) {
-                                console.log(data.data[i]);
-                                var addStore = `
+                                for (var i = 0; i < data.data.length; i++) {
+                                    str_deleted_at = data.data[i].deleted_at;
+                                    console.log(data.data[i].deleted_at);
+                                    if (typeof data.data[i].deleted_at == 'undefined') {
+                                        str_deleted_at = 'Chưa xoá';
+                                    } else {
+                                        str_deleted_at = data.data[i].deleted_at;
+                                    }
+                                    var addStore = `
                                 <tr>
                                     <td style ="width:200px">` + data.data[i].name + `</td>
                                     <td>` + data.data[i].stars + `</td>
                                     <td style ="width:200px">` + data.data[i].address + `</td>
                                     <td>` + data.data[i].price + `</td>
                                     <td style ="width:150px">` + data.data[i].create_at + `</td>
-                                    <td style ="width:150px">` + data.data[i].deleted_at + `</td>
+                                    <td style ="width:150px">` + str_deleted_at + `</td>
                                     <td>
                                         <a type="button" class="btn btn-info" href=/admin/store/edit/` + data.data[i].store_id + `>
                                             Sửa
@@ -165,16 +173,17 @@
                                     </td>
                                 </tr>
                                 `;
-                                all_store = all_store + addStore;
+                                    all_store = all_store + addStore;
+                                }
+                                $('#body-store').append($(all_store));
+                            },
+                            error: function (jqXhr, textStatus, errorMessage) { // error callback
+                                $('p').append('Error: ' + errorMessage);
                             }
-                            $('#body-store').append($(all_store));
-                        },
-                        error: function (jqXhr, textStatus, errorMessage) { // error callback
-                            $('p').append('Error: ' + errorMessage);
-                        }
-                    });
-            }
-        });
+                        });
+                }
+            });
+        }
     </script>
 
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

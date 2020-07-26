@@ -1,18 +1,16 @@
 from functools import wraps
-from flask import redirect, render_template, Blueprint, session, request, Request
+from flask import redirect, render_template, Blueprint, session, request
 
-from app.main.auth.forms import LoginForm, SignupForm
-from app.main.auth.models import UserModel
-from app.main.store.models import StoreModel
-from app.main.address.models import AddressModel
+from app.main.auth.forms import LoginForm, SignupForm, EmailForm, ResetForm
+from app.model.auth import UserModel
+from app.model.store import StoreModel
 from app.main.search.forms import SearchForm
 
 from app.email import send_email
-from utils import Utils
 from constants import SERVER_NAME
 from flask.helpers import make_response
 from flask.json import jsonify
-from constants import API_KEY
+from constants import API_KEY, CATE_LIST
 from utils import Utils
 
 auth_blueprint = Blueprint(
@@ -36,13 +34,13 @@ def login_required(f):
 @auth_blueprint.route("/login", methods=["GET"])
 def get_login():
     form = LoginForm()
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, footer="footer")
 
 
 @auth_blueprint.route("/signup", methods=["GET"])
 def get_signup():
     form = SignupForm()
-    return render_template('signup.html', form=form)
+    return render_template('signup.html', form=form, footer="footer")
 
 
 @auth_blueprint.route("/signup", methods=["POST"])
@@ -54,15 +52,15 @@ def post_signup(error=None):
         password = request.form.get("password", "")
         password_confirm = request.form.get("password_confirm", "")
         if not email:
-            error = "Email is required"
+            error = "Vui lòng nhập email"
         elif not password:
-            error = "Password is required"
+            error = "Vui lòng nhập mật khẩu"
         elif password != password_confirm:
-            error = "Repeat password is incorrect"
+            error = "Mật khẩu lặp lại không đúng"
 
         elif len(user.find_by_email(email)) == 1:
             if user.find_by_email(email)[0].active == 1:
-                error = "User {0} is already registered.".format(email)
+                error = "Người dùng đã được đăng ký".format(email)
             elif user.find_by_email(email)[0].active == 0:
                 try:
                     url = str(SERVER_NAME) + "/confirm-email?email=" + str(email) + "&password=" + str(
@@ -72,8 +70,8 @@ def post_signup(error=None):
                                      html_content=message,
                                      recipients=str(email))
                     return render_template('signup.html',
-                                           success="You account is not activated. Please check email and confirm email to complete sign up",
-                                           form=form)
+                                           success="Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký",
+                                           form=form, footer="footer")
                 except Exception as e:
                     print(str(e))
         if error is None:
@@ -90,12 +88,12 @@ def post_signup(error=None):
                 print(str(e))
 
             if error:
-                return render_template('signup.html', error=error, success=None, form=form)
+                return render_template('signup.html', error=error, success=None, form=form, footer="footer")
 
             return render_template('signup.html',
-                                   success="You account is not activated. Please check email and confirm email to complete sign up",
-                                   form=form)
-    return render_template('signup.html', error=error, form=form)
+                                   success="Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký",
+                                   form=form, footer="footer")
+    return render_template('signup.html', error=error, form=form, footer="footer")
 
 
 @auth_blueprint.route('/confirm-email', methods=['GET'])
@@ -117,19 +115,18 @@ def get_confirm_email(error=None):
 def post_login(error=None):
     form = LoginForm()
     if form.validate_on_submit():
-        user = UserModel()
+        _user = UserModel()
         email = request.form.get("email", "")
         plain_text_password = request.form.get("password", "")
-
-        user = user.find_by_email(email)
-
+        user = _user.find_by_email(email)
         if len(user) == 0:
-            error = "Incorrect email or password"
+            error = "Email hoặc mật khẩu không chính xác"
         elif not Utils.check_password(plain_text_password, user[0].password):
-            error = "Incorrect password"
+            error = "Mật khẩu không chính xác"
         elif user[0].active == 0:
-            error = "You account is not activated. Please check email and confirm email to complete sign up"
+            error = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email và hoàn tất thủ tục đăng ký"
         if error is None:
+            session.permanent = True
             session['logged'] = True
             session['cur_user'] = user[0]
             session['search'] = ""
@@ -138,7 +135,7 @@ def post_login(error=None):
             if user[0].active == 2:
                 return redirect('/admin/')
             return redirect('/')
-    return render_template("login.html", error=error, form=form)
+    return render_template("login.html", error=error, form=form, footer="footer")
 
 
 @auth_blueprint.route("/logout", methods=["GET"])
@@ -157,6 +154,69 @@ def home(form=None):
     return render_template("index.html", user=session['cur_user'], form=form, API_KEY=API_KEY)
 
 
+@auth_blueprint.route('/forget-password', methods=['GET', 'POST'])
+def forget_password(form=None):
+    form = EmailForm()
+    if form.validate_on_submit():
+        _user = UserModel()
+        email = request.form.get("email", "")
+        user = _user.find_by_email(email)
+        if len(user) == 0:
+            error = "Email không chính xác"
+            return render_template("forget-password.html", form=form, error=error, footer="footer")
+        try:
+            url = str(SERVER_NAME) + "/reset-password/user_id=" + str(user[0].id)
+            message = "Bạn đã yêu cầu reset mật khẩu trong hệ thống <strong>BlogAnUong</strong>.<br> Để hoàn tất reset mật khẩu, xin bạn hãy truy cập vào đường link sau:" + url
+            res = send_email(subject="Xác nhận reset mật khẩu BlogAnUong",
+                             html_content=message,
+                             recipients=str(email))
+            return render_template("forget-password.html", form=form, success="Vui lòng kiểm tra email để lấy lại mật khẩu.", footer="footer")
+        except Exception as e:
+            print(str(e))
+    return render_template("forget-password.html", form=form, footer="footer")
+
+
+@auth_blueprint.route('/reset-password/<string:user_id>', methods=['GET'])
+def reset_password(form=None, user_id=None):
+    print(user_id)
+    form = ResetForm()
+    _id = user_id.split("=")[1]
+    return render_template("reset-password.html", form=form, user_id=_id, footer="footer")
+
+@auth_blueprint.route('/reset-password', methods=['POST'])
+def post_reset_password(form=None, user_id=None, error=None):
+    form = ResetForm()
+    user = UserModel()
+    user_id = request.form.get("user_id", "")
+    email = user.find_by_id(user_id)[0].email
+    password = request.form.get("password", "")
+    password_confirm = request.form.get("password_confirm", "")
+    if not password:
+        error = "Vui lòng nhập mật khẩu"
+    elif password != password_confirm:
+        error = "Mật khẩu lặp lại không đúng"
+    if error is None:
+        hashed_passwd = Utils.hash_password(password_confirm)
+        new_user, error = user.update_psw(email, hashed_passwd.decode())
+        if error:
+            return render_template('reset-password.html', error=error, form=form, footer="footer", user_id=user_id)
+        return render_template('reset-password.html', success="Tài khoản đã được đổi mật khẩu thành công", form=form,
+                               footer="footer", user_id=user_id)
+    return render_template('reset-password.html', error=error, form=form, footer="footer", user_id=user_id)
+
+
+@auth_blueprint.route('/about-us', methods=['GET'])
+@login_required
+def about_us(form=None):
+    return render_template("about-us.html", user=session['cur_user'])
+
+
+@auth_blueprint.route('/contact-us', methods=['GET'])
+@login_required
+def contact_us(form=None):
+    return render_template("contact-us.html", user=session['cur_user'])
+
+
 @auth_blueprint.route('/load-predict-cate', methods=['GET'])
 @login_required
 def load_predict_cate():
@@ -168,7 +228,7 @@ def load_predict_cate():
         text = tsl.translations[0].translated_text.lower()
         session["search_tsl"] += text + " "
         print(session["search_tsl"])
-        rs = Utils.predict_food_cate(session["search_tsl"])
+        rs = Utils.predict_food_cate_online(session["search_tsl"])
         rs.pop('other', None)
         session['recommendation'] = rs
         print(rs)
@@ -177,7 +237,16 @@ def load_predict_cate():
         #     return res
     elif session["search_tsl"]:
         if session['recommendation']:
-            res = make_response(jsonify(session['recommendation']), 201)
+            res_dict = {}
+            rs_list = session['recommendation'].items()
+            print(rs_list)
+            for k, v in rs_list:
+                res_dict[k] = CATE_LIST[k]
+            # res_dict = {k: v for k, v in sorted(res_dict.items(), key=lambda item: item[1], reverse=True)}
+            print(list(res_dict.items())[0])
+            res = make_response(jsonify(list(res_dict.items())[0]), 201)
+            print(res.data)
+            session['recommendation']=""
             return res
 
     res = make_response(jsonify({}), 200)
@@ -193,10 +262,11 @@ def reset_rec():
         data_update = cur_user.infor_rec + " " + session['search_tsl']
         cur_user.update(set__infor_rec=data_update)
         session['search_tsl'] = ""
-        return redirect('/stores/?cate_predict='+rp)
+        return redirect('/stores/?cate_predict=' + rp)
     elif rp == 'n':
         session['search_tsl'] = ""
         return make_response(jsonify({}), 200)
+
 
 @auth_blueprint.route('/load_geo_places')
 @login_required
@@ -223,6 +293,7 @@ def load_geolocation():
             "lat": request.args.get("lat"),
             "lng": request.args.get("lng")
         }
-        session["pos"] = pos 
+        session["pos"] = pos
+        print(session['pos'])
     res = make_response(jsonify({"message": "OK"}), 200)
     return res

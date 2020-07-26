@@ -1,48 +1,46 @@
-from app.entity.user import User
 from tests.test_client import FlaskClientTestCase
+from utils import Utils
 
 
 class AuthViewsTestCase(FlaskClientTestCase):
 
-    # Ensure get_login is correct
     def test_get_login(self):
         with self.client:
             response = self.client.get('/login', follow_redirects=True)
-            self.assertIn(b'Login', response.data)
+            self.assertIn(bytes("ĐĂNG NHẬP", 'utf-8'), response.data)
 
-    # Ensure get_signup is correct
+    def test_home(self):
+        hashed_passwd = Utils.hash_password("huhu")
+        with self.client:
+            response = self.client.get('/', follow_redirects=True)
+            self.assertIn(b'phuongvuong1998', response.data)
+
+    def test_logout(self):
+        with self.client:
+            response = self.client.get('/logout', follow_redirects=True)
+            self.assertIn(bytes("ĐĂNG NHẬP", 'utf-8'), response.data)
+
     def test_get_signup(self):
         with self.client:
-            response = self.client.get('/login', follow_redirects=True)
-            self.assertIn(b'Sign up', response.data)
+            response = self.client.get('/signup', follow_redirects=True)
+            self.assertIn(bytes("ĐĂNG KÝ", 'utf-8'), response.data)
 
-    # # Ensure city is created
-    # def test_create_city(self):
-    #     with self.client:
-    #         response = self.client.post('/city/create', data=dict(
-    #             cityName="Khulalumbua"
-    #         ), follow_redirects=True)
-    #         self.assertIn(response.status, '200 OK')
-    #
-    # # Ensure city is created with city_name is empty
-    # def test_create_city_1(self):
-    #     with self.client:
-    #         response = self.client.post('/city/create', data=dict(
-    #             cityName=""
-    #         ), follow_redirects=True)
-    #         self.assertIn(b"Your city is error", response.data)
-    #
-    # # Ensure api list city is working correctly
-    # def test_api_list_cate(self):
-    #     with self.client:
-    #         response = self.client.get('/city/api/list?page=1', follow_redirects=True)
-    #         self.assertIn(response.status, '200 OK')
-    #
-    # # Ensure city is edit
-    # def test_edit_prod(self):
-    #     with self.client:
-    #         response = self.client.post('/city/edit', data=dict(
-    #             city_id="1",
-    #             city_name="Viet Nam vo dich"
-    #         ), follow_redirects=True)
-    #         self.assertIn(response.status, '200 OK')
+    def test_post_signup(self):
+        with self.client:
+            hashed_passwd = Utils.hash_password("123")
+            response = self.client.post('/signup', data=dict(
+                email="phuongvuong2@gmail.com",
+                passwpord=hashed_passwd,
+                password_confirm=hashed_passwd
+            ), follow_redirects=True)
+        self.assertIn(response.status, '200 OK')
+
+    def test_about_us(self):
+        with self.client:
+            response = self.client.get('/about-us', follow_redirects=True)
+            self.assertIn(b'Britcat', response.data)
+
+    def test_contact_us(self):
+        with self.client:
+            response = self.client.get('/contact-us', follow_redirects=True)
+            self.assertIn(b'Form', response.data)

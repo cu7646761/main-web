@@ -7,16 +7,17 @@ pos_dict = {
     'cozy':1, 'lovely':1, ' reasonably':1, 'cheap':1, 'fast':1 ,'tasty':1, 'affordable':1, 'attractive':1, 'cute':1,
     'pretty':3, "vibe":1, "dedicated":1, 'quiet':1, 'convenient':1, 'exciting':1, 'excited':1, 'amazing':1, 'enjoy':1,
     'enjoyed':1, 'pleasure':1, 'pleased':1, 'friendly':1, 'quick':1, 'satisfied':1, 'wonderfull':1, 'okay':1, 
-    'enthusiastic':1, 'loved':1, 'highly':1, 'impress':1 ,'impressed':1, 'impression':1, 'liked':1
+    'enthusiastic':1, 'loved':1, 'highly':1, 'impress':1 ,'impressed':1, 'impression':1, 'liked':1, 'appreciate':1
 }
 neg_dict = {
     'bad':1, 'worst':1, 'disgusting':1, 'dirty':1, 'ugly':1, 'hate':1, 'impolite':1, 'sad':1, 'disappointed':1, 'dislike':1,
     'poor':1, 'noisy':1, 'expensive':1, 'fuck':3, 'fucking':3, 'lousy':2, 'slow':1, 'slowly':1, 'small':1, 'lack':1, 'weak':1,
     'broken':1, 'disregard':1, 'wasted':1, 'boring':1, 'horrible':1, 'angry':1, 'careless':1, 'failed':1, 'dissatisfied':1,
-    'chemicals':1 , 'chemical':1, 'unsafe':1, 'unloading':1
+    'chemicals':1 , 'chemical':1, 'unsafe':1, 'unloading':1, 'suck':1, 'shit':1
 }
 neg_words = {
-    'no':1, 'not':1, 'nerver':1, "won't":1, "aren't":1, "don't":1, "isn't":1, "doesn't":1, "can't":1, "couldn't":1, 'none':1
+    'no':1, 'not':1, 'nerver':1, "won't":1, "aren't":1, "don't":1, "isn't":1, "doesn't":1, "can't":1, "couldn't":1, 'none':1,
+    "haven't":1, "hasn't":1, "didn't":1, "wasn't":1, "weren't":1, "wouldn't":1, 'hardly':1, , 'k':1, 'ko':1
 }
 temp_dict = {
     'simple':1, 'normal':1, 'temporary':1, 'ordinary':1, 'dc':1, 'tam':1, 'normally':1, 'average':1 
@@ -69,7 +70,7 @@ with open('sentiment_data.csv', 'w') as f:
             temp = random.choice(choice)
             noise = random.choice(list(neutrals.keys()))
             text += noise + " " + noise + " " + temp + " " + noise + " " + noise + " "
-        f_writer.writerow([text, 2])
+        f_writer.writerow([text, 2])appreciate
         print([text, 2])
     # negative pos
     for i in range(2000):
