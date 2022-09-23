@@ -58,7 +58,7 @@ parse==1.12.1
 parse-type==0.5.2
 Pillow==7.1.1
 pluggy==0.13.1
-protobuf==3.11.2
+protobuf==3.18.3
 py==1.8.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
